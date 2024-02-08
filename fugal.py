@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import numpy as np
 from hungarian import hungarian_algorithm
 from sinkhorn_knopp import sinkhorn_knopp as skp
@@ -33,8 +32,6 @@ def permute_adjacency_matrix(
     return permuted, permutation
 
 def extract_features(adjacency: np.ndarray) -> np.ndarray:
-    vertex_count, _ = adjacency.shape
-
     vertex_1st_degrees = adjacency.sum(axis=0)
     vertex_2nd_degrees = []
 
@@ -48,8 +45,19 @@ def extract_features(adjacency: np.ndarray) -> np.ndarray:
     denom = vertex_1st_degrees * (vertex_1st_degrees - 1)
     vertex_clustering = np.divide(vertex_2nd_degrees, denom, where=denom != 0)
 
-    mean_neighbour_degress = (vertex_1st_degrees @ adjacency) / vertex_count
-    mean_neighbour_clustering = (vertex_clustering @ adjacency) / vertex_count
+    div_mask = vertex_1st_degrees!=0
+
+    mean_neighbour_degress = np.divide(
+        vertex_1st_degrees @ adjacency,
+        vertex_1st_degrees,
+        where=div_mask,
+    )
+
+    mean_neighbour_clustering = np.divide(
+        vertex_clustering @ adjacency,
+        vertex_1st_degrees,
+        where=div_mask,
+    )
 
     return np.vstack([
         vertex_1st_degrees,
@@ -62,44 +70,50 @@ def euclidian_distance(f1: np.ndarray, f2: np.ndarray) -> np.ndarray:
     p1 = np.sum(f1**2, axis=1)[:, np.newaxis]
     p2 = np.sum(f2**2, axis=1)
     p3 = -2 * np.dot(f1, f2.T)
-    return np.sqrt(p1 + p2 + p3)
+    # The maximum is only due to precision issues, where some entries might be -0.0000007.
+    return np.sqrt(np.maximum(p1 + p2 + p3, 0.0))
 
 def find_quasi_permutation(
-    g1: np.ndarray,
-    g2: np.ndarray,
-    distance: np.ndarray,
+    A: np.ndarray,
+    B: np.ndarray,
+    D: np.ndarray,
     my: float,
     iteration_count: int,
 ) -> np.ndarray:
-    vertex_count, _ = g1.shape
-    q = np.ones(vertex_count) - np.ones(vertex_count) / vertex_count
+    vertex_count, _ = A.shape
+    Q = np.outer(np.ones(vertex_count), np.ones(vertex_count) / vertex_count)
+    J = np.ones(shape=A.shape)
 
-    f_deriv = lambda x: g1 @ x @ g2.T + my * distance.T
-    g_deriv = lambda x: np.ones(shape=g1.shape) - x
+    f_deriv = lambda P: -A @ P @ B.T - A.T @ P @ B + my * D
+    g_deriv = lambda P: J - 2*P
 
-    for iteration in range(iteration_count):
-        for inner in range(10):
-            grad = f_deriv(q) + iteration * g_deriv(q)
+    for lam in range(iteration_count):
+        for it in range(1, 11):
+            grad = f_deriv(Q) + lam * g_deriv(Q)
             optimizer = skp.SinkhornKnopp()
-            out = optimizer.fit(grad)
-            alpha = 2 / (2 + inner)
-            q = q + alpha * (out - q)
+            q_it = optimizer.fit(grad)
+            alpha = 2 / (2 + it)
+            Q += alpha * (q_it - Q)
 
-    return q
+    return Q
 
-def fugal(g1: np.ndarray, g2: np.ndarray, my: float = 1.5) -> np.ndarray:
+def fugal(g1: np.ndarray, g2: np.ndarray, my: float = 2.0) -> np.ndarray:
     f1, f2 = extract_features(g1), extract_features(g2)
     distance = euclidian_distance(f1, f2)
-    quasi_permutation = find_quasi_permutation(g1, g2, distance, my, 64)
+    quasi_permutation = find_quasi_permutation(g1, g2, distance, my, 10)
     return [x for _, x in hungarian_algorithm(quasi_permutation)]
 
 if __name__ == "__main__":
     generator = np.random.default_rng()
     vertex_count = 16
 
-    g1 = create_random_adjacency_matrix(vertex_count, generator)
-    g2, permutation = permute_adjacency_matrix(g1, generator)
+    means = []
 
-    result = fugal(g1, g2)
+    for _ in range(1):
+        g1 = create_random_adjacency_matrix(vertex_count, generator)
+        g2, permutation = permute_adjacency_matrix(g1, generator)
 
-    print("accuracy:", np.mean(result == permutation))
+        result = fugal(g1, g2)
+        means.append(np.mean(result == permutation))
+
+    print("accuracy:", np.mean(means))
