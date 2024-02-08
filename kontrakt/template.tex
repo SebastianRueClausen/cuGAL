@@ -1,0 +1,82 @@
+\documentclass{article}
+
+% Imports
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+% Header
+\setlength{\headheight}{48.14pt} 
+\fancyhf{}
+\fancyhead[OL]{
+\includegraphics[scale=0.3]{AUlogo}
+\vspace{-0.5cm}
+}
+\fancyhead[OR]{
+\begin{tabular}{l}
+\textbf{\sc Bachelor Contract}       \\
+Date: \today              \\
+Page \thepage/\pageref{LastPage}\\
+~~
+\end{tabular}}
+
+\newcommand{\timeest}[1]{$\mathbf{#1}$}% used to write time estimations without excessive math-mode
+
+\begin{document}
+\pagestyle{fancy}
+
+% Meta-information about group/advisors/etc.
+\bgroup\def\arraystretch{1.5}
+\begin{table}[h]
+\begin{tabular}{ll}
+\textbf{Advisor}     & Davide Mottin \\
+\textbf{Students}    & Andreas H. H. Hansen \& Sebastian Rue Clausen \\
+\textbf{Languages}   & English \\
+\textbf{Text tools}  & \LaTeX         \\
+\textbf{Other tools} & C++, CUDA, Git      
+\end{tabular}
+\end{table}
+\egroup\vspace{-0.cm}
+
+\subsection*{Project Description (at least 10-20 lines)}
+
+This project will investigate how Graph Alignment Problems are modelled and what algorithms are used to approximate solutions to Graph Alignment problems. The project will explain the FUGAL-algorithm, and investigate how it can be optimized to run on Nvidia GPUs using the CUDA framework. 
+
+\subsection*{Provisional Table of Contents}
+\begin{itemize}
+    \item Abstract (10-20 lines)
+    \item Section 1: Introduction (1-2 pages)
+    \item Section 2: Review of literature (4-8 pages)
+    \item Section 3: Description of Task A (4-8 pages)
+    \item Section 4: Description of Task B (4-8 pages)
+    \item Section 5: Description of Task C (4-8 pages)
+    \item Section 6: Comparison to other work and ideas for future work (2-4 pages)
+    \item Section 7: Conclusion (1-2 pages)
+    \item Acknowledgements (3-5 lines)
+    \item References ($\frac{1}{2}$-1 page)
+    \item Appendix with programming code, tables, full proofs, etc. (5-20 pages)
+\end{itemize}
+
+\subsection*{Provisional Time Plan}
+
+\paragraph{First week of February (15 hours)}~\\\noindent
+Planning of activities, including the production of the Bachelor's contract.
+
+\paragraph{Rest of February and first half of March (\timeest{3\times 15} hours)}~\\\noindent
+Read literature (one or more scientific papers) and make draft of Section 2 in Bachelor's report.
+
+\paragraph{Rest of March and first week of April (\timeest{2\times 15+2\times 30} hours)}~\\\noindent
+Completion of task A and make draft of Section 3 in Bachelor's report.
+
+\paragraph{Rest of April (\timeest{3\times 30} hours)}~\\\noindent
+Completion of task B and make draft of Section 4 in Bachelor's report.
+
+\paragraph{First three weeks of May (\timeest{3\times 30} hours)}~\\\noindent
+Completion of task C and make draft of Section 2 in Bachelor's report.
+
+\paragraph{Last week of April of first half of June (\timeest{3\times 30} hours)}~\\\noindent
+Write the missing parts, put drafts together, make things consistent, proof reading.
+
+\end{document}
