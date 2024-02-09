@@ -1,6 +1,7 @@
 import numpy as np
 from hungarian import hungarian_algorithm
 from sinkhorn_knopp import sinkhorn_knopp as skp
+from sinkhorn import sinkhorn
 
 def create_random_adjacency_matrix(
     vertex_count: int,
@@ -77,40 +78,40 @@ def find_quasi_permutation(
     A: np.ndarray,
     B: np.ndarray,
     D: np.ndarray,
-    my: float,
+    mu: float,
     iteration_count: int,
 ) -> np.ndarray:
     vertex_count, _ = A.shape
-    Q = np.outer(np.ones(vertex_count), np.ones(vertex_count) / vertex_count)
+    ones = np.ones(vertex_count)
+    Q = np.outer(ones, ones) / vertex_count
     J = np.ones(shape=A.shape)
 
-    f_deriv = lambda P: -A @ P @ B.T - A.T @ P @ B + my * D
+    f_deriv = lambda P: -A @ P @ B.T - A.T @ P @ B + mu * D
     g_deriv = lambda P: J - 2*P
 
     for lam in range(iteration_count):
         for it in range(1, 11):
             grad = f_deriv(Q) + lam * g_deriv(Q)
-            optimizer = skp.SinkhornKnopp()
-            q_it = optimizer.fit(grad)
-            alpha = 2 / (2 + it)
+            q_it = sinkhorn(ones, ones, grad, reg=1.0, maxIter=500, stopThr=1e-3)
+            alpha = 2 / (2.0 + it)
             Q += alpha * (q_it - Q)
 
     return Q
 
-def fugal(g1: np.ndarray, g2: np.ndarray, my: float = 2.0) -> np.ndarray:
+def fugal(g1: np.ndarray, g2: np.ndarray, mu: float = 2.0) -> np.ndarray:
     f1, f2 = extract_features(g1), extract_features(g2)
     distance = euclidian_distance(f1, f2)
-    quasi_permutation = find_quasi_permutation(g1, g2, distance, my, 10)
+    quasi_permutation = find_quasi_permutation(g1, g2, distance, mu, 15)
     return [x for _, x in hungarian_algorithm(quasi_permutation)]
 
 if __name__ == "__main__":
     generator = np.random.default_rng()
-    vertex_count = 16
+    vertex_count = 128
 
     means = []
 
     for _ in range(1):
-        g1 = create_random_adjacency_matrix(vertex_count, generator)
+        g1 = create_random_adjacency_matrix(vertex_count, generator, connectivity=0.1)
         g2, permutation = permute_adjacency_matrix(g1, generator)
 
         result = fugal(g1, g2)
