@@ -5,7 +5,7 @@ import networkx as nx
 import time
 import scipy
 from sklearn.metrics.pairwise import euclidean_distances
-import sinkhorn
+import official.sinkhorn as sinkhorn
 
 def feature_extraction(G):
     """Node feature extraction.
@@ -67,14 +67,17 @@ def dist(A, B, P):
     return obj*obj/2
 
 def FindQuasiPerm(A, B, D, mu, niter):
+    print("Finding Quasi Permutation")
     n = len(A)
     P = torch.ones((n,n), dtype = torch.float64) / n
     ones = torch.ones(n, dtype = torch.float64)
     mat_ones = torch.ones((n, n), dtype = torch.float64)
     reg = 1.0
     K = mu * D
+    print(niter)
     for i in range(niter):
         for it in range(1, 11):
+            print("Iteration ", it)
             G = -torch.mm(torch.mm(A.T, P), B) - torch.mm(torch.mm(A, P), B.T) + K + i*(mat_ones - 2*P)
             q = sinkhorn.sinkhorn(ones, ones, G, reg, maxIter = 500, stopThr = 1e-3)
             alpha = 2.0 / float(2.0 + it)
@@ -95,6 +98,7 @@ def convertToPermHungarian(M, n1, n2):
     return P, ans
 
 def fugal(Gq, Gt, mu, niter):
+    print("FUGAL!")
     n1 = len(Gq.nodes())
     n2 = len(Gt.nodes())
     n = max(n1, n2)
@@ -118,7 +122,9 @@ def predict_alignment(queries, targets, mu = 1, niter = 15):
     n = len(queries)
     mapping = []
     times = []
+    print("Predicting alignment for size ", n)
     for i in tqdm(range(n)):
+        print("Predicting alignment for size ", i)
         t1 = time.time()
         ans = fugal(queries[i], targets[i], mu, niter)
         mapping.append(ans)
@@ -164,6 +170,11 @@ if __name__ == "__main__":
 
     g1 = create_random_adjacency_matrix(256, generator, connectivity=0.01)
     g2, permutation = permute_adjacency_matrix(g1, generator)
+
+    print("g1:", g1)
+    print("g2:", type(g2[0][0]))
+    print("permutation:", permutation)
+    
 
     mapping, _ = predict_alignment([nx.from_numpy_array(g1)], [nx.from_numpy_array(g2)])
 

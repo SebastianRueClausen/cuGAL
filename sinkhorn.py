@@ -65,7 +65,7 @@ def sinkhorn(a, b, C, reg=1e-1, method='sinkhorn', maxIter=1000, tau=1e3,
     --------
 
     """
-
+    print("Sinkhorn running method ", method, "\n")
     if method.lower() == 'sinkhorn':
         return sinkhorn_knopp(a, b, C, reg, maxIter=maxIter,
                               stopThr=stopThr, verbose=verbose, log=log,
@@ -126,6 +126,7 @@ def sinkhorn_knopp(a, b, C, reg=1e-1, maxIter=1000, stopThr=1e-9,
     --------
 
     """
+    print("Sinkhorn called\n")
 
     na, nb = C.shape
 
@@ -165,6 +166,7 @@ def sinkhorn_knopp(a, b, C, reg=1e-1, maxIter=1000, stopThr=1e-9,
         np.matmul(K, v, out=Kv)
         u = np.divide(a, Kv + M_EPS)
 
+        print("help:\n", np.isnan(u))
         if np.any(np.isnan(u)) or np.any(np.isnan(v)) or \
                 np.any(np.isinf(u)) or np.any(np.isinf(v)):
             print('Warning: numerical errors at iteration', it)

@@ -81,6 +81,7 @@ def find_quasi_permutation(
     mu: float,
     iteration_count: int,
 ) -> np.ndarray:
+    print("finding quasi permutation")
     vertex_count, _ = A.shape
     ones = np.ones(vertex_count)
     Q = np.outer(ones, ones) / vertex_count
@@ -92,6 +93,7 @@ def find_quasi_permutation(
     for lam in range(iteration_count):
         for it in range(1, 11):
             grad = f_deriv(Q) + lam * g_deriv(Q)
+            print("WTF")
             q_it = sinkhorn(ones, ones, grad, reg=1.0, maxIter=500, stopThr=1e-3)
             alpha = 2 / (2.0 + it)
             Q += alpha * (q_it - Q)
@@ -99,6 +101,7 @@ def find_quasi_permutation(
     return Q
 
 def fugal(g1: np.ndarray, g2: np.ndarray, mu: float = 2.0) -> np.ndarray:
+    print("fugal")
     f1, f2 = extract_features(g1), extract_features(g2)
     distance = euclidian_distance(f1, f2)
     quasi_permutation = find_quasi_permutation(g1, g2, distance, mu, 15)
