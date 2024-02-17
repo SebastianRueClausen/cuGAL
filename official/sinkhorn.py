@@ -14,6 +14,8 @@ def sinkhorn(
     match config.sinkhorn_method:
         case SinkhornMethod.STANDARD:
             return sinkhorn_knopp(a, b, C, config)
+        case SinkhornMethod.PRECISE:
+            return sinkhorn_knopp_precise(a, b, C, config)
         case SinkhornMethod.LOG:
             return sinkhorn_log(a, b, C, config)
 
@@ -28,28 +30,41 @@ def sinkhorn_knopp(
     u = torch.full(size=(na,), fill_value=1/na, device=config.device, dtype=config.data_type)
     v = torch.full(size=(nb,), fill_value=1/nb, device=config.device, dtype=config.data_type)
 
-    K = torch.empty(C.shape, device=config.device, dtype=config.data_type)
-    torch.div(C, -config.sinkhorn_regularization, out=K)
-    torch.exp(K, out=K)
-
-    # allocate memory beforehand
-    KTu = torch.empty(v.shape, device=config.device, dtype=config.data_type)
-    Kv = torch.empty(u.shape, device=config.device, dtype=config.data_type)
+    K = torch.exp(C / -config.sinkhorn_regularization)
 
     for _ in range(config.sinkhorn_iterations):
-        torch.matmul(u, K, out=KTu)
-        v = torch.div(b, KTu + M_EPS)
-        torch.matmul(K, v, out=Kv)
-        u = torch.div(a, Kv + M_EPS)
-
-        #if torch.any(torch.isnan(u)) or torch.any(torch.isnan(v)) or \
-        #        torch.any(torch.isinf(u)) or torch.any(torch.isinf(v)):
-        #    print('Warning: numerical errors at iteration', it)
-        #    u, v = upre, vpre
-        #    break
+        v = b / (u @ K + M_EPS)
+        u = a / (K @ v + M_EPS)
 
     return u.reshape(-1, 1) * K * v.reshape(1, -1)
-    
+
+def sinkhorn_knopp_precise(
+    a: torch.Tensor,
+    b: torch.Tensor,
+    C: torch.Tensor,
+    config: Config,
+) -> torch.Tensor:
+    na, nb = C.shape
+
+    u = torch.full(size=(na,), fill_value=1/na, device=config.device, dtype=config.data_type)
+    v = torch.full(size=(nb,), fill_value=1/nb, device=config.device, dtype=config.data_type)
+
+    K = C / -config.sinkhorn_regularization
+
+    c_max = C.max()
+    K = torch.exp(K - c_max)
+
+    alpha = -torch.exp(c_max.to(dtype=torch.float64))
+
+    for _ in range(config.sinkhorn_iterations):
+        x = ((u @ K).to(dtype=torch.float64) * alpha).to(dtype=config.data_type)
+        y = ((K @ v).to(dtype=torch.float64) * alpha).to(dtype=config.data_type)
+
+        v = b / (x + M_EPS)
+        u = a / (y + M_EPS)
+
+    return u.reshape(-1, 1) * K * v.reshape(1, -1)
+
 def sinkhorn_log(
     a: torch.Tensor,
     b: torch.Tensor,

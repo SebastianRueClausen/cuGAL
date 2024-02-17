@@ -50,7 +50,7 @@ def find_quasi_perm(
 
     for i in tqdm(range(config.iter_count)):
         for it in range(1, 11):
-            G = -torch.mm(torch.mm(A.T, P), B) - torch.mm(torch.mm(A, P), B.T) + K + i*(mat_ones - 2*P)
+            G = -A.T @ P @ B - A @ P @ B.T + K + i*(mat_ones - 2*P)
             q = sinkhorn.sinkhorn(ones, ones, G, config)
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)

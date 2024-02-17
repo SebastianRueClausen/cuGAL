@@ -5,18 +5,18 @@ import networkx as nx
 import official.metrics as metrics
 import torch, torch.cuda, torch.backends.mps
 
-def select_device() -> torch.device:
+def select_device() -> str:
     device = 'cpu'
     if torch.cuda.is_available():
-        device = 'cuda'
+        device = 'cuda:0'
     elif torch.backends.mps.is_available():
         device = 'mps'
-    return torch.device(device, 0)
+    return device
 
 gpu_config = Config(
     device=select_device(),
-    sinkhorn_regularization=8.0,
-    sinkhorn_method=SinkhornMethod.STANDARD,
+    sinkhorn_regularization=1.0,
+    sinkhorn_method=SinkhornMethod.PRECISE,
     sinkhorn_iterations=200,
     data_type=torch.float32,
     mu=1.0,
@@ -71,7 +71,9 @@ def test_yeast():
     G1 = nx.from_numpy_array(A1)
     G2 = nx.from_numpy_array(A2)
 
-    mapping = p.fugal(G1, G2, cpu_config)
+    print(gpu_config.device)
+
+    mapping = p.fugal(G1, G2, gpu_config)
     mapping = [x for _, x in mapping]
 
     print("ICS:", metrics.ICS(A1, A2, np.arange(n1), mapping))
