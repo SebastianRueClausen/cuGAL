@@ -16,8 +16,6 @@ def sinkhorn(
             return sinkhorn_knopp(a, b, C, config)
         case SinkhornMethod.LOG:
             return sinkhorn_log(a, b, C, config)
-        case SinkhornMethod.LOG_FAST:
-            return sinkhorn_log(a, b, C, config, fast=True)
 
 def sinkhorn_knopp(
     a: torch.Tensor,
@@ -55,18 +53,15 @@ def sinkhorn_knopp(
 def sinkhorn_log(
     a: torch.Tensor,
     b: torch.Tensor,
-    M: torch.Tensor,
+    C: torch.Tensor,
     config: Config,
-    fast=False,
 ) -> torch.Tensor:
     na, nb = len(a), len(b)
 
-    def get_logT(Mr, u, v):
-        return Mr + u[:, None] + v[None, :]
+    def get_logT(K, u, v):
+        return K + u[:, None] + v[None, :]
 
-    Mr = - M / config.sinkhorn_regularization
-    if fast:
-        Mr_exp = torch.exp(Mr)
+    K = - C / config.sinkhorn_regularization
 
     u = torch.zeros(na, device=config.device, dtype=config.data_type)
     v = torch.zeros(nb, device=config.device, dtype=config.data_type)
@@ -74,19 +69,12 @@ def sinkhorn_log(
     loga, logb = torch.log(a), torch.log(b)
 
     for _ in range(config.sinkhorn_iterations):
-        if fast:
-            z = Mr_exp + Mr_exp * (torch.exp(u[:, None]) - 1)
-            v = logb - torch.log(torch.sum(z, 0))
-
-            z = Mr_exp + Mr_exp * (torch.exp(v[None, :]) - 1)
-            u = loga - torch.log(torch.sum(z, 1))
-        else:
-            v = logb - torch.logsumexp(Mr + u[:, None], 0)
-            u = loga - torch.logsumexp(Mr + v[None, :], 1)
+        v = logb - torch.logsumexp(K + u[:, None], 0)
+        u = loga - torch.logsumexp(K + v[None, :], 1)
 
         #if iter % 50 == 0:
             #tmp = torch.sum(torch.exp(get_logT(Mr, u, v)), 0)
             #threshold = torch.norm(tmp - b)
             #if threshold < 0.01: break
 
-    return torch.exp(get_logT(Mr, u, v))
+    return torch.exp(get_logT(K, u, v))

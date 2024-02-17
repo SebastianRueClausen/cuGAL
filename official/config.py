@@ -5,7 +5,6 @@ import torch
 class SinkhornMethod(Enum):
     STANDARD = 0
     LOG = 1
-    LOG_FAST = 2
 
 @dataclass
 class Config:

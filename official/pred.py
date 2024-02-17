@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import euclidean_distances
 import official.sinkhorn as sinkhorn
 from official.config import Config
 
-def feature_extraction(G: nx.graph):
+def feature_extraction(G: nx.graph) -> np.ndarray:
     node_list = sorted(G.nodes())
     node_degree_dict = dict(G.degree())
     node_clustering_dict = dict(nx.clustering(G))

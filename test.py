@@ -26,24 +26,14 @@ gpu_config = Config(
 cpu_config = Config(
     device='cpu',
     sinkhorn_regularization=1.0,
-    sinkhorn_method=SinkhornMethod.LOG,
+    sinkhorn_method=SinkhornMethod.STANDARD,
     sinkhorn_iterations=200,
     data_type=torch.float64,
     mu=1.0,
     iter_count=15,
 )
 
-gpu_fast_log_config = Config(
-    device=select_device(),
-    sinkhorn_regularization=8.0,
-    sinkhorn_method=SinkhornMethod.LOG_FAST,
-    sinkhorn_iterations=200,
-    data_type=torch.float32,
-    mu=1.0,
-    iter_count=15,
-)
-
-gpu_slow_log_config = Config(
+gpu_log_config = Config(
     device=select_device(),
     sinkhorn_regularization=1.0,
     sinkhorn_method=SinkhornMethod.LOG,
@@ -81,7 +71,7 @@ def test_yeast():
     G1 = nx.from_numpy_array(A1)
     G2 = nx.from_numpy_array(A2)
 
-    mapping = p.fugal(G1, G2, gpu_slow_log_config)
+    mapping = p.fugal(G1, G2, cpu_config)
     mapping = [x for _, x in mapping]
 
     print("ICS:", metrics.ICS(A1, A2, np.arange(n1), mapping))
