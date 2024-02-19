@@ -5,7 +5,6 @@ import torch
 class SinkhornMethod(Enum):
     STANDARD = 0
     LOG = 1
-    PRECISE = 2
 
 @dataclass
 class Config:
@@ -16,6 +15,3 @@ class Config:
     mu: float
     iter_count: int
     data_type: torch.dtype
-
-    def __str__(self) -> str:
-        return ""

@@ -30,6 +30,11 @@ def feature_extraction(G: nx.graph) -> np.ndarray:
 
     return np.nan_to_num(np.stack((degs, clusts, neighbor_degs, neighbor_clusts)).T)
 
+def avg_row_col_sum(matrix: torch.Tensor) -> float:
+    a = torch.mean(matrix.sum(axis=0))
+    b = torch.mean(matrix.sum(axis=1))
+    return ((a + b) / 2).item()
+
 def find_quasi_perm(
     A: np.ndarray,
     B: np.ndarray,
@@ -52,6 +57,7 @@ def find_quasi_perm(
         for it in range(1, 11):
             G = -A.T @ P @ B - A @ P @ B.T + K + i*(mat_ones - 2*P)
             q = sinkhorn.sinkhorn(ones, ones, G, config)
+            assert abs(avg_row_col_sum(q) - 1.0) < 0.01
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)
 

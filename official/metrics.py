@@ -6,7 +6,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 mp.set_sharing_strategy('file_system')
 
-def EC(A, B, ma, mb):
+def edge_correctness(A, B, ma, mb):
     adj1 = A[ma][:, ma]
     adj2 = B[mb][:, mb]
     comb = adj1 + adj2
@@ -15,8 +15,7 @@ def EC(A, B, ma, mb):
 
     return intersection / np.sum(A == 1)
 
-
-def ICS(A, B, ma, mb):
+def induced_conserved_structure(A, B, ma, mb):
     adj1 = A[ma][:, ma]
     adj2 = B[mb][:, mb]
     comb = adj1 + adj2
@@ -26,8 +25,7 @@ def ICS(A, B, ma, mb):
 
     return intersection / induced
 
-
-def S3(A, B, ma, mb):
+def symmetric_substructure(A, B, ma, mb):
     adj1 = A[ma][:, ma]
     adj2 = B[mb][:, mb]
     comb = adj1 + adj2
@@ -37,7 +35,6 @@ def S3(A, B, ma, mb):
     denom = np.sum(A == 1) + induced - intersection
 
     return intersection / denom
-
 
 def jacc(A, B, ma, mb):
     adj1 = A[ma][:, ma]
