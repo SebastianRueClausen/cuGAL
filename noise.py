@@ -6,9 +6,8 @@ def remove_edges(
     noise_level: float,
     generator: np.random.Generator,
 ) -> nx.Graph:
-    n = G.number_of_nodes()
     edges = np.array(G.edges)
-    retain_mask = generator.random(n) >= noise_level
+    retain_mask = generator.random(len(edges)) >= noise_level
     return nx.Graph(edges[retain_mask].tolist())
 
 def add_edges(

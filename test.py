@@ -31,7 +31,7 @@ gpu_log_config = Config(
     sinkhorn_method=SinkhornMethod.LOG,
     sinkhorn_iterations=200,
     data_type=torch.float16,
-    mu=1.0,
+    mu=0.5,
     iter_count=15,
 )
 
@@ -79,8 +79,12 @@ def test(G1: nx.Graph, G2: nx.Graph, correct_mapping: np.ndarray, config: Config
     mapping = p.fugal(G1, G2, config)
     mapping = [x for _, x in mapping]
 
+    assert len(G1.nodes()) == len(G2.nodes())
+
     A1 = nx.to_numpy_array(G1)
     A2 = nx.to_numpy_array(G2)
+
+    assert A1.shape == A2.shape
 
     ics = metrics.induced_conserved_structure(A1, A2, correct_mapping, mapping)
     ec = metrics.edge_correctness(A1, A2, correct_mapping, mapping)
@@ -121,7 +125,19 @@ def test_yeast(config: Config):
     G1 = nx.from_numpy_array(A1)
     G2 = nx.from_numpy_array(A2)
 
-    test(G1, G2, np.arange(n1), config)
+    generator = np.random.default_rng()
+    G1 = noise.remove_edges(G2, 0.01, generator)
+
+    n = max(len(G1.nodes()), len(G2.nodes()))
+    for i in set(range(n)) - set(G1.nodes()):
+        G1.add_node(i)
+
+    for i in set(range(n)) - set(G2.nodes()):
+        G2.add_node(i)
+
+    assert len(G1.nodes()) == len(G2.nodes())
+
+    test(G2, G1, np.arange(n1), config)
 
 if __name__ == "__main__":
     test_yeast(cpu_config)

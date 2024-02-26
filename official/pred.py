@@ -84,13 +84,6 @@ def convert_to_perm_hungarian(
     return ans
 
 def fugal(Gq: nx.graph, Gt: nx.graph, config: Config):
-    n1 = len(Gq.nodes())
-    n2 = len(Gt.nodes())
-    n = max(n1, n2)
-
-    for i in range(n1, n): Gq.add_node(i)
-    for i in range(n2, n): Gt.add_node(i)
-
     F1 = feature_extraction(Gq)
     F2 = feature_extraction(Gt)
 
@@ -101,4 +94,4 @@ def fugal(Gq: nx.graph, Gt: nx.graph, config: Config):
         config,
     )
 
-    return convert_to_perm_hungarian(P, n1, n2)
+    return convert_to_perm_hungarian(P, len(Gq.nodes()), len(Gt.nodes()))
