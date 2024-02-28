@@ -5,7 +5,8 @@ const int block_size = 64;
 
 template <typename scalar_t>
 __global__ void kernel(
-    torch::PackedTensorAccessor<scalar_t, 2> x,
+    torch::PackedTensorAccessor<scalar_t, 2> K,
+    torch::PackedTensorAccessor<scalar_t, 1> add,
     torch::PackedTensorAccessor<scalar_t, 1> out,
     int axis
 ) {
@@ -15,11 +16,11 @@ __global__ void kernel(
     auto tid = threadIdx.x;
     auto bid = blockIdx.x;
 
-    auto size = x.size(axis == 0 ? 1 : 0);
+    auto size = K.size(axis == 0 ? 1 : 0);
 
     scalar_t max = -INFINITY;
     for (int i = tid; i < size; i += block_size) {
-        max = fmaxf(x[bid][i], max);
+        max = fmaxf(K[bid][i] + add[i], max);
     }
 
     results[tid] = max;
@@ -40,7 +41,7 @@ __global__ void kernel(
 
     scalar_t sum = 0.0;
     for (int i = tid; i < size; i += block_size) {
-        sum += expf(x[bid][i] - factor);
+        sum += expf(K[bid][i] + add[i] - factor);
     }
 
     results[tid] = sum;
@@ -54,17 +55,21 @@ __global__ void kernel(
     }
 
     if (tid == 0) {
-        out[bid] = factor + logf(results[0]);
+        out[bid] = -(factor + logf(results[0]));
     }
 }
 
-torch::Tensor logsumexp_cuda(torch::Tensor x, int axis) {
-    auto blocks = x.size(axis == 0 ? 1 : 0);
+torch::Tensor sinkhorn_step_cuda(torch::Tensor K, torch::Tensor add, int axis) {
+    auto blocks = K.size(axis == 0 ? 1 : 0);
     auto threads = block_size;
 
-    auto out = torch::empty(blocks, x.type()).to(x.device());
-
-    kernel<float><<<blocks, threads>>>(x.packed_accessor<float, 2>(), out.packed_accessor<float, 1>(), axis);
+    auto out = torch::empty(blocks, K.type()).to(K.device());
+    kernel<float><<<blocks, threads>>>(
+        K.packed_accessor<float, 2>(),
+        add.packed_accessor<float, 1>(),
+        out.packed_accessor<float, 1>(),
+        axis
+    );
 
     return out;
 }

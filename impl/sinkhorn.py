@@ -85,7 +85,7 @@ with open("impl/sinkhorn.cpp") as file:
 with open("impl/sinkhorn.cu") as file:
     cu = file.read()
 
-module = load_inline(name="inline_extension", cpp_sources=[cpp], cuda_sources=[cu], functions=["logsumexp_row", "logsumexp_col"])
+module = load_inline(name="inline_extension", cpp_sources=[cpp], cuda_sources=[cu], functions=["sinkhorn_step_row", "sinkhorn_step_col"])
 
 def sinkhorn_log_cuda(
     a: torch.Tensor,
@@ -103,11 +103,13 @@ def sinkhorn_log_cuda(
     u = torch.zeros(na, device=config.device, dtype=config.data_type)
     v = torch.zeros(nb, device=config.device, dtype=config.data_type)
 
-    loga, logb = torch.log(a), torch.log(b)
+    # loga, logb = torch.log(a), torch.log(b)
 
     for iter in range(config.sinkhorn_iterations):
-        v = logb - module.logsumexp_row(K + u[:, None])
-        u = loga - module.logsumexp_col(K + v[None, :])
+        # v = logb - module.logsumexp_row(K + u[:, None])
+        # u = loga - module.logsumexp_col(K + v[None, :])
+        v = module.sinkhorn_step_row(K, u)
+        u = module.sinkhorn_step_col(K, v)
 
         if iter % config.sinkhorn_eval_freq == 0:
             tmp = torch.sum(torch.exp(get_logT(K, u, v)), 0)
