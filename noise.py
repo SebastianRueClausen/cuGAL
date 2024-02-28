@@ -7,8 +7,17 @@ def remove_edges(
     generator: np.random.Generator,
 ) -> nx.Graph:
     edges = np.array(G.edges)
-    retain_mask = generator.random(len(edges)) >= noise_level
-    return nx.Graph(edges[retain_mask].tolist())
+    bin_count = np.bincount(edges.flatten())
+    rows_to_delete = []
+    for i, edge in enumerate(edges):
+        if generator.random(1) < noise_level:
+            e, f = edge
+            if bin_count[e] > 1 and bin_count[f] > 1:
+                bin_count[e] -= 1
+                bin_count[f] -= 1
+                rows_to_delete.append(i)
+    new_edges = np.delete(edges, rows_to_delete, axis=0)
+    return nx.Graph(new_edges.tolist())
 
 def add_edges(
     G: nx.Graph,

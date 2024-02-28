@@ -1,11 +1,18 @@
+from dataclasses import dataclass, fields
 import numpy as np
-import official.pred as p
-from official.config import Config, SinkhornMethod
-import networkx as nx
-import official.metrics as metrics
-import torch, torch.cuda, torch.backends.mps
+import impl.pred as p
+from impl.config import Config, SinkhornMethod
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
+import networkx as nx
+import impl.metrics as metrics
+import torch
+import torch.cuda
+import torch.backends.mps
 import noise
+import generate
+from official.pred import fugal as official_fugal
+
 
 def select_device() -> str:
     device = 'cpu'
@@ -15,91 +22,112 @@ def select_device() -> str:
         device = 'mps'
     return device
 
-cpu_config = Config(
-    device='cpu',
-    sinkhorn_regularization=1.0,
-    sinkhorn_method=SinkhornMethod.STANDARD,
-    sinkhorn_iterations=200,
-    data_type=torch.float64,
-    mu=1.0,
-    iter_count=15,
-)
+
+cpu_config = Config()
 
 gpu_log_config = Config(
     device=select_device(),
-    sinkhorn_regularization=1.0,
     sinkhorn_method=SinkhornMethod.LOG,
-    sinkhorn_iterations=200,
-    data_type=torch.float16,
-    mu=0.5,
-    iter_count=15,
+    data_type=torch.float32,
 )
 
-def permute_graph(
-    source: nx.Graph,
-    generator: np.random.Generator,
-) -> tuple[nx.Graph, np.ndarray]:
-    n = source.number_of_nodes()
 
-    permutation = np.array((
-        np.arange(n),
-        generator.permutation(n)
-    ))
+@dataclass
+class Experiment:
+    config: Config
+    source: nx.Graph
+    target: nx.Graph | None = None
+    permute: bool = False
+    source_noise: float = 0
+    target_noise: float = 0
+    refill_edges: bool = True
+    generator: np.random.Generator = np.random.default_rng()
 
-    permutation = (
-        permutation[:, permutation[1].argsort()][0],
-        permutation[:, permutation[0].argsort()][1]
-    )
 
-    edges = np.array(source.edges)
-    target = nx.Graph(permutation[0][edges].tolist())
+@dataclass
+class Result:
+    ics: float
+    ec: float
+    sss: float
+    accuracy: float
 
-    return target, permutation[1]
+    def __str__(self) -> str:
+        metrics = [self.ics, self.ec, self.sss, self.accuracy]
+        names = [
+            "Induced Conserved Structure (ICS)",
+            "Edge Correctness (EC)",
+            "Symmetric Substructure Score (SSS)",
+            "Accuracy",
+        ]
+        column_width = max(len(name) for name in names)
+        return "\n".join(f"{n:<{column_width}} {m}" for n, m in zip(names, metrics))
 
-def test_graph_with_synthetic_noise(
-    source: nx.Graph,
-    config: Config,
-    source_noise: float,
-    target_noise: float,
-):
-    generator = np.random.default_rng()
-    target, permutation = permute_graph(source, generator)
 
-    edge_count = source.number_of_edges()
+def plot_results(experiments: list[Experiment], results: list[Result], x_axis_field: str):
+    x = np.arange(len(experiments))
+    for field in fields(Result):
+        plt.plot(x, [getattr(result, field.name) for result in results], label=field.name)
+    x_labels = [getattr(experiment, x_axis_field) for experiment in experiments]
+    if all(isinstance(label, float) for label in x_labels):
+        x_labels = ["{:.2f}".format(label) for label in x_labels]
+    plt.xticks(x, x_labels)
+    plt.xlabel(x_axis_field)
+    plt.legend()
+    plt.show()
 
-    source = noise.remove_edges(source, source_noise, generator)
-    target = noise.remove_edges(target, target_noise, generator)
 
-    source = noise.add_edges(source, edge_count - source.number_of_edges(), generator)
-    target = noise.add_edges(target, edge_count - target.number_of_edges(), generator)
+def add_missing_nodes(graph: nx.Graph, node_count: int):
+    for i in set(range(node_count)) - set(graph.nodes()):
+        graph.add_node(i)
 
-    test(source, target, permutation, config)
 
-def test(G1: nx.Graph, G2: nx.Graph, correct_mapping: np.ndarray, config: Config):
-    mapping = p.fugal(G1, G2, config)
+def test(experiment: Experiment, use_official=True) -> Result:
+    if experiment.target is not None:
+        assert experiment.source.number_of_nodes() == experiment.target.number_of_nodes()
+
+    if experiment.target is None:
+        source, target, (source_mapping, target_mapping) = generate.generate_graphs(
+            G=experiment.source,
+            source_noise=experiment.target_noise,
+            target_noise=experiment.target_noise,
+            refill=experiment.refill_edges,
+        )
+        source, target = nx.from_edgelist(source), nx.from_edgelist(target)
+    else:
+        source, target = experiment.source, experiment.target
+        source_mapping = np.arange(source.number_of_nodes())
+
+    if use_official:
+        mapping = official_fugal(source, target, experiment.config.mu, experiment.config.sinkhorn_iterations)
+    else:
+        mapping = p.fugal(source, target, experiment.config)
+
     mapping = [x for _, x in mapping]
 
-    assert len(G1.nodes()) == len(G2.nodes())
-
-    A1 = nx.to_numpy_array(G1)
-    A2 = nx.to_numpy_array(G2)
+    A1 = nx.to_numpy_array(source)
+    A2 = nx.to_numpy_array(target)
 
     assert A1.shape == A2.shape
 
-    ics = metrics.induced_conserved_structure(A1, A2, correct_mapping, mapping)
-    ec = metrics.edge_correctness(A1, A2, correct_mapping, mapping)
-    sss = metrics.symmetric_substructure(A1, A2, correct_mapping, mapping)
+    ics = metrics.induced_conserved_structure(A1, A2, source_mapping, mapping)
+    ec = metrics.edge_correctness(A1, A2, source_mapping, mapping)
+    sss = metrics.symmetric_substructure(A1, A2, source_mapping, mapping)
+    accuracy = np.mean(mapping == source_mapping)
 
-    accuracy = np.mean(correct_mapping == mapping)
+    return Result(ics, ec, sss, accuracy)
 
-    print("induced conserved structure (ICS):", ics)
-    print("edge correctness (EC):", ec)
-    print("symmetric substructure score (SSS):", sss)
-    print("accuracy:", accuracy)
 
-def test_yeast(config: Config):
-    f1 = open("./official/data/yeast0_Y2H1.txt", "r")
-    f2 = open("./official/data/yeast10_Y2H1.txt", "r")
+def newmann_watts_graph(
+    node_count: int,
+    node_degree: int,
+    rewriting_prob: float,
+) -> nx.Graph:
+    return nx.newman_watts_strogatz_graph(node_count, node_degree, rewriting_prob)
+
+
+def multi_magna_graph() -> tuple[nx.Graph, nx.Graph]:
+    f1 = open("data/yeast0_Y2H1.txt", "r")
+    f2 = open("data/yeast10_Y2H1.txt", "r")
 
     nodes1 = [tuple(map(int, n.split())) for n in f1.read().split("\n") if n]
     nodes2 = [tuple(map(int, n.split())) for n in f2.read().split("\n") if n]
@@ -122,22 +150,41 @@ def test_yeast(config: Config):
         A2[i - 1, j - 1] = 1
         A2[j - 1, i - 1] = 1
 
-    G1 = nx.from_numpy_array(A1)
-    G2 = nx.from_numpy_array(A2)
+    return nx.from_numpy_array(A1), nx.from_numpy_array(A2)
 
-    generator = np.random.default_rng()
-    G1 = noise.remove_edges(G2, 0.01, generator)
 
-    n = max(len(G1.nodes()), len(G2.nodes()))
-    for i in set(range(n)) - set(G1.nodes()):
-        G1.add_node(i)
+def multi_magna_experiment(config: Config) -> Experiment:
+    return Experiment(config, *multi_magna_graph())
 
-    for i in set(range(n)) - set(G2.nodes()):
-        G2.add_node(i)
 
-    assert len(G1.nodes()) == len(G2.nodes())
+def newmann_watts_experiment(config: Config, source_noise: float) -> Experiment:
+    graph = newmann_watts_graph(
+        node_count=100, node_degree=7, rewriting_prob=0.1)
+    return Experiment(config, graph, source_noise=source_noise)
 
-    test(G2, G1, np.arange(n1), config)
+
+def replicate_figure_5(config: Config):
+    config = Config(mu=2)
+    noises = np.linspace(0, 0.25, num=6)
+    experiments = [newmann_watts_experiment(config, source_noise=noise) for noise in noises]
+    results = list(map(test, experiments))
+    plot_results(experiments, results, "source_noise")
+
+
+def compare_against_official():
+    node_count = 1024
+    graph = newmann_watts_graph(node_count=node_count, node_degree=7, rewriting_prob=0.01)
+    config = Config(sinkhorn_method=SinkhornMethod.STANDARD)
+    mapping = p.fugal(graph, graph, config)
+    mapping = [x for _, x in mapping]
+    official_mapping = official_fugal(graph, graph, config.mu, config.iter_count)
+    official_mapping = [x for _, x in official_mapping]
+    accuracy = np.mean(np.arange(node_count) == mapping)
+    official_accuracy = np.mean(np.arange(node_count) == official_mapping)
+    print("accuracy:", accuracy, "official accuracy:", official_accuracy)
+
 
 if __name__ == "__main__":
-    test_yeast(cpu_config)
+    replicate_figure_5(gpu_log_config)
+    #print(test(multi_magna_experiment(cpu_config)))
+    #compare_against_official()
