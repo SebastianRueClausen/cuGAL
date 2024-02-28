@@ -1,5 +1,4 @@
-#include<iostream>
-
+#include <iostream>
 
 torch::Tensor logsumexp_cuda(torch::Tensor, int);
 

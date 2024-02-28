@@ -81,8 +81,10 @@ def sinkhorn_log(
 
 with open("impl/sinkhorn.cpp") as file:
     cpp = file.read()
+
 with open("impl/sinkhorn.cu") as file:
     cu = file.read()
+
 module = load_inline(name="inline_extension", cpp_sources=[cpp], cuda_sources=[cu], functions=["logsumexp_row", "logsumexp_col"])
 
 def sinkhorn_log_cuda(
@@ -91,13 +93,12 @@ def sinkhorn_log_cuda(
     C: torch.Tensor,
     config: Config,
 ) -> torch.Tensor:
-
     na, nb = len(a), len(b)
 
     def get_logT(K, u, v):
         return K + u[:, None] + v[None, :]
 
-    K = - C / config.sinkhorn_regularization
+    K = -C / config.sinkhorn_regularization
 
     u = torch.zeros(na, device=config.device, dtype=config.data_type)
     v = torch.zeros(nb, device=config.device, dtype=config.data_type)
