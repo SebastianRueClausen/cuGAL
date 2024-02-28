@@ -3,16 +3,14 @@ import numpy as np
 import impl.pred as p
 from impl.config import Config, SinkhornMethod
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
 import networkx as nx
 import impl.metrics as metrics
 import torch
 import torch.cuda
 import torch.backends.mps
-import noise
 import generate
 from official.pred import fugal as official_fugal
-
+from impl.sinkhorn import test_cuda, benchmark_cuda
 
 def select_device() -> str:
     device = 'cpu'
@@ -29,7 +27,7 @@ cpu_config = Config()
 gpu_log_config = Config(
     device=select_device(),
     sinkhorn_method=SinkhornMethod.LOG,
-    data_type=torch.float32,
+    data_type=torch.float16,
 )
 
 
@@ -154,7 +152,13 @@ def multi_magna_graph() -> tuple[nx.Graph, nx.Graph]:
     return nx.from_numpy_array(A1), nx.from_numpy_array(A2)
 
 
-def multi_magna_experiment(config: Config) -> Experiment:
+def multi_magna_experiment(device: str) -> Experiment:
+    config = Config(
+        device=device,
+        sinkhorn_method=SinkhornMethod.LOG,
+        data_type=torch.float32,
+        mu=2.0,
+    )
     return Experiment(config, *multi_magna_graph())
 
 
@@ -165,7 +169,7 @@ def newmann_watts_experiment(config: Config, source_noise: float) -> Experiment:
 
 
 def replicate_figure_4(config: Config):
-    config = Config(mu=2, sinkhorn_method=SinkhornMethod.LOG, device=select_device(), data_type=torch.float32)
+    config = Config(mu=2, sinkhorn_method=SinkhornMethod.LOG, device=select_device(), data_type=torch.float16)
     noises = np.linspace(0, 0.25, num=6)
     experiments = [newmann_watts_experiment(config, source_noise=noise) for noise in noises]
     results = list(map(test, experiments))
@@ -186,6 +190,9 @@ def compare_against_official():
 
 
 if __name__ == "__main__":
-    replicate_figure_4(gpu_log_config)
-    #test(multi_magna_experiment(cpu_config))
+    #replicate_figure_4(gpu_log_config)
+    print(test(multi_magna_experiment(select_device())))
     #compare_against_official()
+
+    #test_cuda()
+    #benchmark_cuda()
