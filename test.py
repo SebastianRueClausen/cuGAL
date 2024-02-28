@@ -20,6 +20,7 @@ def select_device() -> str:
         device = 'cuda:0'
     elif torch.backends.mps.is_available():
         device = 'mps'
+    print("selected device:", device)
     return device
 
 
@@ -81,7 +82,7 @@ def add_missing_nodes(graph: nx.Graph, node_count: int):
         graph.add_node(i)
 
 
-def test(experiment: Experiment, use_official=True) -> Result:
+def test(experiment: Experiment, use_official=False) -> Result:
     if experiment.target is not None:
         assert experiment.source.number_of_nodes() == experiment.target.number_of_nodes()
 
@@ -159,12 +160,12 @@ def multi_magna_experiment(config: Config) -> Experiment:
 
 def newmann_watts_experiment(config: Config, source_noise: float) -> Experiment:
     graph = newmann_watts_graph(
-        node_count=100, node_degree=7, rewriting_prob=0.1)
+        node_count=1000, node_degree=7, rewriting_prob=0.1)
     return Experiment(config, graph, source_noise=source_noise)
 
 
-def replicate_figure_5(config: Config):
-    config = Config(mu=2)
+def replicate_figure_4(config: Config):
+    config = Config(mu=2, sinkhorn_method=SinkhornMethod.LOG, device=select_device(), data_type=torch.float32)
     noises = np.linspace(0, 0.25, num=6)
     experiments = [newmann_watts_experiment(config, source_noise=noise) for noise in noises]
     results = list(map(test, experiments))
@@ -185,6 +186,6 @@ def compare_against_official():
 
 
 if __name__ == "__main__":
-    replicate_figure_5(gpu_log_config)
-    #print(test(multi_magna_experiment(cpu_config)))
+    replicate_figure_4(gpu_log_config)
+    #test(multi_magna_experiment(cpu_config))
     #compare_against_official()

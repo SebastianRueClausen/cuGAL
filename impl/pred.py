@@ -43,6 +43,8 @@ def find_quasi_perm(
 ) -> torch.Tensor:
     n = len(A)
 
+    print(config.device)
+
     A = torch.tensor(A, dtype=config.data_type, device=config.device)
     B = torch.tensor(B, dtype=config.data_type, device=config.device)
     D = torch.tensor(D, dtype=config.data_type, device=config.device)
