@@ -87,6 +87,7 @@ with open("impl/sinkhorn.cu") as file:
 
 module = load_inline(name="inline_extension", cpp_sources=[cpp], cuda_sources=[cu], functions=["sinkhorn_step_row", "sinkhorn_step_col"])
 
+# a and b must be ones.
 def sinkhorn_log_cuda(
     a: torch.Tensor,
     b: torch.Tensor,
@@ -103,11 +104,7 @@ def sinkhorn_log_cuda(
     u = torch.zeros(na, device=config.device, dtype=config.data_type)
     v = torch.zeros(nb, device=config.device, dtype=config.data_type)
 
-    # loga, logb = torch.log(a), torch.log(b)
-
     for iter in range(config.sinkhorn_iterations):
-        # v = logb - module.logsumexp_row(K + u[:, None])
-        # u = loga - module.logsumexp_col(K + v[None, :])
         v = module.sinkhorn_step_row(K, u)
         u = module.sinkhorn_step_col(K, v)
 

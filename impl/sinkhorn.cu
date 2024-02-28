@@ -64,12 +64,15 @@ torch::Tensor sinkhorn_step_cuda(torch::Tensor K, torch::Tensor add, int axis) {
     auto threads = block_size;
 
     auto out = torch::empty(blocks, K.type()).to(K.device());
-    kernel<float><<<blocks, threads>>>(
-        K.packed_accessor<float, 2>(),
-        add.packed_accessor<float, 1>(),
-        out.packed_accessor<float, 1>(),
-        axis
-    );
+
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(K.type(), "kernel", ([&] {
+        kernel<scalar_t><<<blocks, threads>>>(
+            K.packed_accessor<scalar_t, 2>(),
+            add.packed_accessor<scalar_t, 1>(),
+            out.packed_accessor<scalar_t, 1>(),
+            axis
+        );
+    }));
 
     return out;
 }
