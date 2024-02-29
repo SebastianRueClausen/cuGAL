@@ -1,9 +1,9 @@
 # https://pythonot.github.io/_modules/ot/bregman.html#sinkhorn
 
 from torch.utils.cpp_extension import load_inline
-from os import read
 import torch
 from impl.config import Config, SinkhornMethod
+import numpy as np
 
 with open("impl/sinkhorn.cpp") as file: cpp = file.read()
 with open("impl/sinkhorn.cu") as file: cu = file.read()
@@ -95,13 +95,14 @@ def sinkhorn_log_cuda(
         return K + u[:, None] + v[None, :]
 
     K = -C / config.sinkhorn_regularization
+    K_transpose = K.t().clone()
 
     u = torch.zeros(na, device=config.device, dtype=config.data_type)
     v = torch.zeros(nb, device=config.device, dtype=config.data_type)
 
     for iter in range(config.sinkhorn_iterations):
         v = module.sinkhorn_step(K, u, 0)
-        u = module.sinkhorn_step(K, v, 1)
+        u = module.sinkhorn_step(K_transpose, v, 0)
 
         if iter % config.sinkhorn_eval_freq == 0:
             tmp = torch.sum(torch.exp(get_logT(K, u, v)), 0)
@@ -116,6 +117,7 @@ def test_cuda():
     dtype = torch.float32
 
     matrix = torch.randn((matrix_size, matrix_size), device="cuda", dtype=dtype)
+    matrix_transposed = matrix.t().clone()
 
     vector = torch.randn(matrix_size, device="cuda", dtype=dtype)
 
@@ -123,7 +125,7 @@ def test_cuda():
     a1 = -torch.logsumexp(matrix + vector[None, :], 1)
 
     b0 = module.sinkhorn_step(matrix, vector, 0)
-    b1 = module.sinkhorn_step(matrix, vector, 1)
+    b1 = module.sinkhorn_step(matrix_transposed, vector, 0)
 
     d0 = torch.mean(torch.abs(a0 - b0)).item()
     d1 = torch.mean(torch.abs(a1 - b1)).item()
@@ -134,36 +136,44 @@ def test_cuda():
     assert torch.allclose(a0, b0)
     assert torch.allclose(a1, b1)
 
-def benchmark_cuda():
-    import time
-    import numpy as np
+def mean_cuda_time(function, iter_count) -> float:
+    times = []
 
-    matrix_size = 10000
-    iterations = 100
+    for _ in range(iter_count):
+        start = torch.cuda.Event(enable_timing=True)
+        end = torch.cuda.Event(enable_timing=True)
+
+        start.record()
+        function()
+        end.record()
+
+        torch.cuda.synchronize()
+        times.append(start.elapsed_time(end))
+
+    return np.mean(times)
+
+
+def benchmark_cuda():
+    matrix_size = 100
+    iter_count = 15000
     dtype = torch.float32
 
-    torch_times = []
-    cuda_times = []
+    matrix = torch.randn((matrix_size, matrix_size), device="cuda", dtype=dtype)
+    matrix_transposed = matrix.t().clone()
+    vector = torch.randn(matrix_size, device="cuda", dtype=dtype)
 
-    for _ in range(iterations):
-        matrix = torch.randn((matrix_size, matrix_size), device="cuda", dtype=dtype)
-        vector = torch.randn(matrix_size, device="cuda", dtype=dtype)
+    def test_torch():
+        -torch.logsumexp(matrix + vector[:, None], 0)
+        -torch.logsumexp(matrix + vector[None, :], 1)
 
-        before = time.time()
-        a0 = -torch.logsumexp(matrix + vector[:, None], 0)
-        a1 = -torch.logsumexp(matrix + vector[None, :], 1)
-        torch_times.append(time.time() - before)
+    def test_cuda():
+        module.sinkhorn_step(matrix, vector, 0)
+        module.sinkhorn_step(matrix_transposed, vector, 0)
 
-        before = time.time()
-        b0 = module.sinkhorn_step(matrix, vector, 0)
-        b1 = module.sinkhorn_step(matrix, vector, 1)
-        cuda_times.append(time.time() - before)
+    mean_torch = mean_cuda_time(test_torch, iter_count)
+    mean_cuda = mean_cuda_time(test_cuda, iter_count)
 
-
-    torch_mean = np.mean(torch_times)
-    cuda_mean = np.mean(cuda_times)
-
-    print("mean torch time:", torch_mean)
-    print("mean cuda time:", cuda_mean)
-    print("cuda is time", torch_mean / cuda_mean, "times faster")
+    print("torch time:", mean_torch)
+    print("cuda time:", mean_cuda)
+    print("cuda is time", mean_torch / mean_cuda, "times faster")
     
