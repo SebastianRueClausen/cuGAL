@@ -96,15 +96,17 @@ def sinkhorn_log_cuda(
         return K + u[:, None] + v[None, :]
 
     K = -C / config.sinkhorn_regularization
-    K_transpose = K.t().clone()
+    K_transpose = K.t().contiguous()
 
     u = torch.zeros(na, device=config.device, dtype=config.data_type)
     v = torch.zeros(nb, device=config.device, dtype=config.data_type)
 
     for iter in range(config.sinkhorn_iterations):
-        module.sinkhorn_step(K, u, v, 0)
-        module.sinkhorn_step(K_transpose, v, u, 0)
+        module.sinkhorn_step(K_transpose, u, v, 0)
+        module.sinkhorn_step(K, v, u, 0)
 
+        print(v)
+    
         if iter % config.sinkhorn_eval_freq == 0:
             tmp = torch.sum(torch.exp(get_logT(K, u, v)), 0)
             threshold = (tmp - b).pow(2).sum().item()
@@ -115,10 +117,10 @@ def sinkhorn_log_cuda(
 
 def test_cuda():
     matrix_size = 1000
-    dtype = torch.float32
+    dtype = torch.float16
 
-    matrix = torch.randn((matrix_size, matrix_size), device="cuda", dtype=dtype)
-    matrix_transposed = matrix.t().clone()
+    matrix = torch.randn((matrix_size, matrix_size), device="cuda", dtype=dtype) * 20
+    matrix_transposed = matrix.t().contiguous()
 
     vector = torch.randn(matrix_size, device="cuda", dtype=dtype)
 
@@ -127,8 +129,8 @@ def test_cuda():
 
     b0 = torch.empty_like(a0, device="cuda")
     b1 = torch.empty_like(a0, device="cuda")
-    module.sinkhorn_step(matrix, vector, b0, 0)
-    module.sinkhorn_step(matrix_transposed, vector, b1, 0)
+    module.sinkhorn_step(matrix_transposed, vector, b0, 0)
+    module.sinkhorn_step(matrix, vector, b1, 0)
 
     d0 = torch.mean(torch.abs(a0 - b0)).item()
     d1 = torch.mean(torch.abs(a1 - b1)).item()
@@ -162,7 +164,7 @@ def benchmark_cuda():
     matrix_size = 10000
     iter_count = 5
 
-    config = Config(device="cuda", data_type=torch.float32, sinkhorn_iterations=200)
+    config = Config(device="cuda", data_type=torch.float16, sinkhorn_iterations=200)
 
     matrix = torch.randn((matrix_size, matrix_size), device=config.device, dtype=config.data_type)
     ones = torch.ones((matrix_size,), device=config.device, dtype=config.data_type)

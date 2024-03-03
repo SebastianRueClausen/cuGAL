@@ -155,8 +155,8 @@ def multi_magna_graph() -> tuple[nx.Graph, nx.Graph]:
 def multi_magna_experiment(device: str) -> Experiment:
     config = Config(
         device=device,
-        sinkhorn_method=SinkhornMethod.SOFTMAX,
-        data_type=torch.float32,
+        sinkhorn_method=SinkhornMethod.LOG,
+        data_type=torch.float16,
         mu=2.0,
     )
     return Experiment(config, *multi_magna_graph())
@@ -191,8 +191,8 @@ def compare_against_official():
 
 if __name__ == "__main__":
     #replicate_figure_4(gpu_log_config)
-    #print(test(multi_magna_experiment(select_device())))
+    print(test(multi_magna_experiment(select_device())))
     #compare_against_official()
 
-    test_cuda()
-    benchmark_cuda()
+    #test_cuda()
+    #benchmark_cuda()
