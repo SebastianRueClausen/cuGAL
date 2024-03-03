@@ -20,8 +20,10 @@ def sinkhorn(
     match config.sinkhorn_method:
         case SinkhornMethod.STANDARD:
             return sinkhorn_knopp(a, b, C, config)
-        case SinkhornMethod.LOG:
+        case SinkhornMethod.LOG if "cuda" in config.device:
             return sinkhorn_log_cuda(a, b, C, config)
+        case SinkhornMethod.LOG:
+            return sinkhorn_log(a, b, C, config)
 
 
 def sinkhorn_knopp(
@@ -102,11 +104,9 @@ def sinkhorn_log_cuda(
     v = torch.zeros(nb, device=config.device, dtype=config.data_type)
 
     for iter in range(config.sinkhorn_iterations):
-        module.sinkhorn_step(K_transpose, u, v, 0)
-        module.sinkhorn_step(K, v, u, 0)
+        module.sinkhorn_step(K_transpose, u, v)
+        module.sinkhorn_step(K, v, u)
 
-        print(v)
-    
         if iter % config.sinkhorn_eval_freq == 0:
             tmp = torch.sum(torch.exp(get_logT(K, u, v)), 0)
             threshold = (tmp - b).pow(2).sum().item()
@@ -116,10 +116,10 @@ def sinkhorn_log_cuda(
     return torch.exp(get_logT(K, u, v))
 
 def test_cuda():
-    matrix_size = 1000
+    matrix_size = 1024
     dtype = torch.float16
 
-    matrix = torch.randn((matrix_size, matrix_size), device="cuda", dtype=dtype) * 20
+    matrix = torch.randn((matrix_size, matrix_size), device="cuda", dtype=dtype) * 42.0
     matrix_transposed = matrix.t().contiguous()
 
     vector = torch.randn(matrix_size, device="cuda", dtype=dtype)
@@ -129,11 +129,14 @@ def test_cuda():
 
     b0 = torch.empty_like(a0, device="cuda")
     b1 = torch.empty_like(a0, device="cuda")
-    module.sinkhorn_step(matrix_transposed, vector, b0, 0)
-    module.sinkhorn_step(matrix, vector, b1, 0)
+    module.sinkhorn_step(matrix_transposed, vector, b0)
+    module.sinkhorn_step(matrix, vector, b1)
 
     d0 = torch.mean(torch.abs(a0 - b0)).item()
     d1 = torch.mean(torch.abs(a1 - b1)).item()
+
+    print(matrix)
+    print(b0 - a0)
 
     print("mean difference axis 0:", d0)
     print("mean difference axis 1:", d1)

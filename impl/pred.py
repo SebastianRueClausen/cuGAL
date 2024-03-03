@@ -84,6 +84,12 @@ def convert_to_perm_hungarian(
     return ans
 
 def fugal(Gq: nx.graph, Gt: nx.graph, config: Config):
+    node_count = Gq.number_of_nodes()
+
+    if config.data_type == torch.float16 and Gq.number_of_nodes() % 2 != 0:
+        Gq.add_node(Gq.number_of_nodes())
+        Gt.add_node(Gt.number_of_nodes())
+
     F1 = feature_extraction(Gq)
     F2 = feature_extraction(Gt)
 
@@ -94,4 +100,9 @@ def fugal(Gq: nx.graph, Gt: nx.graph, config: Config):
         config,
     )
 
-    return convert_to_perm_hungarian(P, len(Gq.nodes()), len(Gt.nodes()))
+    mapping = convert_to_perm_hungarian(P, len(Gq.nodes()), len(Gt.nodes()))
+
+    if node_count != len(mapping):
+        mapping.pop()
+
+    return mapping
