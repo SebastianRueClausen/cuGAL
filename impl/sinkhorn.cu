@@ -2,6 +2,9 @@
 #include <cuda_runtime.h>
 #include <cuda_fp16.h>
 
+// TODO: Finding the max of each row can be made constant time by simple precomputing
+// the max of each row and column of K.
+
 // Performs a sum reduction within a single warp.
 __device__ inline float warp_sum_reduce(float sum) {
     #pragma unroll
@@ -78,7 +81,6 @@ __device__ inline float block_sum_reduce(float value) {
 __device__ inline __half2 block_sum_reduce_half2(__half2 value) {
     const auto default_value = __float2half2_rn(0.0);
     const auto warp_sum = warp_sum_reduce_half2(value);
-    // __syncthreads();
     return warp_sum_reduce_half2(
         warp_lane_swap<__half2>(warp_sum, default_value)
     );
@@ -92,7 +94,6 @@ __device__ inline float block_max_reduce(float value) {
 __device__ inline __half2 block_max_reduce_half2(__half2 value) {
     const auto default_value = __float2half2_rn(-INFINITY);
     const auto warp_max = warp_max_reduce_half2(value);
-    // __syncthreads();
     return warp_max_reduce_half2(
         warp_lane_swap<__half2>(warp_max, default_value)
     );
@@ -171,7 +172,6 @@ __global__ void kernel_half2(
     #pragma unroll
     for (auto i = tid; i < size; i += blockDim.x) {
         sum = __hadd2(sum, h2exp(__hadd2(K[bid][i], __hsub2(add[i], max))));
-        // sum = __hadd2(sum, h2exp(__hadd2(add[i], __hsub2(K[bid][i], max))));
     }
 
     if (block_size > warpSize) {
@@ -187,7 +187,7 @@ __global__ void kernel_half2(
     }
 }
 
-constexpr size_t block_size = 64;
+constexpr size_t block_size = 32 * 12;
 
 void sinkhorn_step_cuda(torch::Tensor K, torch::Tensor add, torch::Tensor out) {
     const auto blocks = K.size(0);

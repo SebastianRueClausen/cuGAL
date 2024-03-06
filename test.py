@@ -191,8 +191,9 @@ def compare_against_official():
 
 if __name__ == "__main__":
     #replicate_figure_4(gpu_log_config)
-    print(test(multi_magna_experiment(select_device())))
     #compare_against_official()
 
     #test_cuda()
-    #benchmark_cuda()
+    benchmark_cuda()
+
+    #print(test(multi_magna_experiment(select_device())))
