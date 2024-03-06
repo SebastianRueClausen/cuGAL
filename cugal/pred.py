@@ -4,8 +4,9 @@ from tqdm.auto import tqdm
 import networkx as nx
 import scipy
 from sklearn.metrics.pairwise import euclidean_distances
-import impl.sinkhorn as sinkhorn
-from impl.config import Config
+import cugal.sinkhorn as sinkhorn
+from cugal.config import Config
+
 
 def feature_extraction(G: nx.graph) -> np.ndarray:
     node_list = sorted(G.nodes())
@@ -30,38 +31,29 @@ def feature_extraction(G: nx.graph) -> np.ndarray:
 
     return np.nan_to_num(np.stack((degs, clusts, neighbor_degs, neighbor_clusts)).T)
 
-def avg_row_col_sum(matrix: torch.Tensor) -> float:
-    a = torch.mean(matrix.sum(axis=0))
-    b = torch.mean(matrix.sum(axis=1))
-    return ((a + b) / 2).item()
 
-def find_quasi_perm(
-    A: np.ndarray,
-    B: np.ndarray,
-    D: np.ndarray,
-    config: Config,
-) -> torch.Tensor:
+def find_quasi_perm(A: np.ndarray, B: np.ndarray, D: np.ndarray, config: Config) -> torch.Tensor:
     n = len(A)
 
-    A = torch.tensor(A, dtype=config.data_type, device=config.device)
-    B = torch.tensor(B, dtype=config.data_type, device=config.device)
-    D = torch.tensor(D, dtype=config.data_type, device=config.device)
+    A = torch.tensor(A, dtype=config.dtype, device=config.device)
+    B = torch.tensor(B, dtype=config.dtype, device=config.device)
+    D = torch.tensor(D, dtype=config.dtype, device=config.device)
 
-    P = torch.full(size=(n,n), fill_value=1/n, dtype=config.data_type, device=config.device)
-    ones = torch.ones(n, dtype=config.data_type, device=config.device)
-    mat_ones = torch.ones((n, n), dtype=config.data_type, device=config.device)
+    P = torch.full(size=(n, n), fill_value=1/n,
+                   dtype=config.dtype, device=config.device)
+    mat_ones = torch.ones((n, n), dtype=config.dtype, device=config.device)
 
     K = config.mu * D
 
     for i in tqdm(range(config.iter_count)):
         for it in range(1, 11):
             G = -A.T @ P @ B - A @ P @ B.T + K + i*(mat_ones - 2*P)
-            q = sinkhorn.sinkhorn(ones, ones, G, config)
-            assert abs(avg_row_col_sum(q) - 1.0) < 0.01
+            q = sinkhorn.sinkhorn(G, config)
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)
 
     return P.cpu()
+
 
 def convert_to_perm_hungarian(
     M: torch.Tensor,
@@ -83,15 +75,30 @@ def convert_to_perm_hungarian(
 
     return ans
 
-def fugal(Gq: nx.graph, Gt: nx.graph, config: Config):
-    F1 = feature_extraction(Gq)
-    F2 = feature_extraction(Gt)
+
+def cugal(source: nx.graph, target: nx.graph, config: Config):
+    """Run cuGAL algorithm."""
+
+    node_count = source.number_of_nodes()
+
+    if config.dtype == torch.float16 and source.number_of_nodes() % 2 != 0:
+        source.add_node(source.number_of_nodes())
+        target.add_node(target.number_of_nodes())
+
+    F1 = feature_extraction(source)
+    F2 = feature_extraction(target)
 
     P = find_quasi_perm(
-        nx.to_numpy_array(Gq),
-        nx.to_numpy_array(Gt),
+        nx.to_numpy_array(source),
+        nx.to_numpy_array(target),
         euclidean_distances(F1, F2),
         config,
     )
 
-    return convert_to_perm_hungarian(P, len(Gq.nodes()), len(Gt.nodes()))
+    mapping = convert_to_perm_hungarian(
+        P, len(source.nodes()), len(target.nodes()))
+
+    if node_count != len(mapping):
+        mapping.pop()
+
+    return mapping

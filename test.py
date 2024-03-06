@@ -1,18 +1,16 @@
 from dataclasses import dataclass, fields
 import numpy as np
-import impl.pred as p
-from impl.config import Config, SinkhornMethod
+from cugal.pred import cugal
+from cugal.config import Config, SinkhornMethod
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
 import networkx as nx
-import impl.metrics as metrics
+import metrics as metrics
 import torch
 import torch.cuda
 import torch.backends.mps
-import noise
 import generate
-from official.pred import fugal as official_fugal
-
+from fugal.pred import fugal
+from cugal.sinkhorn import test_cuda, benchmark_cuda
 
 def select_device() -> str:
     device = 'cpu'
@@ -20,6 +18,7 @@ def select_device() -> str:
         device = 'cuda:0'
     elif torch.backends.mps.is_available():
         device = 'mps'
+    print("selected device:", device)
     return device
 
 
@@ -28,7 +27,7 @@ cpu_config = Config()
 gpu_log_config = Config(
     device=select_device(),
     sinkhorn_method=SinkhornMethod.LOG,
-    data_type=torch.float32,
+    dtype=torch.float16,
 )
 
 
@@ -81,7 +80,7 @@ def add_missing_nodes(graph: nx.Graph, node_count: int):
         graph.add_node(i)
 
 
-def test(experiment: Experiment, use_official=True) -> Result:
+def test(experiment: Experiment, use_fugal=False) -> Result:
     if experiment.target is not None:
         assert experiment.source.number_of_nodes() == experiment.target.number_of_nodes()
 
@@ -97,10 +96,10 @@ def test(experiment: Experiment, use_official=True) -> Result:
         source, target = experiment.source, experiment.target
         source_mapping = np.arange(source.number_of_nodes())
 
-    if use_official:
-        mapping = official_fugal(source, target, experiment.config.mu, experiment.config.sinkhorn_iterations)
+    if use_fugal:
+        mapping = fugal(source, target, experiment.config.mu, experiment.config.sinkhorn_iterations)
     else:
-        mapping = p.fugal(source, target, experiment.config)
+        mapping = cugal(source, target, experiment.config)
 
     mapping = [x for _, x in mapping]
 
@@ -153,18 +152,24 @@ def multi_magna_graph() -> tuple[nx.Graph, nx.Graph]:
     return nx.from_numpy_array(A1), nx.from_numpy_array(A2)
 
 
-def multi_magna_experiment(config: Config) -> Experiment:
+def multi_magna_experiment(device: str) -> Experiment:
+    config = Config(
+        device=device,
+        sinkhorn_method=SinkhornMethod.LOG,
+        dtype=torch.float16,
+        mu=2.0,
+    )
     return Experiment(config, *multi_magna_graph())
 
 
 def newmann_watts_experiment(config: Config, source_noise: float) -> Experiment:
     graph = newmann_watts_graph(
-        node_count=100, node_degree=7, rewriting_prob=0.1)
+        node_count=1000, node_degree=7, rewriting_prob=0.1)
     return Experiment(config, graph, source_noise=source_noise)
 
 
-def replicate_figure_5(config: Config):
-    config = Config(mu=2)
+def replicate_figure_4(config: Config):
+    config = Config(mu=2, sinkhorn_method=SinkhornMethod.LOG, device=select_device(), dtype=torch.float16)
     noises = np.linspace(0, 0.25, num=6)
     experiments = [newmann_watts_experiment(config, source_noise=noise) for noise in noises]
     results = list(map(test, experiments))
@@ -175,16 +180,23 @@ def compare_against_official():
     node_count = 1024
     graph = newmann_watts_graph(node_count=node_count, node_degree=7, rewriting_prob=0.01)
     config = Config(sinkhorn_method=SinkhornMethod.STANDARD)
-    mapping = p.fugal(graph, graph, config)
-    mapping = [x for _, x in mapping]
-    official_mapping = official_fugal(graph, graph, config.mu, config.iter_count)
-    official_mapping = [x for _, x in official_mapping]
-    accuracy = np.mean(np.arange(node_count) == mapping)
-    official_accuracy = np.mean(np.arange(node_count) == official_mapping)
-    print("accuracy:", accuracy, "official accuracy:", official_accuracy)
+
+    cugal_mapping = cugal(graph, graph, config)
+    cugal_mapping = [x for _, x in cugal_mapping]
+
+    fugal_mapping = fugal(graph, graph, config.mu, config.iter_count)
+    fugal_mapping = [x for _, x in fugal_mapping]
+
+    cugal_accuracy = np.mean(np.arange(node_count) == cugal_mapping)
+    fugal_accuracy = np.mean(np.arange(node_count) == fugal_mapping)
+
+    print("accuracy:", cugal_accuracy, "official accuracy:", fugal_accuracy)
 
 
 if __name__ == "__main__":
-    replicate_figure_5(gpu_log_config)
-    #print(test(multi_magna_experiment(cpu_config)))
+    #replicate_figure_4(gpu_log_config)
     #compare_against_official()
+
+    benchmark_cuda()
+
+    #print(test(multi_magna_experiment(select_device())))
