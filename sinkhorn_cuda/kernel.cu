@@ -1,9 +1,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <cuda_fp16.h>
-
-// TODO: Finding the max of each row can be made constant time by simple precomputing
-// the max of each row and column of K.
+#include <torch/torch.h>
 
 // Performs a sum reduction within a single warp.
 __device__ inline float warp_sum_reduce(float sum) {
@@ -100,11 +98,10 @@ __device__ inline __half2 block_max_reduce_half2(__half2 value) {
 }
 
 // Adds `add` to each column of `K` and sums all rows together.
-template <size_t block_size>
 __global__ void kernel(
-    const torch::PackedTensorAccessor<float, 2> K,
-    const torch::PackedTensorAccessor<float, 1> add,
-    torch::PackedTensorAccessor<float, 1> out,
+    const torch::PackedTensorAccessor32<float, 2> K,
+    const torch::PackedTensorAccessor32<float, 1> add,
+    torch::PackedTensorAccessor32<float, 1> out,
     const size_t size
 ) {
     const auto tid = threadIdx.x;
@@ -118,33 +115,24 @@ __global__ void kernel(
         max = fmaxf(max, K[bid][i] + add[i]);
     }
 
-    if (block_size > warpSize) {
-        max = block_max_reduce(max);
-    } else {
-        max = warp_max_reduce(max);
-    }
+    max = block_max_reduce(max);
 
     #pragma unroll
     for (auto i = tid; i < size; i += blockDim.x) {
         sum += expf(K[bid][i] + add[i] - max);
     }
 
-    if (block_size > warpSize) {
-        sum = block_sum_reduce(sum);
-    } else {
-        sum = warp_sum_reduce(sum);
-    }
+    sum = block_sum_reduce(sum);
 
     if (tid == 0) {
         out[bid] = -(max + logf(sum));
     }
 }
 
-template <size_t block_size>
 __global__ void kernel_half2(
-    const torch::PackedTensorAccessor<__half2, 2> K,
-    const torch::PackedTensorAccessor<__half2, 1> add,
-    torch::PackedTensorAccessor<__half, 1> out,
+    const torch::PackedTensorAccessor32<__half2, 2> K,
+    const torch::PackedTensorAccessor32<__half2, 1> add,
+    torch::PackedTensorAccessor32<__half, 1> out,
     const size_t size
 ) {
     const auto tid = threadIdx.x;
@@ -158,11 +146,7 @@ __global__ void kernel_half2(
         max = __hmax2(max, __hadd2(K[bid][i], add[i]));
     }
 
-    if (block_size > warpSize) {
-        max = block_max_reduce_half2(max);
-    } else {
-        max = warp_max_reduce_half2(max);
-    }
+    max = block_max_reduce_half2(max);
 
     // The lower part of max contains the max of all even entries, while the
     // high part contains the max of the odd.
@@ -174,12 +158,7 @@ __global__ void kernel_half2(
         sum = __hadd2(sum, h2exp(__hadd2(K[bid][i], __hsub2(add[i], max))));
     }
 
-    if (block_size > warpSize) {
-        sum = block_sum_reduce_half2(sum);
-    } else {
-        sum = warp_sum_reduce_half2(sum);
-    }
-    
+    sum = block_sum_reduce_half2(sum);
     const auto joined_sum = __hadd(__low2half(sum), __high2half(sum));
 
     if (tid == 0) {
@@ -193,10 +172,10 @@ void sinkhorn_step_cuda(torch::Tensor K, torch::Tensor add, torch::Tensor out) {
     const auto blocks = K.size(0);
 
     if (K.scalar_type() == torch::ScalarType::Float) {
-        kernel<block_size><<<blocks, block_size>>>(
-            K.packed_accessor<float, 2>(),
-            add.packed_accessor<float, 1>(),
-            out.packed_accessor<float, 1>(),
+        kernel<<<blocks, block_size>>>(
+            K.packed_accessor32<float, 2>(),
+            add.packed_accessor32<float, 1>(),
+            out.packed_accessor32<float, 1>(),
             K.size(0)
         );
     } else if (K.scalar_type() == torch::ScalarType::Half) {
@@ -212,10 +191,10 @@ void sinkhorn_step_cuda(torch::Tensor K, torch::Tensor add, torch::Tensor out) {
         const auto out_size = out.size(0);
         const auto out_stride = out.stride(0);
 
-        kernel_half2<block_size><<<blocks, block_size>>>(
-            torch::PackedTensorAccessor<__half2, 2>(K_ptr, K_sizes, K_strides),
-            torch::PackedTensorAccessor<__half2, 1>(add_ptr, &add_size, &add_stride),
-            torch::PackedTensorAccessor<__half, 1>(out_ptr, &out_size, &out_stride),
+        kernel_half2<<<blocks, block_size>>>(
+            torch::PackedTensorAccessor32<__half2, 2>(K_ptr, K_sizes, K_strides),
+            torch::PackedTensorAccessor32<__half2, 1>(add_ptr, &add_size, &add_stride),
+            torch::PackedTensorAccessor32<__half, 1>(out_ptr, &out_size, &out_stride),
             add_size
         );
     } else {

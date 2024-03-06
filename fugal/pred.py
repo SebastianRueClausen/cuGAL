@@ -5,7 +5,7 @@ import networkx as nx
 import time
 import scipy
 from sklearn.metrics.pairwise import euclidean_distances
-from official import sinkhorn
+from fugal import sinkhorn
 
 def feature_extraction(G):
     """Node feature extraction.
