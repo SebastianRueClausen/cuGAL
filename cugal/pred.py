@@ -1,10 +1,11 @@
-import numpy as np
-import torch
-from tqdm.auto import tqdm
 import networkx as nx
+import numpy as np
 import scipy
+import torch
 from sklearn.metrics.pairwise import euclidean_distances
-import cugal.sinkhorn as sinkhorn
+from tqdm.auto import tqdm
+
+from cugal import sinkhorn
 from cugal.config import Config
 
 
@@ -34,7 +35,12 @@ def feature_extraction(G: nx.graph) -> np.ndarray:
     return np.nan_to_num(np.stack((degs, clusts, neighbor_degs, neighbor_clusts)).T)
 
 
-def find_quasi_perm(A: np.ndarray, B: np.ndarray, D: np.ndarray, config: Config) -> torch.Tensor:
+def find_quasi_perm(
+    A: np.ndarray,
+    B: np.ndarray,
+    D: np.ndarray,
+    config: Config,
+) -> torch.Tensor:
     n = len(A)
 
     A = torch.tensor(A, dtype=config.dtype, device=config.device)
@@ -65,7 +71,6 @@ def convert_to_permutation_matrix(
     """Convert quasi permutation matrix M into true permutation matrix.
     Also returns a mapping from source to target graph.
     """
-
     n = len(quasi_permutation)
 
     row_ind, col_ind = scipy.optimize.linear_sum_assignment(
@@ -89,15 +94,16 @@ def cugal(
     config: Config,
 ) -> tuple[np.ndarray, list[tuple[int, int]]]:
     """Run cuGAL algorithm.
+
     Returns permutation matrix and mapping from source to target.
     """
-
     source_node_count = source.number_of_nodes()
     target_node_count = target.number_of_nodes()
 
     node_count = max(source_node_count, target_node_count)
 
-    # For float16 to be aligned properly in cuda, we add an extra dummy node with no edges.
+    # For float16 to be aligned properly in cuda, we add an extra dummy node
+    # with no edges.
     if config.dtype == torch.float16 and node_count % 2 != 0:
         node_count += 1
 
@@ -108,15 +114,15 @@ def cugal(
     while target.number_of_nodes() < node_count:
         target.add_node(target.number_of_nodes())
 
-    F1 = feature_extraction(source)
-    F2 = feature_extraction(target)
+    source_features = feature_extraction(source)
+    target_features = feature_extraction(target)
 
-    P = find_quasi_perm(
+    quasi_permutation = find_quasi_perm(
         nx.to_numpy_array(source),
         nx.to_numpy_array(target),
-        euclidean_distances(F1, F2),
+        euclidean_distances(source_features, target_features),
         config,
     )
 
     return convert_to_permutation_matrix(
-        P, source_node_count, target_node_count)
+        quasi_permutation, source_node_count, target_node_count)

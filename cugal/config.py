@@ -1,5 +1,8 @@
-from enum import Enum
+"""Configuration of the cuGAL."""
+
 from dataclasses import dataclass
+from enum import Enum
+
 import torch
 
 
@@ -14,7 +17,6 @@ class SinkhornMethod(Enum):
     LOG = 1
     """Perform Sinkhorn-Knopp in logarithmic space.
     Computational intensive but numerically stable and optimized for the GPU.
-    Can be used with single-precision or half-precision floats.
     """
 
 
@@ -37,5 +39,6 @@ class Config:
     mu: float = 0.5
     iter_count: int = 15
 
-    def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:
-        return input.to(dtype=self.dtype, device=self.device)
+    def convert_tensor(self, tensor: torch.Tensor) -> torch.Tensor:
+        """Convert tensor to correct type and dtype."""
+        return tensor.to(dtype=self.dtype, device=self.device)
