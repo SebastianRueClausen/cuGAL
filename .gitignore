@@ -4,4 +4,8 @@ include
 lib
 lib64
 share
-pyvenv.cfg
+pyvenv.cf
+build
+ENV_DIR
+*.egg*
+.*

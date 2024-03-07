@@ -16,12 +16,14 @@ def feature_extraction(G: nx.graph) -> np.ndarray:
 
     degs = [node_degree_dict[n] for n in node_list]
     clusts = [node_clustering_dict[n] for n in node_list]
+
     neighbor_degs = [
         np.mean([node_degree_dict[m] for m in egonets[n].nodes if m != n])
         if node_degree_dict[n] > 0
         else 0
         for n in node_list
     ]
+
     neighbor_clusts = [
         np.mean([node_clustering_dict[m] for m in egonets[n].nodes if m != n])
         if node_degree_dict[n] > 0
@@ -55,34 +57,55 @@ def find_quasi_perm(A: np.ndarray, B: np.ndarray, D: np.ndarray, config: Config)
     return P.cpu()
 
 
-def convert_to_perm_hungarian(
-    M: torch.Tensor,
-    n1: int,
-    n2: int,
-) -> list[tuple[float, float]]:
-    n = len(M)
+def convert_to_permutation_matrix(
+    quasi_permutation: torch.Tensor,
+    source_node_count: int,
+    target_node_count: int,
+) -> tuple[np.ndarray, list[tuple[int, int]]]:
+    """Convert quasi permutation matrix M into true permutation matrix.
+    Also returns a mapping from source to target graph.
+    """
 
-    row_ind, col_ind = scipy.optimize.linear_sum_assignment(M, maximize=True)
+    n = len(quasi_permutation)
 
-    P = np.zeros((n, n))
-    ans = []
+    row_ind, col_ind = scipy.optimize.linear_sum_assignment(
+        quasi_permutation, maximize=True)
+
+    permutation = np.zeros((n, n))
+    mapping = []
 
     for i in range(n):
-        P[row_ind[i]][col_ind[i]] = 1
-        if (row_ind[i] >= n1) or (col_ind[i] >= n2):
+        permutation[row_ind[i]][col_ind[i]] = 1
+        if (row_ind[i] >= source_node_count) or (col_ind[i] >= target_node_count):
             continue
-        ans.append((row_ind[i], col_ind[i]))
+        mapping.append((int(row_ind[i]), int(col_ind[i])))
 
-    return ans
+    return permutation, mapping
 
 
-def cugal(source: nx.graph, target: nx.graph, config: Config):
-    """Run cuGAL algorithm."""
+def cugal(
+    source: nx.graph,
+    target: nx.graph,
+    config: Config,
+) -> tuple[np.ndarray, list[tuple[int, int]]]:
+    """Run cuGAL algorithm.
+    Returns permutation matrix and mapping from source to target.
+    """
 
-    node_count = source.number_of_nodes()
+    source_node_count = source.number_of_nodes()
+    target_node_count = target.number_of_nodes()
 
-    if config.dtype == torch.float16 and source.number_of_nodes() % 2 != 0:
+    node_count = max(source_node_count, target_node_count)
+
+    # For float16 to be aligned properly in cuda, we add an extra dummy node with no edges.
+    if config.dtype == torch.float16 and node_count % 2 != 0:
+        node_count += 1
+
+    # Add dummy nodes to match sizes.
+    while source.number_of_nodes() < node_count:
         source.add_node(source.number_of_nodes())
+
+    while target.number_of_nodes() < node_count:
         target.add_node(target.number_of_nodes())
 
     F1 = feature_extraction(source)
@@ -95,10 +118,5 @@ def cugal(source: nx.graph, target: nx.graph, config: Config):
         config,
     )
 
-    mapping = convert_to_perm_hungarian(
-        P, len(source.nodes()), len(target.nodes()))
-
-    if node_count != len(mapping):
-        mapping.pop()
-
-    return mapping
+    return convert_to_permutation_matrix(
+        P, source_node_count, target_node_count)
