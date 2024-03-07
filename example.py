@@ -10,7 +10,7 @@ import torch.cuda
 import torch.backends.mps
 import generate
 from fugal.pred import fugal
-from cugal.sinkhorn import test_cuda, benchmark_cuda
+
 
 def select_device() -> str:
     device = 'cpu'
@@ -65,8 +65,10 @@ class Result:
 def plot_results(experiments: list[Experiment], results: list[Result], x_axis_field: str):
     x = np.arange(len(experiments))
     for field in fields(Result):
-        plt.plot(x, [getattr(result, field.name) for result in results], label=field.name)
-    x_labels = [getattr(experiment, x_axis_field) for experiment in experiments]
+        plt.plot(x, [getattr(result, field.name)
+                 for result in results], label=field.name)
+    x_labels = [getattr(experiment, x_axis_field)
+                for experiment in experiments]
     if all(isinstance(label, float) for label in x_labels):
         x_labels = ["{:.2f}".format(label) for label in x_labels]
     plt.xticks(x, x_labels)
@@ -97,7 +99,8 @@ def test(experiment: Experiment, use_fugal=False) -> Result:
         source_mapping = np.arange(source.number_of_nodes())
 
     if use_fugal:
-        mapping = fugal(source, target, experiment.config.mu, experiment.config.sinkhorn_iterations)
+        mapping = fugal(source, target, experiment.config.mu,
+                        experiment.config.sinkhorn_iterations)
     else:
         mapping = cugal(source, target, experiment.config)
 
@@ -169,16 +172,19 @@ def newmann_watts_experiment(config: Config, source_noise: float) -> Experiment:
 
 
 def replicate_figure_4(config: Config):
-    config = Config(mu=2, sinkhorn_method=SinkhornMethod.LOG, device=select_device(), dtype=torch.float16)
+    config = Config(mu=2, sinkhorn_method=SinkhornMethod.LOG,
+                    device=select_device(), dtype=torch.float16)
     noises = np.linspace(0, 0.25, num=6)
-    experiments = [newmann_watts_experiment(config, source_noise=noise) for noise in noises]
+    experiments = [newmann_watts_experiment(
+        config, source_noise=noise) for noise in noises]
     results = list(map(test, experiments))
     plot_results(experiments, results, "source_noise")
 
 
 def compare_against_official():
     node_count = 1024
-    graph = newmann_watts_graph(node_count=node_count, node_degree=7, rewriting_prob=0.01)
+    graph = newmann_watts_graph(
+        node_count=node_count, node_degree=7, rewriting_prob=0.01)
     config = Config(sinkhorn_method=SinkhornMethod.STANDARD)
 
     cugal_mapping = cugal(graph, graph, config)
@@ -194,9 +200,7 @@ def compare_against_official():
 
 
 if __name__ == "__main__":
-    #replicate_figure_4(gpu_log_config)
-    #compare_against_official()
-
-    benchmark_cuda()
-
-    #print(test(multi_magna_experiment(select_device())))
+    # replicate_figure_4(gpu_log_config)
+    # compare_against_official()
+    # print(test(multi_magna_experiment(select_device())))
+    pass

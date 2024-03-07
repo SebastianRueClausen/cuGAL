@@ -2,6 +2,7 @@ from enum import Enum
 from dataclasses import dataclass
 import torch
 
+
 class SinkhornMethod(Enum):
     """The method used for Sinkhorn-Knopp."""
 
@@ -16,12 +17,16 @@ class SinkhornMethod(Enum):
     Can be used with single-precision or half-precision floats.
     """
 
+
 @dataclass
 class Config:
     """Configuration of the CUGAL algorithm."""
 
     device: str = "cpu"
+    """The torch device used for computations."""
+
     dtype: torch.dtype = torch.float64
+    """The data type used for computations."""
 
     sinkhorn_regularization: float = 1.0
     sinkhorn_method: SinkhornMethod = SinkhornMethod.STANDARD

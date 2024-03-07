@@ -2,6 +2,7 @@ import numpy as np
 import networkx as nx
 import scipy.sparse as sps
 
+
 def refill_e(edges, n, amount):
     if amount == 0:
         return edges
@@ -15,7 +16,7 @@ def refill_e(edges, n, amount):
         # _ee = np.sort(_e).tolist()
         _ee = tuple(np.sort(_e).tolist())
         check += 1
-        if not(_ee in ee) and _e[0] != _e[1]:
+        if not (_ee in ee) and _e[0] != _e[1]:
             # ee.append(_ee)
             ee.add(_ee)
             new_e.append(_e)
@@ -90,20 +91,20 @@ def generate_graphs(G, source_noise=0.00, target_noise=0.00, refill=False):
         else:
             gt_e = np.array(_gt, int)
 
-        #Gt = (
+        # Gt = (
         #    gt_e[:, gt_e[1].argsort()][0],
         #    gt_e[:, gt_e[0].argsort()][1]
-        #)
+        # )
         n = np.amax(Tar_e) + 1
-        nedges =Tar_e.shape[0]
+        nedges = Tar_e.shape[0]
 
         gt_e = np.array((
             np.arange(n),
             np.random.permutation(n)
         ))
         Gt = (
-        gt_e[:, gt_e[1].argsort()][0],
-        gt_e[:, gt_e[0].argsort()][1]
+            gt_e[:, gt_e[1].argsort()][0],
+            gt_e[:, gt_e[0].argsort()][1]
         )
         Tar_e1 = Gt[0][Tar_e]
         return Src_e, Tar_e1, Gt
@@ -137,8 +138,8 @@ def generate_graphs(G, source_noise=0.00, target_noise=0.00, refill=False):
         return sps.csr_matrix([]), sps.csr_matrix([]), (np.empty(1), np.empty(1))
     Src_e = np.array(G.edges)
 
-    if (np.amin(Src_e)!=0):
-        Src_e=Src_e-np.amin(Src_e)
+    if (np.amin(Src_e) != 0):
+        Src_e = Src_e-np.amin(Src_e)
     n = np.amax(Src_e) + 1
     nedges = Src_e.shape[0]
 
@@ -164,6 +165,8 @@ def generate_graphs(G, source_noise=0.00, target_noise=0.00, refill=False):
     return Src_e, Tar_e,  Gt
 
 # def init1(graphs, iters, _run, path=None):
+
+
 def init1(graphs, iters):
 
     # if path is None:
