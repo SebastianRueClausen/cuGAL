@@ -48,7 +48,7 @@ def sinkhorn_knopp(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
 def sinkhorn_log(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
     na, nb = C.shape
 
-    def get_logT(K, u, v):
+    def get_log_P(K, u, v):
         return K + u[:, None] + v[None, :]
 
     K = - C / config.sinkhorn_regularization
@@ -61,18 +61,18 @@ def sinkhorn_log(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
         u = -torch.logsumexp(K + v[None, :], 1)
 
         if iter % config.sinkhorn_eval_freq == 0:
-            tmp = torch.sum(torch.exp(get_logT(K, u, v)), 0)
+            tmp = torch.sum(torch.exp(get_log_P(K, u, v)), 0)
             threshold = (tmp - 1).pow(2).sum().item()
             if threshold < config.sinkhorn_threshold:
                 break
 
-    return torch.exp(get_logT(K, u, v)), iter
+    return torch.exp(get_log_P(K, u, v)), iter
 
 
 def sinkhorn_log_cuda(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
     na, nb = C.shape
 
-    def get_logT(K, u, v):
+    def get_log_P(K, u, v):
         return K + u[:, None] + v[None, :]
 
     K = -C / config.sinkhorn_regularization
@@ -86,9 +86,9 @@ def sinkhorn_log_cuda(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, in
         sinkhorn_cuda.sinkhorn_step(K, v, u)
 
         if iter % config.sinkhorn_eval_freq == 0:
-            tmp = torch.sum(torch.exp(get_logT(K, u, v)), 0)
+            tmp = torch.sum(torch.exp(get_log_P(K, u, v)), 0)
             threshold = (tmp - 1).pow(2).sum().item()
             if threshold < config.sinkhorn_threshold:
                 break
 
-    return torch.exp(get_logT(K, u, v)), iter
+    return torch.exp(get_log_P(K, u, v)), iter 

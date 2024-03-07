@@ -81,7 +81,8 @@ def benchmark_random_matrices():
         ))
 
         cuda_half_results.append(mean_cuda_time(
-            partial(sinkhorn.sinkhorn_log_cuda, gpu_half_matrix, gpu_half_config),
+            partial(sinkhorn.sinkhorn_log_cuda,
+                    gpu_half_matrix, gpu_half_config),
             iter_count,
         ))
 

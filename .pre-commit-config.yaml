@@ -1,0 +1,26 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+-   repo: https://github.com/hhatto/autopep8
+    rev: v2.0.4
+    hooks:
+    -   id: autopep8
+-   repo: local
+    hooks:
+    -   id: install
+        name: install
+        entry: env PYTHONPATH="." pip install .
+        language: system
+        always_run: true
+        pass_filenames: false
+    -   id: tests
+        name: tests
+        entry: env PYTHONPATH="." python -m unittest
+        language: system
+        always_run: true
+        pass_filenames: false

@@ -8,4 +8,5 @@ pyvenv.cf
 build
 ENV_DIR
 *.egg*
-.*
+.vscode
+.venv

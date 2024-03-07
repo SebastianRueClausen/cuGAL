@@ -7,6 +7,7 @@ import scipy
 from sklearn.metrics.pairwise import euclidean_distances
 from fugal import sinkhorn
 
+
 def feature_extraction(G):
     """Node feature extraction.
 
@@ -58,28 +59,34 @@ def feature_extraction(G):
     node_features = np.nan_to_num(node_features)
     return np.nan_to_num(node_features)
 
+
 def eucledian_dist(F1, F2, n):
     D = euclidean_distances(F1, F2)
     return D
+
 
 def dist(A, B, P):
     obj = np.linalg.norm(np.dot(A, P) - np.dot(P, B))
     return obj*obj/2
 
+
 def FindQuasiPerm(A, B, D, mu, niter):
     n = len(A)
-    P = torch.ones((n,n), dtype = torch.float64) / n
-    ones = torch.ones(n, dtype = torch.float64)
-    mat_ones = torch.ones((n, n), dtype = torch.float64)
+    P = torch.ones((n, n), dtype=torch.float64) / n
+    ones = torch.ones(n, dtype=torch.float64)
+    mat_ones = torch.ones((n, n), dtype=torch.float64)
     reg = 1.0
     K = mu * D
     for i in range(niter):
         for it in range(1, 11):
-            G = -torch.mm(torch.mm(A.T, P), B) - torch.mm(torch.mm(A, P), B.T) + K + i*(mat_ones - 2*P)
-            q = sinkhorn.sinkhorn(ones, ones, G, reg, maxIter = 500, stopThr = 1e-3)
+            G = -torch.mm(torch.mm(A.T, P), B) - \
+                torch.mm(torch.mm(A, P), B.T) + K + i*(mat_ones - 2*P)
+            q = sinkhorn.sinkhorn(ones, ones, G, reg,
+                                  maxIter=500, stopThr=1e-3)
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)
     return P
+
 
 def convertToPermHungarian(M, n1, n2):
     row_ind, col_ind = scipy.optimize.linear_sum_assignment(M, maximize=True)
@@ -94,6 +101,7 @@ def convertToPermHungarian(M, n1, n2):
         ans.append((row_ind[i], col_ind[i]))
     return P, ans
 
+
 def fugal(Gq, Gt, mu, niter):
     n1 = len(Gq.nodes())
     n2 = len(Gt.nodes())
@@ -103,18 +111,19 @@ def fugal(Gq, Gt, mu, niter):
     for i in range(n2, n):
         Gt.add_node(i)
 
-    A = torch.tensor(nx.to_numpy_array(Gq), dtype = torch.float64)
-    B = torch.tensor(nx.to_numpy_array(Gt), dtype = torch.float64)
+    A = torch.tensor(nx.to_numpy_array(Gq), dtype=torch.float64)
+    B = torch.tensor(nx.to_numpy_array(Gt), dtype=torch.float64)
     F1 = feature_extraction(Gq)
     F2 = feature_extraction(Gt)
     D = eucledian_dist(F1, F2, n)
-    D = torch.tensor(D, dtype = torch.float64)
+    D = torch.tensor(D, dtype=torch.float64)
 
     P = FindQuasiPerm(A, B, D, mu, niter)
     P_perm, ans = convertToPermHungarian(P, n1, n2)
     return ans
 
-def predict_alignment(queries, targets, mu = 1, niter = 15):
+
+def predict_alignment(queries, targets, mu=1, niter=15):
     n = len(queries)
     mapping = []
     times = []

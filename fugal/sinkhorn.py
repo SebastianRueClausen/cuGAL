@@ -470,8 +470,10 @@ def sinkhorn_epsilon_scaling(a, b, C, reg=1e-1, maxIter=100, maxInnerIter=100, t
         warm_start['alpha'] = _log['alpha']
         warm_start['beta'] = _log['beta']
 
-        primal_val = (C * P).sum() + reg * (P * torch.log(P)).sum() - reg * P.sum()
-        dual_val = (_log['alpha'] * a).sum() + (_log['beta'] * b).sum() - reg * P.sum()
+        primal_val = (C * P).sum() + reg * \
+            (P * torch.log(P)).sum() - reg * P.sum()
+        dual_val = (_log['alpha'] * a).sum() + \
+            (_log['beta'] * b).sum() - reg * P.sum()
         err = primal_val - dual_val
         log['err'].append(err)
 

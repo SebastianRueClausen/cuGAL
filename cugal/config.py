@@ -2,6 +2,7 @@ from enum import Enum
 from dataclasses import dataclass
 import torch
 
+
 class SinkhornMethod(Enum):
     """The method used for Sinkhorn-Knopp."""
 
@@ -15,6 +16,7 @@ class SinkhornMethod(Enum):
     Computational intensive but numerically stable and optimized for the GPU.
     Can be used with single-precision or half-precision floats.
     """
+
 
 @dataclass
 class Config:
