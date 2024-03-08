@@ -7,6 +7,7 @@ from tqdm.auto import tqdm
 
 from cugal import sinkhorn
 from cugal.config import Config
+import math
 
 
 def feature_extraction(G: nx.graph) -> np.ndarray:
@@ -35,27 +36,100 @@ def feature_extraction(G: nx.graph) -> np.ndarray:
     return np.nan_to_num(np.stack((degs, clusts, neighbor_degs, neighbor_clusts)).T)
 
 
+def to_bit_matrix(matrix: torch.Tensor) -> torch.Tensor:
+    n = len(matrix)
+    rows, cols = n, math.ceil(n / 32)
+
+    bit_matrix = torch.zeros(size=(rows, cols), dtype=torch.int32)
+
+    for row_index, row in enumerate(matrix):
+        for col_index, element in enumerate(row):
+            if element == 1.0:
+                block_offset = col_index % 32
+                bit_matrix[row_index, col_index // 32] |= 1 << block_offset
+
+    return bit_matrix
+
+
+def from_bit_matrix(
+    bit_matrix: torch.Tensor,
+    output_size: int,
+    dtype: torch.dtype,
+) -> torch.Tensor:
+    assert bit_matrix.dtype == torch.int
+
+    matrix = torch.zeros((output_size, output_size), dtype=dtype)
+
+    for row_index, row in enumerate(bit_matrix):
+        for block_index, block in enumerate(row):
+            block_size = 32 if block_index != output_size // 32 else output_size % 32
+            for block_offset in range(block_size):
+                col_index = block_index * 32 + block_offset
+                if block & (1 << block_offset) != 0:
+                    matrix[row_index, col_index] = 1.0
+    
+    return matrix
+
+
+def matrix_dot_bit_matrix(
+    matrix: torch.Tensor,
+    bit_matrix: torch.Tensor,
+) -> torch.Tensor:
+    size = len(matrix)
+    convertex_matrix = from_bit_matrix(bit_matrix, size, matrix.dtype)
+    result = matrix @ convertex_matrix
+    del convertex_matrix 
+    return result
+
+
+def bit_matrix_gradient(
+    A_bit, A_transpose_bit, B_bit, B_transpose_bit: torch.Tensor,
+    P, K: torch.Tensor,
+    iteration: int,
+) -> torch.Tensor:
+    t0 = matrix_dot_bit_matrix(-matrix_dot_bit_matrix(P.T, A_bit).T, B_bit)
+    t1 = matrix_dot_bit_matrix(
+        matrix_dot_bit_matrix(P.T, A_transpose_bit).T,
+        B_transpose_bit,
+    )
+    return t0 - t1 + K + iteration*(1 - 2*P)
+
+
+def gradient(A, B, P, K: torch.Tensor, iteration: int) -> torch.Tensor:
+    return -A.T @ P @ B - A @ P @ B.T + K + iteration*(1 - 2*P)
+
+
 def find_quasi_perm(
     A: np.ndarray,
     B: np.ndarray,
-    D: np.ndarray,
+    distance: np.ndarray,
     config: Config,
 ) -> torch.Tensor:
     n = len(A)
 
     A = torch.tensor(A, dtype=config.dtype, device=config.device)
     B = torch.tensor(B, dtype=config.dtype, device=config.device)
-    D = torch.tensor(D, dtype=config.dtype, device=config.device)
+    distance = torch.tensor(distance, dtype=config.dtype, device=config.device)
+
+    if config.use_bit_matrices:
+        A_bit, B_bit = to_bit_matrix(A), to_bit_matrix(B)
+        A_transpose_bit, B_transpose_bit = to_bit_matrix(A.T), to_bit_matrix(B.T)
+        del A
+        del B
 
     P = torch.full(size=(n, n), fill_value=1/n,
                    dtype=config.dtype, device=config.device)
-    mat_ones = torch.ones((n, n), dtype=config.dtype, device=config.device)
 
-    K = config.mu * D
+    K = config.mu * distance
 
     for i in tqdm(range(config.iter_count)):
         for it in range(1, 11):
-            G = -A.T @ P @ B - A @ P @ B.T + K + i*(mat_ones - 2*P)
+            if not config.use_bit_matrices:
+                G = gradient(A, B, P, K, i)
+            else:
+                G = bit_matrix_gradient(
+                    A_bit, A_transpose_bit, B_bit, B_transpose_bit, P, K, i,
+                )
             q = sinkhorn.sinkhorn(G, config)
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)

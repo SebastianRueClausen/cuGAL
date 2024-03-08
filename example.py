@@ -102,7 +102,7 @@ def test(experiment: Experiment, use_fugal=False) -> Result:
         mapping = fugal(source, target, experiment.config.mu,
                         experiment.config.sinkhorn_iterations)
     else:
-        mapping = cugal(source, target, experiment.config)
+        _, mapping = cugal(source, target, experiment.config)
 
     mapping = [x for _, x in mapping]
 
@@ -159,7 +159,7 @@ def multi_magna_experiment(device: str) -> Experiment:
     config = Config(
         device=device,
         sinkhorn_method=SinkhornMethod.LOG,
-        dtype=torch.float16,
+        dtype=torch.float32,
         mu=2.0,
     )
     return Experiment(config, *multi_magna_graph())
@@ -167,7 +167,7 @@ def multi_magna_experiment(device: str) -> Experiment:
 
 def newmann_watts_experiment(config: Config, source_noise: float) -> Experiment:
     graph = newmann_watts_graph(
-        node_count=1000, node_degree=7, rewriting_prob=0.1)
+        node_count=100, node_degree=7, rewriting_prob=0.1)
     return Experiment(config, graph, source_noise=source_noise)
 
 
@@ -202,5 +202,5 @@ def compare_against_official():
 if __name__ == "__main__":
     # replicate_figure_4(gpu_log_config)
     # compare_against_official()
-    # print(test(multi_magna_experiment(select_device())))
+    print(test(newmann_watts_experiment(Config(use_bit_matrices=True), 0.0)))
     pass

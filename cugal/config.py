@@ -39,6 +39,9 @@ class Config:
     mu: float = 0.5
     iter_count: int = 15
 
-    def convert_tensor(self, tensor: torch.Tensor) -> torch.Tensor:
+    use_bit_matrices: bool = False
+    """Compress adjacency matrices to bit arrays"""
+
+    def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:
         """Convert tensor to correct type and dtype."""
-        return tensor.to(dtype=self.dtype, device=self.device)
+        return input.to(dtype=self.dtype, device=self.device)

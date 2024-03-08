@@ -61,7 +61,7 @@ class TestSinkhorn(unittest.TestCase):
     @unittest.skipUnless(condition=torch.cuda.is_available(), reason="requires CUDA")
     def test_log_cuda_float32_doubly_stochastic(self):
         test_config = Config(sinkhorn_method=SinkhornMethod.LOG,
-                             dtype=torch.float32, device="cuda:0")
+                             dtype=torch.float32, device="cuda")
         matrix = random_matrix(128)
         test = sinkhorn(test_config.convert_tensor(matrix), test_config)
         assert_is_doubly_stochastic(test)
