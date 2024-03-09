@@ -4,10 +4,11 @@ import scipy
 import torch
 from sklearn.metrics.pairwise import euclidean_distances
 from tqdm.auto import tqdm
+from functools import partial
 
+from cugal.adjacency import Adjacency
 from cugal import sinkhorn
 from cugal.config import Config
-import math
 
 
 def feature_extraction(G: nx.graph) -> np.ndarray:
@@ -36,67 +37,19 @@ def feature_extraction(G: nx.graph) -> np.ndarray:
     return np.nan_to_num(np.stack((degs, clusts, neighbor_degs, neighbor_clusts)).T)
 
 
-def to_bit_matrix(matrix: torch.Tensor) -> torch.Tensor:
-    n = len(matrix)
-    rows, cols = n, math.ceil(n / 32)
-
-    bit_matrix = torch.zeros(size=(rows, cols), dtype=torch.int32)
-
-    for row_index, row in enumerate(matrix):
-        for col_index, element in enumerate(row):
-            if element == 1.0:
-                block_offset = col_index % 32
-                bit_matrix[row_index, col_index // 32] |= 1 << block_offset
-
-    return bit_matrix
+def gradient(A, B, P, K: torch.Tensor, iteration: int) -> torch.Tensor:
+    return -A.T @ P @ B - A @ P @ B.T + K + iteration*(1 - 2*P)
 
 
-def from_bit_matrix(
-    bit_matrix: torch.Tensor,
-    output_size: int,
-    dtype: torch.dtype,
-) -> torch.Tensor:
-    assert bit_matrix.dtype == torch.int
-
-    matrix = torch.zeros((output_size, output_size), dtype=dtype)
-
-    for row_index, row in enumerate(bit_matrix):
-        for block_index, block in enumerate(row):
-            block_size = 32 if block_index != output_size // 32 else output_size % 32
-            for block_offset in range(block_size):
-                col_index = block_index * 32 + block_offset
-                if block & (1 << block_offset) != 0:
-                    matrix[row_index, col_index] = 1.0
-    
-    return matrix
-
-
-def matrix_dot_bit_matrix(
-    matrix: torch.Tensor,
-    bit_matrix: torch.Tensor,
-) -> torch.Tensor:
-    size = len(matrix)
-    convertex_matrix = from_bit_matrix(bit_matrix, size, matrix.dtype)
-    result = matrix @ convertex_matrix
-    del convertex_matrix 
-    return result
-
-
-def bit_matrix_gradient(
-    A_bit, A_transpose_bit, B_bit, B_transpose_bit: torch.Tensor,
+def sparse_gradient(
+    A, B: Adjacency,
+    A_transpose, B_transpose: Adjacency,
     P, K: torch.Tensor,
     iteration: int,
 ) -> torch.Tensor:
-    t0 = matrix_dot_bit_matrix(-matrix_dot_bit_matrix(P.T, A_bit).T, B_bit)
-    t1 = matrix_dot_bit_matrix(
-        matrix_dot_bit_matrix(P.T, A_transpose_bit).T,
-        B_transpose_bit,
-    )
-    return t0 - t1 + K + iteration*(1 - 2*P)
-
-
-def gradient(A, B, P, K: torch.Tensor, iteration: int) -> torch.Tensor:
-    return -A.T @ P @ B - A @ P @ B.T + K + iteration*(1 - 2*P)
+    # TODO: Figure out why there are small numeric differences between the non-sparse version.
+    return B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
+        - B.mul(A.mul(P).T).T + K + iteration*(1 - 2*P)
 
 
 def find_quasi_perm(
@@ -111,11 +64,9 @@ def find_quasi_perm(
     B = torch.tensor(B, dtype=config.dtype, device=config.device)
     distance = torch.tensor(distance, dtype=config.dtype, device=config.device)
 
-    if config.use_bit_matrices:
-        A_bit, B_bit = to_bit_matrix(A), to_bit_matrix(B)
-        A_transpose_bit, B_transpose_bit = to_bit_matrix(A.T), to_bit_matrix(B.T)
-        del A
-        del B
+    if config.use_sparse_adjacency:
+        A_transpose, B_transpose = Adjacency(A.T), Adjacency(B.T)
+        A, B = Adjacency(A), Adjacency(B)
 
     P = torch.full(size=(n, n), fill_value=1/n,
                    dtype=config.dtype, device=config.device)
@@ -124,13 +75,9 @@ def find_quasi_perm(
 
     for i in tqdm(range(config.iter_count)):
         for it in range(1, 11):
-            if not config.use_bit_matrices:
-                G = gradient(A, B, P, K, i)
-            else:
-                G = bit_matrix_gradient(
-                    A_bit, A_transpose_bit, B_bit, B_transpose_bit, P, K, i,
-                )
-            q = sinkhorn.sinkhorn(G, config)
+            gradient_function = partial(sparse_gradient, A, B, A_transpose, B_transpose) \
+                if config.use_sparse_adjacency else partial(gradient, A, B)
+            q = sinkhorn.sinkhorn(gradient_function(P, K, i), config)
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)
 
@@ -145,6 +92,7 @@ def convert_to_permutation_matrix(
     """Convert quasi permutation matrix M into true permutation matrix.
     Also returns a mapping from source to target graph.
     """
+
     n = len(quasi_permutation)
 
     row_ind, col_ind = scipy.optimize.linear_sum_assignment(

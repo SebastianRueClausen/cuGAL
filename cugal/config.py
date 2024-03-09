@@ -39,7 +39,7 @@ class Config:
     mu: float = 0.5
     iter_count: int = 15
 
-    use_bit_matrices: bool = False
+    use_sparse_adjacency: bool = False
     """Compress adjacency matrices to bit arrays"""
 
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:

@@ -202,5 +202,5 @@ def compare_against_official():
 if __name__ == "__main__":
     # replicate_figure_4(gpu_log_config)
     # compare_against_official()
-    print(test(newmann_watts_experiment(Config(use_bit_matrices=True), 0.0)))
+    print(test(newmann_watts_experiment(Config(use_sparse_adjacency=True), 0.0)))
     pass
