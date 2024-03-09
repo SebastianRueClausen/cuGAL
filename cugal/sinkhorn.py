@@ -3,7 +3,7 @@ import torch
 from cugal.config import Config, SinkhornMethod
 
 try:
-    import sinkhorn_cuda
+    import cuda_kernels
     has_cuda = True
 except ImportError:
     has_cuda = False
@@ -77,8 +77,8 @@ def sinkhorn_log_cuda(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, in
     v = torch.zeros(nb, device=config.device, dtype=config.dtype)
 
     for iteration in range(config.sinkhorn_iterations):
-        sinkhorn_cuda.sinkhorn_step(K_transpose, u, v)
-        sinkhorn_cuda.sinkhorn_step(K, v, u)
+        cuda_kernels.sinkhorn_step(K_transpose, u, v)
+        cuda_kernels.sinkhorn_step(K, v, u)
 
         if iteration % config.sinkhorn_eval_freq == 0:
             tmp = torch.sum(torch.exp(K + u[:, None] + v[None, :]), 0)
