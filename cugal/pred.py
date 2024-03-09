@@ -47,7 +47,7 @@ def sparse_gradient(
     P, K: torch.Tensor,
     iteration: int,
 ) -> torch.Tensor:
-    # TODO: Figure out why there are small numeric differences between the non-sparse version.
+    # TODO: Figure out why there are small numeric differences between the non-sparse.
     return B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
         - B.mul(A.mul(P).T).T + K + iteration*(1 - 2*P)
 
