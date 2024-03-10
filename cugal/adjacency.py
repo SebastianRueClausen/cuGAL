@@ -80,8 +80,9 @@ class Adjacency:
                 start = self.row_pointers[row_index]
                 end = len(self.col_indices) if row_index == self.size() - \
                     1 else self.row_pointers[row_index+1]
+                indices = self.col_indices[start:end].to(torch.int32)
                 out[row_index, col_index] = \
                     torch.sum(
-                        matrix[self.col_indices[start:end], col_index] * (-1 if negate_lhs else 1))
+                        matrix[indices, col_index] * (-1 if negate_lhs else 1))
 
         return out

@@ -6,7 +6,9 @@ import numpy as np
 def cuda_time(function) -> tuple[float, any]:
     start = torch.cuda.Event(enable_timing=True)
     end = torch.cuda.Event(enable_timing=True)
-    start.record(); return_value = function(); end.record()
+    start.record()
+    return_value = function()
+    end.record()
     torch.cuda.synchronize()
     return start.elapsed_time(end) / 1000, return_value
 

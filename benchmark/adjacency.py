@@ -58,7 +58,7 @@ def benchmark_random_graphs(graph_sizes: list[int]):
     plt.xticks(np.arange(len(graph_sizes)), graph_sizes)
 
     plt.show()
-    
+
 
 if __name__ == "__main__":
     benchmark_random_graphs([2500, 5000, 10000, 15000])
