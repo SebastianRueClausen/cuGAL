@@ -167,7 +167,7 @@ def multi_magna_experiment(device: str) -> Experiment:
 
 def newmann_watts_experiment(config: Config, source_noise: float) -> Experiment:
     graph = newmann_watts_graph(
-        node_count=100, node_degree=7, rewriting_prob=0.1)
+        node_count=1000, node_degree=7, rewriting_prob=0.1)
     return Experiment(config, graph, source_noise=source_noise)
 
 

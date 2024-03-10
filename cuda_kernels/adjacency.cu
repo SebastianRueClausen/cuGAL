@@ -4,8 +4,9 @@
 #include <torch/torch.h>
 #include "common.cuh"
 
+template <typename index_t>
 __global__ void kernel(
-    const torch::PackedTensorAccessor32<int, 1> col_indices,
+    const torch::PackedTensorAccessor32<index_t, 1> col_indices,
     const torch::PackedTensorAccessor32<int, 1> row_pointers,
     const torch::PackedTensorAccessor32<float, 2> matrix,
     torch::PackedTensorAccessor32<float, 2> out,
@@ -47,14 +48,28 @@ void adjacency_matmul_cuda(
 
     const auto sign = negate_lhs ? -1.0 : 1.0;
 
-    kernel<<<blocks, block_size>>>(
-        col_indices.packed_accessor32<int, 1>(),
-        row_pointers.packed_accessor32<int, 1>(),
-        matrix.packed_accessor32<float, 2>(),
-        out.packed_accessor32<float, 2>(),
-        size,
-        sign
-    );
+    if (col_indices.scalar_type() == torch::ScalarType::Int) {
+        kernel<int><<<blocks, block_size>>>(
+            col_indices.packed_accessor32<int, 1>(),
+            row_pointers.packed_accessor32<int, 1>(),
+            matrix.packed_accessor32<float, 2>(),
+            out.packed_accessor32<float, 2>(),
+            size,
+            sign
+        );
+    } else if (col_indices.scalar_type() == torch::ScalarType::Short) {
+        kernel<short><<<blocks, block_size>>>(
+            col_indices.packed_accessor32<short, 1>(),
+            row_pointers.packed_accessor32<int, 1>(),
+            matrix.packed_accessor32<float, 2>(),
+            out.packed_accessor32<float, 2>(),
+            size,
+            sign
+        );
+    } else {
+        printf("invalid data type\n");
+        abort();
+    }
 
     cudaDeviceSynchronize();
 }
