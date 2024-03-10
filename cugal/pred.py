@@ -65,8 +65,9 @@ def find_quasi_perm(
     distance = torch.tensor(distance, dtype=config.dtype, device=config.device)
 
     if config.use_sparse_adjacency:
-        A_transpose, B_transpose = Adjacency(A.T), Adjacency(B.T)
-        A, B = Adjacency(A), Adjacency(B)
+        A_transpose, B_transpose = Adjacency.from_dense(
+            A.T), Adjacency.from_dense(B.T)
+        A, B = Adjacency.from_dense(A), Adjacency.from_dense(B)
 
     P = torch.full(size=(n, n), fill_value=1/n,
                    dtype=config.dtype, device=config.device)
@@ -119,6 +120,7 @@ def cugal(
 
     Returns permutation matrix and mapping from source to target.
     """
+
     source_node_count = source.number_of_nodes()
     target_node_count = target.number_of_nodes()
 

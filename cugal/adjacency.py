@@ -4,12 +4,18 @@ from dataclasses import dataclass
 from itertools import product
 import numpy as np
 import torch
+import networkx as nx
+from itertools import groupby
 
 try:
     import cuda_kernels
     has_cuda = True
 except ImportError:
     has_cuda = False
+
+
+def determine_index_type(size: int) -> torch.dtype:
+    return torch.int16 if size < np.iinfo(np.int16).max else torch.int32
 
 
 @dataclass
@@ -20,23 +26,53 @@ class Adjacency:
     row_pointers: torch.Tensor
     """Indices into col_indices each row begins."""
 
-    def __init__(self, dense: torch.Tensor):
+    @classmethod
+    def from_dense(cls, dense: torch.Tensor):
         """Create from from dense adjacency matrix."""
 
         size = len(dense)
-        dtype = torch.int16 if size < np.iinfo(np.int16).max else torch.int32
+        dtype = determine_index_type(size)
 
-        self.col_indices = torch.tensor(
+        col_indices = torch.tensor(
             [], dtype=dtype, device=dense.device)
-        self.row_pointers = torch.empty(
+        row_pointers = torch.empty(
             size=(size,), dtype=torch.int32, device=dense.device)
 
         for row_index, row in enumerate(dense):
-            col_indices = row.nonzero().to(dtype)
-            self.row_pointers[row_index] = len(self.col_indices)
-            self.col_indices = torch.cat((self.col_indices, col_indices))
+            row_pointers[row_index] = len(col_indices)
+            col_indices = torch.cat((col_indices, row.nonzero().to(dtype)))
 
-        self.col_indices = self.col_indices.squeeze(1)
+        return cls(col_indices.squeeze(1), row_pointers)
+
+    @classmethod
+    def from_graph(cls, graph: nx.graph, device: torch.device):
+        """Create from networkx graph."""
+
+        node_count = graph.number_of_nodes()
+
+        edges = nx.edges(graph)
+        edges = sorted(list(edges) + [(y, x) for x, y in edges])
+
+        col_indices, row_pointers = \
+            torch.empty(size=(len(edges),)), torch.empty(size=(node_count,))
+
+        col_index_count, row_index = 0, 0
+        for node_index, node_edges in groupby(edges, key=lambda edge: edge[0]):
+            while row_index <= node_index:
+                row_pointers[row_index] = col_index_count
+                row_index += 1
+            for _, to in node_edges:
+                col_indices[col_index_count] = to
+                col_index_count += 1
+
+        while row_index < len(row_pointers):
+            row_pointers[row_index] = col_index_count
+            row_index += 1
+
+        dtype = determine_index_type(node_count)
+        col_indices = col_indices.to(dtype=dtype, device=device)
+        row_pointers = row_pointers.to(dtype=torch.int32, device=device)
+        return cls(col_indices, row_pointers)
 
     def as_dense(self, dtype: torch.dtype) -> torch.Tensor:
         """Convert back to dense representation."""

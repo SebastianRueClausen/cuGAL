@@ -27,7 +27,7 @@ def benchmark_random_graphs(graph_sizes: list[int]):
 
         dense_torch_times.append(cuda_time(lambda: adjacency @ matrix)[0])
 
-        adjacency = Adjacency(adjacency)
+        adjacency = Adjacency.from_dense(adjacency)
         cuda_times.append(cuda_time(lambda: adjacency.mul(matrix))[0])
 
         dense_sizes.append(node_count * node_count * 4)
