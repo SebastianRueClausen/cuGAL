@@ -50,14 +50,15 @@ class Adjacency:
 
         node_count = graph.number_of_nodes()
 
-        edges = nx.edges(graph)
-        edges = sorted(list(edges) + [(y, x) for x, y in edges])
+        edges = list(nx.edges(graph))
+        if not graph.is_directed():
+            edges += [(y, x) for x, y in edges]
 
         col_indices, row_pointers = \
             torch.empty(size=(len(edges),)), torch.empty(size=(node_count,))
 
         col_index_count, row_index = 0, 0
-        for node_index, node_edges in groupby(edges, key=lambda edge: edge[0]):
+        for node_index, node_edges in groupby(sorted(edges), key=lambda edge: edge[0]):
             while row_index <= node_index:
                 row_pointers[row_index] = col_index_count
                 row_index += 1
