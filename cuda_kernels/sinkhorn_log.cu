@@ -6,9 +6,9 @@
 
 // Adds `add` to each column of `K` and sums all rows together.
 __global__ void kernel(
-    const torch::PackedTensorAccessor32<float, 2> K,
-    const torch::PackedTensorAccessor32<float, 1> add,
-    torch::PackedTensorAccessor32<float, 1> out,
+    const Accessor<float, 2> K,
+    const Accessor<float, 1> add,
+    Accessor<float, 1> out,
     const size_t size
 ) {
     const auto tid = threadIdx.x;
@@ -37,9 +37,9 @@ __global__ void kernel(
 }
 
 __global__ void kernel_half2(
-    const torch::PackedTensorAccessor32<__half2, 2> K,
-    const torch::PackedTensorAccessor32<__half2, 1> add,
-    torch::PackedTensorAccessor32<__half, 1> out,
+    const Accessor<__half2, 2> K,
+    const Accessor<__half2, 1> add,
+    Accessor<__half, 1> out,
     const size_t size
 ) {
     const auto tid = threadIdx.x;
@@ -99,9 +99,9 @@ void sinkhorn_step_cuda(torch::Tensor K, torch::Tensor add, torch::Tensor out) {
         const auto out_stride = out.stride(0);
 
         kernel_half2<<<blocks, block_size>>>(
-            torch::PackedTensorAccessor32<__half2, 2>(K_ptr, K_sizes, K_strides),
-            torch::PackedTensorAccessor32<__half2, 1>(add_ptr, &add_size, &add_stride),
-            torch::PackedTensorAccessor32<__half, 1>(out_ptr, &out_size, &out_stride),
+            Accessor<__half2, 2>(K_ptr, K_sizes, K_strides),
+            Accessor<__half2, 1>(add_ptr, &add_size, &add_stride),
+            Accessor<__half, 1>(out_ptr, &out_size, &out_stride),
             add_size
         );
     } else {

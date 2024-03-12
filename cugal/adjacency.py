@@ -49,10 +49,22 @@ class Adjacency:
         """Create from networkx graph."""
 
         node_count = graph.number_of_nodes()
+        dtype = determine_index_type(node_count)
 
         edges = list(nx.edges(graph))
         if not graph.is_directed():
             edges += [(y, x) for x, y in edges]
+
+        if has_cuda and "cuda" in str(device):
+            edges = torch.tensor(sum(edges, ()), dtype=dtype, device=device)
+            col_indices = torch.empty(
+                size=(len(edges),), dtype=dtype, device=device)
+            row_pointers = torch.empty(
+                size=(node_count,), dtype=torch.int, device=device)
+
+            cuda_kernels.create_adjacency(edges, col_indices, row_pointers)
+
+            return cls(col_indices, row_pointers)
 
         col_indices, row_pointers = \
             torch.empty(size=(len(edges),)), torch.empty(size=(node_count,))
@@ -70,7 +82,6 @@ class Adjacency:
             row_pointers[row_index] = col_index_count
             row_index += 1
 
-        dtype = determine_index_type(node_count)
         col_indices = col_indices.to(dtype=dtype, device=device)
         row_pointers = row_pointers.to(dtype=torch.int32, device=device)
         return cls(col_indices, row_pointers)

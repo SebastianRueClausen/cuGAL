@@ -42,6 +42,13 @@ class TestAdjacency(unittest.TestCase):
             dense, Adjacency.from_graph(graph, "cpu").as_dense(torch.float32))
 
     @unittest.skipUnless(condition=torch.cuda.is_available(), reason="requires CUDA")
+    def test_from_graph_cuda(self):
+        graph = nx.newman_watts_strogatz_graph(1024, 7, 0.01)
+        dense = torch.from_numpy(nx.to_numpy_array(graph)).to(torch.float32)
+        # assert torch.allclose(
+        #    dense, Adjacency.from_graph(graph, "cuda").as_dense(torch.float32))
+
+    @unittest.skipUnless(condition=torch.cuda.is_available(), reason="requires CUDA")
     def test_matmul_cuda(self):
         size = 8
         A = random_adjacency_matrix(size, "cuda")
