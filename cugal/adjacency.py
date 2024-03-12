@@ -90,7 +90,8 @@ class Adjacency:
         """Convert back to dense representation."""
 
         col_indices = torch.clone(self.col_indices).to(torch.int64)
-        dense = torch.zeros((self.size(), self.size()), dtype=dtype)
+        dense = torch.zeros((self.size(), self.size()),
+                            dtype=dtype, device=col_indices.device)
 
         for row_index, begin in enumerate(self.row_pointers):
             end = len(col_indices) if row_index == self.size() - \
