@@ -45,9 +45,10 @@ class TestAdjacency(unittest.TestCase):
     def test_from_graph_cuda(self):
         graph = nx.newman_watts_strogatz_graph(16, 7, 0.01)
         correct = torch.from_numpy(nx.to_numpy_array(graph)).to(torch.float32)
-        test = Adjacency.from_graph(
-            graph, "cuda").as_dense(torch.float32).cpu()
-        # assert torch.allclose(correct, test)
+        adj = Adjacency.from_graph(
+            graph, "cuda")
+        test = adj.as_dense(torch.float32).cpu()
+        assert torch.allclose(correct, test)
 
     @unittest.skipUnless(condition=torch.cuda.is_available(), reason="requires CUDA")
     def test_matmul_cuda(self):
