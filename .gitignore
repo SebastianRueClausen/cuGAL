@@ -10,3 +10,4 @@ ENV_DIR
 *.egg*
 .vscode
 .venv
+.egg-info
