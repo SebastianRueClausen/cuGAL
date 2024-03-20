@@ -19,6 +19,11 @@ class SinkhornMethod(Enum):
     Computational intensive but numerically stable and optimized for the GPU.
     """
 
+    MIX = 2
+    """Start out in logarithmic space and switch over to standard
+    Sinkhorn-Knopp when the cost matrix has stabilized.
+    """
+
 
 @dataclass
 class Config:

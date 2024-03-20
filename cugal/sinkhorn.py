@@ -21,6 +21,8 @@ def sinkhorn(C: torch.Tensor, config: Config) -> torch.Tensor:
             return sinkhorn_log_cuda(C, config)[0]
         case SinkhornMethod.LOG:
             return sinkhorn_log(C, config)[0]
+        case SinkhornMethod.MIX:
+            return mixhorn(C, config)[0]
 
 
 def sinkhorn_knopp(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
@@ -28,9 +30,6 @@ def sinkhorn_knopp(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
 
     u = torch.full(size=(na,), fill_value=1/na,
                    device=config.device, dtype=config.dtype)
-    v = torch.full(size=(nb,), fill_value=1/nb,
-                   device=config.device, dtype=config.dtype)
-
     K = torch.exp(C / -config.sinkhorn_regularization)
 
     for iteration in range(config.sinkhorn_iterations):
@@ -52,7 +51,6 @@ def sinkhorn_log(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
     K = - C / config.sinkhorn_regularization
 
     u = torch.zeros(na, device=config.device, dtype=config.dtype)
-    v = torch.zeros(nb, device=config.device, dtype=config.dtype)
 
     for iteration in range(config.sinkhorn_iterations):
         v = -torch.logsumexp(K + u[:, None], 0)
@@ -87,3 +85,25 @@ def sinkhorn_log_cuda(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, in
                 break
 
     return torch.exp(K + u[:, None] + v[None, :]), iteration
+
+
+def mixhorn(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
+    K = -C / config.sinkhorn_regularization
+
+    v = -torch.logsumexp(K, 0)
+    u = -torch.logsumexp(K + v[None, :], 1)
+
+    K = torch.exp(K + u[:, None] + v[None, :])
+    u = torch.exp(-u)
+
+    for iteration in range(config.sinkhorn_iterations):
+        v = 1 / (u @ K + M_EPS)
+        u = 1 / (K @ v + M_EPS)
+
+        if iteration % config.sinkhorn_eval_freq == 0:
+            b_hat = torch.matmul(u, K) * v
+            threshold = (1 - b_hat).pow(2).sum().item()
+            if threshold < config.sinkhorn_threshold:
+                break
+
+    return u.reshape(-1, 1) * K * v.reshape(1, -1), iteration

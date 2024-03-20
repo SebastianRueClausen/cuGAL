@@ -167,7 +167,7 @@ def multi_magna_experiment(device: str) -> Experiment:
 
 def newmann_watts_experiment(config: Config, source_noise: float) -> Experiment:
     graph = newmann_watts_graph(
-        node_count=100, node_degree=7, rewriting_prob=0.1)
+        node_count=10000, node_degree=7, rewriting_prob=0.1)
     return Experiment(config, graph, source_noise=source_noise)
 
 
@@ -202,6 +202,6 @@ def compare_against_official():
 if __name__ == "__main__":
     # replicate_figure_4(gpu_log_config)
     # compare_against_official()
-    print(test(newmann_watts_experiment(Config(use_sparse_adjacency=True,
+    print(test(newmann_watts_experiment(Config(use_sparse_adjacency=True, sinkhorn_method=SinkhornMethod.LOG,
           dtype=torch.float32, device=select_device()), 0.0)))
-    pass
+    # print(test(multi_magna_experiment("cuda")))

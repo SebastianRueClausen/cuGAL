@@ -56,14 +56,14 @@ class Adjacency:
             edges += [(y, x) for x, y in edges]
 
         if has_cuda and "cuda" in str(device):
-            edges = torch.tensor(sum(sorted(edges), ()), dtype=dtype, device=device)
+            edges = torch.tensor(sum(sorted(edges), ()),
+                                 dtype=dtype, device=device)
             col_indices = torch.empty(
                 size=(len(edges),), dtype=dtype, device=device)
             row_pointers = torch.empty(
                 size=(node_count,), dtype=torch.int, device=device)
 
             cuda_kernels.create_adjacency(edges, col_indices, row_pointers)
-            print(edges, "\n", sorted(nx.edges(graph)))
 
             return cls(col_indices, row_pointers)
 
