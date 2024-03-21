@@ -84,8 +84,6 @@ def mixhorn(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
     K = torch.exp(K + u[:, None] + v[None, :])
     u = torch.exp(-u)
 
-    prev_error = float("inf")
-
     for iteration in range(config.sinkhorn_iterations):
         v = 1 / (u @ K + M_EPS)
         u = 1 / (K @ v + M_EPS)
@@ -95,8 +93,5 @@ def mixhorn(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
             error = (1 - b_hat).pow(2).sum().item()
             if error < config.sinkhorn_threshold:
                 break
-            if abs(prev_error - error) < 1e-4:
-                return loghorn(u.reshape(-1, 1) * K * v.reshape(1, -1), config)
-            prev_error = error
 
     return u.reshape(-1, 1) * K * v.reshape(1, -1), iteration
