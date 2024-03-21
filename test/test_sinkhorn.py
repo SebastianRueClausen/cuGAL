@@ -46,6 +46,7 @@ class TestSinkhorn(unittest.TestCase):
                              dtype=torch.float32)
         matrix = random_matrix(128)
         test = sinkhorn(test_config.convert_tensor(matrix), test_config)
+        print(torch.abs(torch.sum(test, dim=0) - 1))
         assert_is_doubly_stochastic(test)
 
     @unittest.skipUnless(condition=torch.cuda.is_available(), reason="requires CUDA")

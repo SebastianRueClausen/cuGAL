@@ -43,7 +43,7 @@ def benchmark_random_matrices(matrix_sizes: list[int], iter_count: int):
     )
     cpu_config = Config(sinkhorn_iterations=200, sinkhorn_threshold=1e-7)
 
-    cuda_log_results, cuda_log_half_results, torch_log_results, torch_mix_results, cpu_results = [], [], [], [], []
+    log_results, log_half_results, mix_results, cpu_results = [], [], [], [], []
 
     for matrix_size in matrix_sizes:
         matrix = torch.randn((matrix_size, matrix_size)) * 4.0
@@ -57,32 +57,26 @@ def benchmark_random_matrices(matrix_sizes: list[int], iter_count: int):
             iter_count,
         ))
 
-        torch_log_results.append(mean_cuda_time(
-            partial(sinkhorn.sinkhorn_log, gpu_matrix, gpu_config),
-            iter_count,
-        ))
-
-        torch_mix_results.append(mean_cuda_time(
+        mix_results.append(mean_cuda_time(
             partial(sinkhorn.mixhorn, gpu_matrix, gpu_config),
             iter_count,
         ))
 
-        cuda_log_results.append(mean_cuda_time(
-            partial(sinkhorn.sinkhorn_log_cuda, gpu_matrix, gpu_config),
+        log_results.append(mean_cuda_time(
+            partial(sinkhorn.loghorn, gpu_matrix, gpu_config),
             iter_count,
         ))
 
-        cuda_log_half_results.append(mean_cuda_time(
+        log_half_results.append(mean_cuda_time(
             partial(sinkhorn.sinkhorn_log_cuda,
                     gpu_half_matrix, gpu_half_config),
             iter_count,
         ))
 
     plots = [
-        (torch_log_results, 'log torch float32'),
-        (torch_mix_results, 'mix torch float32'),
-        (cuda_log_results, 'log cuda float32'),
-        (cuda_log_half_results, 'log cuda float16'),
+        (mix_results, 'mix float32'),
+        (log_results, 'log float32'),
+        (log_half_results, 'log float16'),
         (cpu_results, 'cpu float64'),
     ]
 
