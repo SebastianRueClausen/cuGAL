@@ -1,5 +1,7 @@
 import torch
 from cugal.config import Config, SinkhornMethod
+from cugal.profile import SinkhornProfile
+from time import time
 
 try:
     import cuda_kernels
@@ -15,19 +17,20 @@ def can_use_cuda(config: Config) -> bool:
         torch.float32, torch.float16]
 
 
-def sinkhorn(C: torch.Tensor, config: Config) -> torch.Tensor:
+def sinkhorn(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> torch.Tensor:
     match config.sinkhorn_method:
         case SinkhornMethod.STANDARD:
-            return sinkhorn_knopp(C, config)[0]
+            return sinkhorn_knopp(C, config, profile)
         case SinkhornMethod.LOG:
-            return loghorn(C, config)[0]
+            return loghorn(C, config, profile)
         case SinkhornMethod.MIX:
-            return mixhorn(C, config)[0]
+            return mixhorn(C, config, profile)
 
 
-def sinkhorn_knopp(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
+def sinkhorn_knopp(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> torch.Tensor:
+    start_time = time()
+
     na, _ = C.shape
-
     u = torch.full(size=(na,), fill_value=1/na,
                    device=config.device, dtype=config.dtype)
     K = torch.exp(C / -config.sinkhorn_regularization)
@@ -39,17 +42,23 @@ def sinkhorn_knopp(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
         if iteration % config.sinkhorn_eval_freq == 0:
             b_hat = torch.matmul(u, K) * v
             threshold = (1 - b_hat).pow(2).sum().item()
+            profile.errors.append(threshold)
             if threshold < config.sinkhorn_threshold:
                 break
 
-    return u.reshape(-1, 1) * K * v.reshape(1, -1), iteration
+    output = u.reshape(-1, 1) * K * v.reshape(1, -1)
+
+    profile.iteration_count = iteration + 1
+    profile.time = time() - start_time
+
+    return output
 
 
-def loghorn(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
+def loghorn(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> torch.Tensor:
+    start_time = time()
+
     use_cuda = can_use_cuda(config)
-
     na, nb = C.shape
-
     K = - C / config.sinkhorn_regularization
 
     if use_cuda:
@@ -69,13 +78,21 @@ def loghorn(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
         if iteration % config.sinkhorn_eval_freq == 0:
             tmp = torch.sum(torch.exp(K + u[:, None] + v[None, :]), 0)
             threshold = (tmp - 1).pow(2).sum().item()
+            profile.errors.append(threshold)
             if threshold < config.sinkhorn_threshold:
                 break
 
-    return torch.exp(K + u[:, None] + v[None, :]), iteration
+    output = torch.exp(K + u[:, None] + v[None, :])
+
+    profile.iteration_count = iteration + 1
+    profile.time = time() - start_time
+
+    return output
 
 
-def mixhorn(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
+def mixhorn(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> torch.Tensor:
+    start_time = time()
+
     K = -C / config.sinkhorn_regularization
 
     v = -torch.logsumexp(K, 0)
@@ -90,8 +107,13 @@ def mixhorn(C: torch.Tensor, config: Config) -> tuple[torch.Tensor, int]:
 
         if iteration % config.sinkhorn_eval_freq == 0:
             b_hat = torch.matmul(u, K) * v
-            error = (1 - b_hat).pow(2).sum().item()
-            if error < config.sinkhorn_threshold:
+            threshold = (1 - b_hat).pow(2).sum().item()
+            if threshold < config.sinkhorn_threshold:
                 break
 
-    return u.reshape(-1, 1) * K * v.reshape(1, -1), iteration
+    output = u.reshape(-1, 1) * K * v.reshape(1, -1)
+
+    profile.iteration_count = iteration + 1
+    profile.time = time() - start_time
+
+    return output

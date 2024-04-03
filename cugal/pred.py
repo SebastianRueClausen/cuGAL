@@ -5,10 +5,12 @@ import torch
 from sklearn.metrics.pairwise import euclidean_distances
 from tqdm.auto import tqdm
 from functools import partial
+from time import time
 
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
 from cugal.config import Config
+from cugal.profile import Profile, Phase, SinkhornProfile
 
 
 def feature_extraction(G: nx.graph) -> np.ndarray:
@@ -52,11 +54,12 @@ def sparse_gradient(
         - B.mul(A.mul(P).T).T + K + iteration*(1 - 2*P)
 
 
-def find_quasi_perm(
+def find_quasi_permutation_matrix(
     A: np.ndarray,
     B: np.ndarray,
     distance: np.ndarray,
     config: Config,
+    profile: Profile,
 ) -> torch.Tensor:
     n = len(A)
 
@@ -76,9 +79,17 @@ def find_quasi_perm(
 
     for i in tqdm(range(config.iter_count)):
         for it in range(1, 11):
+            start_time = time()
             gradient_function = partial(sparse_gradient, A, B, A_transpose, B_transpose) \
                 if config.use_sparse_adjacency else partial(gradient, A, B)
-            q = sinkhorn.sinkhorn(gradient_function(P, K, i), config)
+            profile.log_time(start_time, Phase.GRADIENT) 
+
+            start_time = time()
+            sinkhorn_profile = SinkhornProfile()
+            q = sinkhorn.sinkhorn(gradient_function(P, K, i), config, sinkhorn_profile)
+            profile.sinkhorn_profiles.append(sinkhorn_profile)
+            profile.log_time(start_time, Phase.SINKHORN)
+
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)
 
@@ -89,6 +100,7 @@ def convert_to_permutation_matrix(
     quasi_permutation: torch.Tensor,
     source_node_count: int,
     target_node_count: int,
+    profile: Profile,
 ) -> tuple[np.ndarray, list[tuple[int, int]]]:
     """Convert quasi permutation matrix M into true permutation matrix.
     Also returns a mapping from source to target graph.
@@ -96,8 +108,10 @@ def convert_to_permutation_matrix(
 
     n = len(quasi_permutation)
 
+    start_time = time()
     row_ind, col_ind = scipy.optimize.linear_sum_assignment(
         quasi_permutation, maximize=True)
+    profile.log_time(start_time, Phase.HUNGARIAN)
 
     permutation = np.zeros((n, n))
     mapping = []
@@ -115,6 +129,7 @@ def cugal(
     source: nx.graph,
     target: nx.graph,
     config: Config,
+    profile = Profile(),
 ) -> tuple[np.ndarray, list[tuple[int, int]]]:
     """Run cuGAL algorithm.
 
@@ -123,7 +138,6 @@ def cugal(
 
     source_node_count = source.number_of_nodes()
     target_node_count = target.number_of_nodes()
-
     node_count = max(source_node_count, target_node_count)
 
     # For float16 to be aligned properly in cuda, we add an extra dummy node
@@ -138,15 +152,18 @@ def cugal(
     while target.number_of_nodes() < node_count:
         target.add_node(target.number_of_nodes())
 
+    start_time = time()
     source_features = feature_extraction(source)
     target_features = feature_extraction(target)
+    profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
 
-    quasi_permutation = find_quasi_perm(
+    quasi_permutation = find_quasi_permutation_matrix(
         nx.to_numpy_array(source),
         nx.to_numpy_array(target),
         euclidean_distances(source_features, target_features),
         config,
+        profile,
     )
 
     return convert_to_permutation_matrix(
-        quasi_permutation, source_node_count, target_node_count)
+        quasi_permutation, source_node_count, target_node_count, profile)

@@ -38,7 +38,7 @@ class Config:
     sinkhorn_regularization: float = 1.0
     sinkhorn_method: SinkhornMethod = SinkhornMethod.STANDARD
     sinkhorn_iterations: int = 500
-    sinkhorn_threshold: float = 1e-9
+    sinkhorn_threshold: float = 1e-3
     sinkhorn_eval_freq: int = 10
 
     mu: float = 0.5

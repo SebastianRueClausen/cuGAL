@@ -478,7 +478,7 @@ def sinkhorn_epsilon_scaling(a, b, C, reg=1e-1, maxIter=100, maxInnerIter=100, t
         log['err'].append(err)
 
         if verbose and it % print_freq == 0:
-            print('iteration {:5d}, constraint error {:5e}'.format(it, err))
+            ('iteration {:5d}, constraint error {:5e}'.format(it, err))
 
         it += 1
 
