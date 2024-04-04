@@ -2,7 +2,7 @@ from dataclasses import dataclass, fields
 import numpy as np
 from cugal.pred import cugal
 from cugal.config import Config, SinkhornMethod
-from cugal.profile import Phase, Profile, write_plot_phases_as_csv
+from cugal.profile import Phase, Profile, write_phases_as_csv, plot_phases
 import matplotlib.pyplot as plt
 import networkx as nx
 import metrics as metrics
@@ -206,12 +206,12 @@ def compare_against_official():
 if __name__ == "__main__":
     # replicate_figure_4(gpu_log_config)
     # compare_against_official()
-    sizes = [256, 512, 1024]
+    sizes = [128, 256, 512, 1024]
     profiles = []
     for index, size in enumerate(sizes):
         result = test(newmann_watts_experiment(Config(use_sparse_adjacency=False, sinkhorn_method=SinkhornMethod.STANDARD,
               dtype=torch.float64, device="cpu"), 0.0, size))
         profiles.append(result.profile)
     #print(profiles)
-    write_plot_phases_as_csv(profiles, sizes, "phase_times.csv")
+    plot_phases(profiles, sizes)
     #print(test(multi_magna_experiment(select_device())))

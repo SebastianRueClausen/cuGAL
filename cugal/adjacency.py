@@ -125,6 +125,8 @@ class Adjacency:
             cuda_kernels.adjacency_matmul(
                 self.col_indices, self.row_pointers, matrix, out, negate_lhs,
             )
+        elif matrix.shape[0] < 10000:
+            return self.as_dense(matrix.dtype) @ matrix
         else:
             for row_index, col_index in product(range(self.size()), repeat=2):
                 start = self.row_pointers[row_index]

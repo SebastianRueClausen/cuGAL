@@ -35,7 +35,7 @@ def extract_phase_times(profiles: list[Profile], phase: Phase) -> list[float]:
     return [profile.phase_times[phase] for profile in profiles]    
 
 
-def write_plot_phases_as_csv(profiles: list[Profile], sizes: list[int], path: str):
+def write_phases_as_csv(profiles: list[Profile], sizes: list[int], path: str):
     phases = [Phase.SINKHORN, Phase.FEATURE_EXTRACTION, Phase.GRADIENT, Phase.HUNGARIAN]
 
     with open(path, 'w', newline='') as csvfile:
@@ -46,7 +46,8 @@ def write_plot_phases_as_csv(profiles: list[Profile], sizes: list[int], path: st
             phase_times = extract_phase_times(profiles, phase)
             writer.writerow(chain([phase.name], phase_times))
 
-def append_phase_to_csv(profile: Profile, path: str):
+
+def append_phases_to_csv(profile: Profile, path: str):
     phases = [Phase.SINKHORN, Phase.FEATURE_EXTRACTION, Phase.GRADIENT, Phase.HUNGARIAN]
     filepath = f"{path}/times.csv"
 
@@ -65,10 +66,19 @@ def append_phase_to_csv(profile: Profile, path: str):
     
     print("Wrote times to ", path)
 
+
 def plot_phases(profiles: list[Profile], sizes: list[int]):
-    feature_extraction_times = extract_phase_times(profiles, Phase.FEATURE_EXTRACTION)
-    sinkhorn_times = extract_phase_times(profiles, Phase.SINKHORN)
-    hungarian_times = extract_phase_times(profiles, Phase.HUNGARIAN)
-    gradient_times = extract_phase_times(profiles, Phase.GRADIENT)
-    plt.stackplot(sizes, feature_extraction_times, sinkhorn_times, hungarian_times, gradient_times)
+    labels = ["Feature Extraction", "Sinkhorn-Knopp", "Hungarian", "Gradient"]
+    plt.stackplot(
+        sizes,
+        extract_phase_times(profiles, Phase.FEATURE_EXTRACTION),
+        extract_phase_times(profiles, Phase.SINKHORN),
+        extract_phase_times(profiles, Phase.HUNGARIAN),
+        extract_phase_times(profiles, Phase.GRADIENT),
+        labels=labels,
+        baseline ='zero',
+    )
+    plt.xlabel("Graph size")
+    plt.ylabel("Time (seconds)")
+    plt.legend()
     plt.show()

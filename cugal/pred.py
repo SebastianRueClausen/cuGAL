@@ -39,7 +39,7 @@ def feature_extraction(G: nx.graph) -> np.ndarray:
     return np.nan_to_num(np.stack((degs, clusts, neighbor_degs, neighbor_clusts)).T)
 
 
-def gradient(A, B, P, K: torch.Tensor, iteration: int) -> torch.Tensor:
+def dense_gradient(A, B, P, K: torch.Tensor, iteration: int) -> torch.Tensor:
     return -A.T @ P @ B - A @ P @ B.T + K + iteration*(1 - 2*P)
 
 
@@ -55,22 +55,23 @@ def sparse_gradient(
 
 
 def find_quasi_permutation_matrix(
-    A: np.ndarray,
-    B: np.ndarray,
+    A: nx.graph,
+    B: nx.graph,
     distance: np.ndarray,
     config: Config,
     profile: Profile,
 ) -> torch.Tensor:
     n = len(A)
 
-    A = torch.tensor(A, dtype=config.dtype, device=config.device)
-    B = torch.tensor(B, dtype=config.dtype, device=config.device)
     distance = torch.tensor(distance, dtype=config.dtype, device=config.device)
 
     if config.use_sparse_adjacency:
-        A_transpose, B_transpose = Adjacency.from_dense(
-            A.T), Adjacency.from_dense(B.T)
-        A, B = Adjacency.from_dense(A), Adjacency.from_dense(B)
+        assert not nx.is_directed(A), "graph must be undirected to use sparse adjacency (for now)"
+        assert not nx.is_directed(B), "graph must be undirected to use sparse adjacency (for now)"
+        A, B = Adjacency.from_graph(A, config.device), Adjacency.from_graph(B, config.device)
+    else:
+        A = torch.tensor(nx.to_numpy_array(A), dtype=config.dtype, device=config.device)
+        B = torch.tensor(nx.to_numpy_array(B), dtype=config.dtype, device=config.device)
 
     P = torch.full(size=(n, n), fill_value=1/n,
                    dtype=config.dtype, device=config.device)
@@ -80,13 +81,14 @@ def find_quasi_permutation_matrix(
     for i in tqdm(range(config.iter_count)):
         for it in range(1, 11):
             start_time = time()
-            gradient_function = partial(sparse_gradient, A, B, A_transpose, B_transpose) \
-                if config.use_sparse_adjacency else partial(gradient, A, B)
+            gradient_function = partial(sparse_gradient, A, B, A, B) \
+                if config.use_sparse_adjacency else partial(dense_gradient, A, B)
+            gradient = gradient_function(P, K, i)
             profile.log_time(start_time, Phase.GRADIENT) 
 
             start_time = time()
             sinkhorn_profile = SinkhornProfile()
-            q = sinkhorn.sinkhorn(gradient_function(P, K, i), config, sinkhorn_profile)
+            q = sinkhorn.sinkhorn(gradient, config, sinkhorn_profile)
             profile.sinkhorn_profiles.append(sinkhorn_profile)
             profile.log_time(start_time, Phase.SINKHORN)
 
@@ -157,13 +159,8 @@ def cugal(
     target_features = feature_extraction(target)
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
 
-    quasi_permutation = find_quasi_permutation_matrix(
-        nx.to_numpy_array(source),
-        nx.to_numpy_array(target),
-        euclidean_distances(source_features, target_features),
-        config,
-        profile,
-    )
+    distance = euclidean_distances(source_features, target_features)
+    quasi_permutation = find_quasi_permutation_matrix(source, target, distance, config, profile)
 
     return convert_to_permutation_matrix(
         quasi_permutation, source_node_count, target_node_count, profile)
