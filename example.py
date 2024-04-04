@@ -210,8 +210,8 @@ if __name__ == "__main__":
     profiles = []
     for index, size in enumerate(sizes):
         result = test(newmann_watts_experiment(Config(use_sparse_adjacency=False, sinkhorn_method=SinkhornMethod.STANDARD,
-              dtype=torch.float64, device="cpu"), 0.0, size))
+                                                      dtype=torch.float64, device="cpu"), 0.0, size))
         profiles.append(result.profile)
-    #print(profiles)
+    # print(profiles)
     plot_phases(profiles, sizes)
-    #print(test(multi_magna_experiment(select_device())))
+    # print(test(multi_magna_experiment(select_device())))

@@ -17,7 +17,7 @@ def can_use_cuda(config: Config) -> bool:
         torch.float32, torch.float16]
 
 
-def sinkhorn(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> torch.Tensor:
+def sinkhorn(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch.Tensor:
     match config.sinkhorn_method:
         case SinkhornMethod.STANDARD:
             return sinkhorn_knopp(C, config, profile)
@@ -27,7 +27,7 @@ def sinkhorn(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> to
             return mixhorn(C, config, profile)
 
 
-def sinkhorn_knopp(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> torch.Tensor:
+def sinkhorn_knopp(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch.Tensor:
     start_time = time()
 
     na, _ = C.shape
@@ -54,7 +54,7 @@ def sinkhorn_knopp(C: torch.Tensor, config: Config, profile = SinkhornProfile())
     return output
 
 
-def loghorn(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> torch.Tensor:
+def loghorn(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch.Tensor:
     start_time = time()
 
     use_cuda = can_use_cuda(config)
@@ -90,7 +90,7 @@ def loghorn(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> tor
     return output
 
 
-def mixhorn(C: torch.Tensor, config: Config, profile = SinkhornProfile()) -> torch.Tensor:
+def mixhorn(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch.Tensor:
     start_time = time()
 
     K = -C / config.sinkhorn_regularization

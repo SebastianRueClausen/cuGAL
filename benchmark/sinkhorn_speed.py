@@ -5,6 +5,7 @@ from cugal import sinkhorn
 from cugal.config import Config, SinkhornMethod
 from cugal.profile import SinkhornProfile
 
+
 def benchmark_random_matrices(matrix_sizes: list[int]):
     gpu_config = Config(
         device="cuda", dtype=torch.float32, sinkhorn_iterations=200,
@@ -22,7 +23,8 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
         matrix = torch.randn((matrix_size, matrix_size)) * 4.0
 
         profile = SinkhornProfile()
-        sinkhorn.sinkhorn_knopp(cpu_config.convert_tensor(matrix), cpu_config, profile)
+        sinkhorn.sinkhorn_knopp(
+            cpu_config.convert_tensor(matrix), cpu_config, profile)
         log_profiles.append(profile)
 
         gpu_matrix = gpu_config.convert_tensor(matrix)
@@ -36,7 +38,8 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
         log_profiles.append(profile)
 
         profile = SinkhornProfile()
-        sinkhorn.loghorn(gpu_half_config.convert_tensor(matrix), gpu_half_config, profile)
+        sinkhorn.loghorn(gpu_half_config.convert_tensor(
+            matrix), gpu_half_config, profile)
         log_half_profiles.append(profile)
 
     plots = [

@@ -5,12 +5,11 @@ import torch
 from sklearn.metrics.pairwise import euclidean_distances
 from tqdm.auto import tqdm
 from functools import partial
-from time import time
 
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
 from cugal.config import Config
-from cugal.profile import Profile, Phase, SinkhornProfile
+from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 
 
 def feature_extraction(G: nx.graph) -> np.ndarray:
@@ -66,12 +65,17 @@ def find_quasi_permutation_matrix(
     distance = torch.tensor(distance, dtype=config.dtype, device=config.device)
 
     if config.use_sparse_adjacency:
-        assert not nx.is_directed(A), "graph must be undirected to use sparse adjacency (for now)"
-        assert not nx.is_directed(B), "graph must be undirected to use sparse adjacency (for now)"
-        A, B = Adjacency.from_graph(A, config.device), Adjacency.from_graph(B, config.device)
+        assert not nx.is_directed(
+            A), "graph must be undirected to use sparse adjacency (for now)"
+        assert not nx.is_directed(
+            B), "graph must be undirected to use sparse adjacency (for now)"
+        A, B = Adjacency.from_graph(
+            A, config.device), Adjacency.from_graph(B, config.device)
     else:
-        A = torch.tensor(nx.to_numpy_array(A), dtype=config.dtype, device=config.device)
-        B = torch.tensor(nx.to_numpy_array(B), dtype=config.dtype, device=config.device)
+        A = torch.tensor(nx.to_numpy_array(
+            A), dtype=config.dtype, device=config.device)
+        B = torch.tensor(nx.to_numpy_array(
+            B), dtype=config.dtype, device=config.device)
 
     P = torch.full(size=(n, n), fill_value=1/n,
                    dtype=config.dtype, device=config.device)
@@ -80,13 +84,13 @@ def find_quasi_permutation_matrix(
 
     for i in tqdm(range(config.iter_count)):
         for it in range(1, 11):
-            start_time = time()
+            start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
             gradient = gradient_function(P, K, i)
-            profile.log_time(start_time, Phase.GRADIENT) 
+            profile.log_time(start_time, Phase.GRADIENT)
 
-            start_time = time()
+            start_time = TimeStamp(config.device)
             sinkhorn_profile = SinkhornProfile()
             q = sinkhorn.sinkhorn(gradient, config, sinkhorn_profile)
             profile.sinkhorn_profiles.append(sinkhorn_profile)
@@ -102,6 +106,7 @@ def convert_to_permutation_matrix(
     quasi_permutation: torch.Tensor,
     source_node_count: int,
     target_node_count: int,
+    config: Config,
     profile: Profile,
 ) -> tuple[np.ndarray, list[tuple[int, int]]]:
     """Convert quasi permutation matrix M into true permutation matrix.
@@ -110,7 +115,7 @@ def convert_to_permutation_matrix(
 
     n = len(quasi_permutation)
 
-    start_time = time()
+    start_time = TimeStamp(config.device)
     row_ind, col_ind = scipy.optimize.linear_sum_assignment(
         quasi_permutation, maximize=True)
     profile.log_time(start_time, Phase.HUNGARIAN)
@@ -131,7 +136,7 @@ def cugal(
     source: nx.graph,
     target: nx.graph,
     config: Config,
-    profile = Profile(),
+    profile=Profile(),
 ) -> tuple[np.ndarray, list[tuple[int, int]]]:
     """Run cuGAL algorithm.
 
@@ -154,13 +159,14 @@ def cugal(
     while target.number_of_nodes() < node_count:
         target.add_node(target.number_of_nodes())
 
-    start_time = time()
+    start_time = TimeStamp(config.device)
     source_features = feature_extraction(source)
     target_features = feature_extraction(target)
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
 
     distance = euclidean_distances(source_features, target_features)
-    quasi_permutation = find_quasi_permutation_matrix(source, target, distance, config, profile)
+    quasi_permutation = find_quasi_permutation_matrix(
+        source, target, distance, config, profile)
 
     return convert_to_permutation_matrix(
-        quasi_permutation, source_node_count, target_node_count, profile)
+        quasi_permutation, source_node_count, target_node_count, config, profile)
