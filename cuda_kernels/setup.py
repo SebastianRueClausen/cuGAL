@@ -7,6 +7,7 @@ setup(
     ext_modules=[
         CUDAExtension('cuda_kernels', [
             'kernels.cpp',
+            'feature_extraction.cpp',
             'adjacency.cu',
             'sinkhorn_log.cu',
         ]),

@@ -11,6 +11,13 @@ from cugal import sinkhorn
 from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 
+def cpp_clustering(graph: nx.graph) -> np.ndarray:
+    edges = list(nx.edges(graph))
+    if not graph.is_directed():
+        edges += [(y, x) for x, y in edges]
+    edges = torch.tensor(sum(sorted(edges), ()),
+                            dtype=torch.int32, device='cpu')
+
 
 def feature_extraction(G: nx.graph) -> np.ndarray:
     node_list = sorted(G.nodes())
