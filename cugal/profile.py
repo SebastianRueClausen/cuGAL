@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from dataclasses import dataclass, field
 from itertools import chain
 import csv
+import os
 
 class Phase(Enum):
     FEATURE_EXTRACTION = 0
@@ -45,6 +46,24 @@ def write_plot_phases_as_csv(profiles: list[Profile], sizes: list[int], path: st
             phase_times = extract_phase_times(profiles, phase)
             writer.writerow(chain([phase.name], phase_times))
 
+def append_phase_to_csv(profile: Profile, path: str):
+    phases = [Phase.SINKHORN, Phase.FEATURE_EXTRACTION, Phase.GRADIENT, Phase.HUNGARIAN]
+    filepath = f"{path}/times.csv"
+
+    if os.path.isfile(filepath):
+        csvfile = open(filepath, 'r', newline='')
+
+        reader = csv.reader(csvfile)
+        data = [row for row in reader]
+    else: data = [[""]]*len(phases)
+
+    csvfile = open(filepath, 'w', newline='')
+    writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    for row, phase in enumerate(phases):
+        phase_times = extract_phase_times([profile], phase)
+        writer.writerow(data[row] + phase_times)
+    
+    print("Wrote times to ", path)
 
 def plot_phases(profiles: list[Profile], sizes: list[int]):
     feature_extraction_times = extract_phase_times(profiles, Phase.FEATURE_EXTRACTION)
