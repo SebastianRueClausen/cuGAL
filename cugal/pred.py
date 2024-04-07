@@ -10,26 +10,12 @@ from cugal.adjacency import Adjacency
 from cugal import sinkhorn
 from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
-import cuda_kernels
 
-def cpp_clustering(graph: nx.graph) -> np.ndarray:
-    edges = list(nx.edges(graph))
-    if not graph.is_directed():
-        edges += [(y, x) for x, y in edges]
-    edges_tensor = torch.stack(list(map(torch.tensor, sorted(edges))))
-    
-    out = torch.empty(nx.number_of_nodes(graph), dtype=torch.long)
-    
-    print(edges_tensor.shape)
-
-    cuda_kernels.graph_clustering(edges_tensor, out)
-    print(out)
-    return out
 
 def feature_extraction(G: nx.graph) -> np.ndarray:
     node_list = sorted(G.nodes())
     node_degree_dict = dict(G.degree())
-    node_clustering_dict = dict(enumerate(cpp_clustering(G)))
+    node_clustering_dict = dict(nx.clustering(G))
     egonets = {n: nx.ego_graph(G, n) for n in node_list}
 
     degs = [node_degree_dict[n] for n in node_list]

@@ -3,24 +3,37 @@
 #include <unordered_set>
 #include <algorithm>
 #include <iostream>
+#include <utility>
 
-std::unordered_set<int> create_edge_set(torch::Tensor& edges, std::vector<uint32_t>& edge_start, uint32_t vertex_index) {
-    const auto vertex_count = edge_start.size();
-    const auto edge_count = edges.size(0);
+std::pair<int, int> edge_range(torch::Tensor& edges, std::vector<uint32_t>& edge_starts, uint32_t vertex_index) {
+    return std::make_pair(
+        edge_starts[vertex_index],
+        edge_starts.size() == vertex_index + 1 ? edges.size(0) : edge_starts[vertex_index + 1]
+    );
+}
 
-    const auto start_index = edge_start[vertex_index];
-    const auto end_index = vertex_count == vertex_index + 1 ? edge_count : edge_start[vertex_index + 1];
-    std::cout << "Start index: " << start_index << "    end index: " << end_index << "\n"; 
+long intersection_size(torch::Tensor& edges, std::vector<uint32_t>& edge_starts, uint32_t vertex_a, uint32_t vertex_b) {
+    const auto [a_start, a_end] = edge_range(edges, edge_starts, vertex_a);
+    const auto [b_start, b_end] = edge_range(edges, edge_starts, vertex_b);
 
-    std::unordered_set<int> set{};
+    long intersection_size = 0;
 
-    for (auto edge_index = start_index; edge_index < end_index; edge_index++) {
-        std::cout << edge_index << "\n";
-        set.insert(edges.accessor<long, 2>()[edge_index][1]);
+    for (auto a_index = a_start, b_index = b_start; a_index < a_end && b_index < b_end;) {
+        const auto a_edge = edges.accessor<long, 2>()[a_index][1];
+        const auto b_edge = edges.accessor<long, 2>()[b_index][1];
+
+        if (a_edge == b_edge) {
+            intersection_size++;
+            a_index++;
+            b_index++;
+        } else if (a_edge > b_edge) {
+            b_index++;
+        } else {
+            a_index++;
+        }
     }
 
-    std::cout << "Done with set\n";
-    return set;
+    return intersection_size;
 }
 
 void graph_clustering(torch::Tensor& edges, torch::Tensor coeffs) {
@@ -34,34 +47,29 @@ void graph_clustering(torch::Tensor& edges, torch::Tensor coeffs) {
     auto prev_vertex_index = -1;
 
     for (auto edge_index = 0; edge_index < edge_count; edge_index++) {
-        std::cout << edge_index << "\n";
         auto vertex_index = edges.accessor<long, 2>()[edge_index][0];
         if (vertex_index != prev_vertex_index) {
             for (auto edge_starts_index = prev_vertex_index + 1; edge_starts_index <= vertex_index; edge_starts_index++) {
                 edge_starts[edge_starts_index] = edge_index;
             }
-            prev_vertex_index = vertex_index; 
+            prev_vertex_index = vertex_index;
         }
         vertex_degree[prev_vertex_index] += 1;
     }
 
-    std::cout << "Found vertex degree\n";
-
     for (auto vertex_index = 0; vertex_index < edge_starts.size(); vertex_index++) {
-        std::cout << "Creating edge set for vertex " << vertex_index << "\n";
-        const auto edge_set = create_edge_set(edges, edge_starts, vertex_index);
-
         auto triangle_count = 0;
 
-        for (auto neighbor : edge_set) {
-            const auto neighbor_set = create_edge_set(edges, edge_starts, neighbor);
-            const auto intersection_size = std::count_if(begin(edge_set), end(edge_set), [&](const auto& x) {
-                return neighbor_set.find(x) != end(neighbor_set);
-            });
-            triangle_count += intersection_size;
+        const auto [start, end] = edge_range(edges, edge_starts, vertex_index);
+        for (auto edge_index = start; edge_index < end; edge_index++) {
+            const auto neighbor_index = edges.accessor<long, 2>()[edge_index][1];
+            triangle_count += intersection_size(edges, edge_starts, vertex_index, neighbor_index);
         }
+
         const auto degree = vertex_degree[vertex_index];
+
         // 0 if t == 0 else t / (d * (d - 1)) for v, d, t, _ in td_iter
-        coeffs.accessor<long, 1>()[vertex_index] = triangle_count == 0 ? 0 : triangle_count / (degree * (degree - 1));
+        const auto result = triangle_count == 0 ? 0.0 : float(triangle_count) / (degree * (degree - 1));
+        coeffs.accessor<float, 1>()[vertex_index] = result;
     }
 }

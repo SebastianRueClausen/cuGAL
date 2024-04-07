@@ -152,11 +152,8 @@ void create_adjacency_cuda(torch::Tensor edges, torch::Tensor col_indices, torch
     const auto edge_count = edges.size(0) / 2;
     const auto block_count = div_ceil(thread_count, block_size);
 
-    // Sort edges in parallel (Sort first by row then by column) (Could be radix sort).
     if (edges.scalar_type() == torch::ScalarType::Short) {
         const auto edge_ptr = reinterpret_cast<Edge<short>*>(edges.data_ptr());
-
-        //thrust::sort(thrust::device, edge_ptr, edge_ptr + edge_count);
 
         const auto stride = edges.stride(0);
         const auto edges_accessor = Accessor<Edge<short>, 1>(edge_ptr, &edge_count, &stride);
@@ -169,8 +166,6 @@ void create_adjacency_cuda(torch::Tensor edges, torch::Tensor col_indices, torch
         );
     } else if (edges.scalar_type() == torch::ScalarType::Int) {
         const auto edge_ptr = reinterpret_cast<Edge<int>*>(edges.data_ptr());
-
-        //thrust::sort(thrust::device, edge_ptr, edge_ptr + edge_count);
 
         const auto stride = edges.stride(0);
         const auto edges_accessor = Accessor<Edge<int>, 1>(edge_ptr, &edge_count, &stride);
