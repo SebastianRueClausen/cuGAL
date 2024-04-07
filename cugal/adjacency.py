@@ -6,6 +6,7 @@ import numpy as np
 import torch
 import networkx as nx
 from itertools import groupby
+import warnings
 
 try:
     import cuda_kernels
@@ -125,9 +126,9 @@ class Adjacency:
             cuda_kernels.adjacency_matmul(
                 self.col_indices, self.row_pointers, matrix, out, negate_lhs,
             )
-        elif matrix.shape[0] < 10000:
-            return self.as_dense(matrix.dtype) @ matrix
         else:
+            warnings.warn(
+                "using sparse adjacency matrices on a device other than cuda is very slow")
             for row_index, col_index in product(range(self.size()), repeat=2):
                 start = self.row_pointers[row_index]
                 end = len(self.col_indices) if row_index == self.size() - \

@@ -33,8 +33,7 @@ class TestAdjacency(unittest.TestCase):
             B), Adjacency.from_dense(A.T), Adjacency.from_dense(B.T), P, K, 0)
 
         # This requres a bit high error tolerance.
-        # TODO: FIX
-        # assert torch.allclose(grad, sparse_grad, rtol=1e-4, atol=1e-5)
+        assert torch.allclose(grad, sparse_grad, rtol=1e-4, atol=1e-5)
 
     def test_from_graph(self):
         graph = nx.newman_watts_strogatz_graph(16, 7, 0.01)
