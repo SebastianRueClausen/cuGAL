@@ -1,8 +1,14 @@
+#pragma once
+
 #include <cuda_fp16.h>
 #include <torch/torch.h>
 
 template <typename scalar_t, size_t dims>
 using Accessor = torch::PackedTensorAccessor32<scalar_t, dims>;
+
+constexpr int div_ceil(int x, int y) {
+  return (x + y - 1) / y;
+}
 
 // Performs a sum reduction within a single warp.
 __device__ inline float warp_sum_reduce(float sum) {

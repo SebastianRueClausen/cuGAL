@@ -4,7 +4,7 @@
 void sinkhorn_step_cuda(torch::Tensor, torch::Tensor, torch::Tensor);
 void adjacency_matmul_cuda(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, bool);
 void create_adjacency_cuda(torch::Tensor, torch::Tensor, torch::Tensor);
-void graph_clustering(torch::Tensor&, torch::Tensor);
+void graph_clustering(torch::Tensor, torch::Tensor, torch::Tensor);
 
 void adjacency_matmul(
   torch::Tensor col_indices,

@@ -56,11 +56,13 @@ class Adjacency:
         if not graph.is_directed():
             edges += [(y, x) for x, y in edges]
 
+        edge_count = len(edges)
+
         if has_cuda and "cuda" in str(device):
             edges = torch.tensor(sum(sorted(edges), ()),
                                  dtype=dtype, device=device)
             col_indices = torch.empty(
-                size=(len(edges),), dtype=dtype, device=device)
+                size=(edge_count,), dtype=dtype, device=device)
             row_pointers = torch.empty(
                 size=(node_count,), dtype=torch.int, device=device)
 
@@ -69,7 +71,9 @@ class Adjacency:
             return cls(col_indices, row_pointers)
 
         col_indices, row_pointers = \
-            torch.empty(size=(len(edges),)), torch.empty(size=(node_count,))
+            torch.empty(size=(edge_count,)), torch.empty(size=(node_count,))
+
+        row_pointers[0] = 0
 
         col_index_count, row_index = 0, 0
         for node_index, node_edges in groupby(sorted(edges), key=lambda edge: edge[0]):

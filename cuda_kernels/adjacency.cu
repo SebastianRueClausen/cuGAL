@@ -110,6 +110,10 @@ __global__ void create_row_pointers(
     const auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     const auto stride = blockDim.x * gridDim.x;
 
+    if (tid == 0) {
+        row_pointers[0] = 0;
+    }
+
     const auto size = edges.size(0);
 
     // Go through all edges and check where if there is a change in the row.
@@ -141,16 +145,12 @@ __global__ void create_col_indices(
     }
 }
 
-int div_ceil(int x, int y) {
-  return (x + y - 1) / y;
-}
-
 void create_adjacency_cuda(torch::Tensor edges, torch::Tensor col_indices, torch::Tensor row_pointers) {
     constexpr auto block_size = 64;
     constexpr auto thread_count = 1024;
 
     const auto edge_count = edges.size(0) / 2;
-    const auto block_count = div_ceil(thread_count, block_size);
+    constexpr auto block_count = div_ceil(thread_count, block_size);
 
     if (edges.scalar_type() == torch::ScalarType::Short) {
         const auto edge_ptr = reinterpret_cast<Edge<short>*>(edges.data_ptr());

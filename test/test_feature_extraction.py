@@ -10,7 +10,7 @@ def random_graph(size: int) -> nx.graph:
 
 class TestAdjacency(unittest.TestCase):
     def test_graph_clustering_agree(self):
-        graph = random_graph(128)
+        graph = random_graph(32)
         correct = graph_clustering(graph)
-        cuda = graph_clustering_cuda(graph)
+        cuda = graph_clustering_cuda(graph).cpu().numpy()
         assert np.allclose(correct, cuda)

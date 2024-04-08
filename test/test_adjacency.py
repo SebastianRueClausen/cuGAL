@@ -6,6 +6,7 @@ from cugal.pred import dense_gradient, sparse_gradient
 import torch
 import random
 import networkx as nx
+import warnings
 
 
 def random_adjacency_matrix(size: int, device="cpu") -> torch.Tensor:
@@ -29,8 +30,11 @@ class TestAdjacency(unittest.TestCase):
         K = torch.randn(size=(size, size), dtype=torch.float32)
 
         grad = dense_gradient(A, B, P, K, 0)
-        sparse_grad = sparse_gradient(Adjacency.from_dense(A), Adjacency.from_dense(
-            B), Adjacency.from_dense(A.T), Adjacency.from_dense(B.T), P, K, 0)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            sparse_grad = sparse_gradient(Adjacency.from_dense(A), Adjacency.from_dense(
+                B), Adjacency.from_dense(A.T), Adjacency.from_dense(B.T), P, K, 0)
 
         # This requres a bit high error tolerance.
         assert torch.allclose(grad, sparse_grad, rtol=1e-4, atol=1e-5)
