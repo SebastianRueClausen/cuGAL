@@ -10,19 +10,26 @@ def graph_clustering(graph: nx.graph) -> np.ndarray:
     return np.array([clustering[i] for i in graph.nodes()])
 
 
-def graph_clustering_cuda(graph: nx.graph) -> torch.Tensor:
+def graph_degree(graph: nx.graph) -> np.ndarray:
+    degrees = dict(nx.degree(graph))
+    return np.array([degrees[i] for i in graph.nodes()])
+
+
+def graph_features_cuda(graph: nx.graph) -> tuple[torch.Tensor, torch.Tensor]:
     adjacency = Adjacency.from_graph(graph, "cuda")
     clustering = torch.zeros(nx.number_of_nodes(
         graph), dtype=torch.float, device="cuda")
-    cuda_kernels.graph_clustering(
-        adjacency.col_indices, adjacency.row_pointers, clustering)
-    return clustering
+    degrees = torch.zeros(nx.number_of_nodes(
+        graph), dtype=torch.float, device="cuda")
+    cuda_kernels.graph_features(
+        adjacency.col_indices, adjacency.row_pointers, clustering, degrees)
+    return clustering, degrees
 
 
 def feature_extraction(G: nx.graph) -> np.ndarray:
     node_list = sorted(G.nodes())
     node_degree_dict = dict(G.degree())
-    clusts = graph_clustering_cuda(G)
+    clusts = graph_features_cuda(G)
     egonets = {n: nx.ego_graph(G, n) for n in node_list}
     degs = [node_degree_dict[n] for n in node_list]
 

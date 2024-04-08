@@ -21,6 +21,8 @@ def feature_extraction(G: nx.graph) -> np.ndarray:
     degs = [node_degree_dict[n] for n in node_list]
     clusts = [node_clustering_dict[n] for n in node_list]
 
+    print(egonets)
+
     neighbor_degs = [
         np.mean([node_degree_dict[m] for m in egonets[n].nodes if m != n])
         if node_degree_dict[n] > 0
