@@ -91,3 +91,58 @@ void graph_features(torch::Tensor col_indices, torch::Tensor row_pointers, torch
 
     cudaDeviceSynchronize();
 }
+
+template <typename index_t>
+__global__ void vertex_average_neighbor_features(
+    const Accessor<index_t, 1> col_indices,
+    const Accessor<int, 1> row_pointers,
+    const Accessor<float, 1> features,
+    Accessor<float, 1> averages
+) {
+    const auto vertex_index = threadIdx.x + blockIdx.x * blockDim.x;
+
+    if (vertex_index >= row_pointers.size(0)) {
+        return;
+    }
+
+    const auto [start, end] = edge_range(col_indices.size(0), row_pointers, vertex_index);
+
+    float sum = 0.0;
+    for (auto edge_index = start; edge_index < end; edge_index++) {
+        sum += features[col_indices[edge_index]];
+    }
+
+    const auto degree = end - start;
+    averages[vertex_index] = degree == 0 ? 0.0 : sum / degree;
+}
+
+void average_neighbor_features(
+    torch::Tensor col_indices,
+    torch::Tensor row_pointers,
+    torch::Tensor features,
+    torch::Tensor averages
+) {
+    constexpr auto block_size = 64;
+
+    const auto thread_count = row_pointers.size(0);
+    const auto block_count = div_ceil(thread_count, block_size);
+
+    if (col_indices.scalar_type() == torch::ScalarType::Short) {
+        vertex_average_neighbor_features<short><<<block_count, block_size>>>(
+            col_indices.packed_accessor32<short, 1>(),
+            row_pointers.packed_accessor32<int, 1>(),
+            features.packed_accessor32<float,  1>(),
+            averages.packed_accessor32<float,  1>()
+        );
+    } else if (col_indices.scalar_type() == torch::ScalarType::Int) {
+        vertex_average_neighbor_features<int><<<block_count, block_size>>>(
+            col_indices.packed_accessor32<int, 1>(),
+            row_pointers.packed_accessor32<int, 1>(),
+            features.packed_accessor32<float,  1>(),
+            averages.packed_accessor32<float,  1>()
+        );
+    }
+
+    cudaDeviceSynchronize();
+
+}
