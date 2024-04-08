@@ -2,6 +2,8 @@
 #include <cuda_runtime.h>
 #include <cuda_fp16.h>
 #include <torch/torch.h>
+#include <cub/cub.cuh>
+#include <iostream>
 #include "common.cuh"
 
 template <typename index_t>
@@ -76,12 +78,9 @@ void adjacency_matmul_cuda(
 // Create adjacency.
 //
 
-#include <thrust/sort.h>
-#include <thrust/device_vector.h>
-
 template <typename index_t>
 struct Edge {
-    index_t row, col;
+    index_t col, row;
 
     __host__ __device__ bool operator <(Edge<index_t> const& rhs) {
         if (row == rhs.row) {
@@ -143,6 +142,24 @@ __global__ void create_col_indices(
     }
 }
 
+template <typename key_t>
+void sort_edges(key_t* edges, key_t* sorted, long edge_count) {
+    // This is only to obtain the required temporary storage size.
+    size_t tmp_storage_size = 0;
+    cub::DeviceRadixSort::SortKeys<key_t>(nullptr, tmp_storage_size, edges, sorted, edge_count);
+
+    // Allocate temporary storage.
+    void* tmp_storage = nullptr;
+    cudaMalloc(&tmp_storage, tmp_storage_size);
+
+    // Sort edges.
+    cub::DeviceRadixSort::SortKeys<key_t>(tmp_storage, tmp_storage_size, edges, sorted, edge_count);
+    cudaDeviceSynchronize();
+
+    // Deallocate temporary storage.
+    cudaFree(tmp_storage);
+}
+
 void create_adjacency_cuda(torch::Tensor edges, torch::Tensor col_indices, torch::Tensor row_pointers) {
     constexpr auto block_size = 64;
     constexpr auto thread_count = 1024;
@@ -150,11 +167,15 @@ void create_adjacency_cuda(torch::Tensor edges, torch::Tensor col_indices, torch
     const auto edge_count = edges.size(0) / 2;
     constexpr auto block_count = div_ceil(thread_count, block_size);
 
+    auto sorted_edges = torch::empty_like(edges);
+
     if (edges.scalar_type() == torch::ScalarType::Short) {
-        const auto edge_ptr = reinterpret_cast<Edge<short>*>(edges.data_ptr());
+        const auto sorted_edge_ptr = reinterpret_cast<Edge<short>*>(sorted_edges.data_ptr());
+
+        sort_edges<uint32_t>((uint32_t*)edges.data_ptr(), (uint32_t*)sorted_edge_ptr, edge_count);
 
         const auto stride = edges.stride(0);
-        const auto edges_accessor = Accessor<Edge<short>, 1>(edge_ptr, &edge_count, &stride);
+        const auto edges_accessor = Accessor<Edge<short>, 1>(sorted_edge_ptr, &edge_count, &stride);
 
         create_row_pointers<short><<<block_count, block_size>>>(
             edges_accessor, row_pointers.packed_accessor32<int, 1>()
@@ -163,10 +184,12 @@ void create_adjacency_cuda(torch::Tensor edges, torch::Tensor col_indices, torch
             edges_accessor, col_indices.packed_accessor32<short, 1>()
         );
     } else if (edges.scalar_type() == torch::ScalarType::Int) {
-        const auto edge_ptr = reinterpret_cast<Edge<int>*>(edges.data_ptr());
+        const auto sorted_edge_ptr = reinterpret_cast<Edge<int>*>(sorted_edges.data_ptr());
+
+        sort_edges<uint64_t>((uint64_t*)edges.data_ptr(), (uint64_t*)sorted_edge_ptr, edge_count);
 
         const auto stride = edges.stride(0);
-        const auto edges_accessor = Accessor<Edge<int>, 1>(edge_ptr, &edge_count, &stride);
+        const auto edges_accessor = Accessor<Edge<int>, 1>(sorted_edge_ptr, &edge_count, &stride);
 
         create_row_pointers<int><<<block_count, block_size>>>(
             edges_accessor, row_pointers.packed_accessor32<int, 1>()

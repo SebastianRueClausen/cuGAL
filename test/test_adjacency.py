@@ -47,7 +47,7 @@ class TestAdjacency(unittest.TestCase):
 
     @unittest.skipUnless(condition=torch.cuda.is_available(), reason="requires CUDA")
     def test_from_graph_cuda(self):
-        graph = nx.newman_watts_strogatz_graph(16, 7, 0.01)
+        graph = nx.erdos_renyi_graph(1024, 0.005)
         correct = torch.from_numpy(nx.to_numpy_array(graph)).to(torch.float32)
         adj = Adjacency.from_graph(
             graph, "cuda")

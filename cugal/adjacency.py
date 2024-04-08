@@ -59,7 +59,7 @@ class Adjacency:
         edge_count = len(edges)
 
         if has_cuda and "cuda" in str(device):
-            edges = torch.tensor(sum(sorted(edges), ()),
+            edges = torch.tensor(sum(edges, ()),
                                  dtype=dtype, device=device)
             col_indices = torch.empty(
                 size=(edge_count,), dtype=dtype, device=device)
