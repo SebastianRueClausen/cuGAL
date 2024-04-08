@@ -70,8 +70,6 @@ void adjacency_matmul_cuda(
         printf("invalid data type\n");
         abort();
     }
-
-    cudaDeviceSynchronize();
 }
 
 //

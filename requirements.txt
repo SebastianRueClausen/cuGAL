@@ -1,7 +1,7 @@
 torch
 numpy
 matplotlib
-scikit-learn
 networkx
+scipy
 tqdm
 pre-commit

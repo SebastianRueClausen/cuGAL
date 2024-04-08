@@ -2,7 +2,6 @@ import networkx as nx
 import numpy as np
 import scipy
 import torch
-from sklearn.metrics.pairwise import euclidean_distances
 from tqdm.auto import tqdm
 from functools import partial
 
@@ -10,34 +9,7 @@ from cugal.adjacency import Adjacency
 from cugal import sinkhorn
 from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
-
-
-def feature_extraction(G: nx.graph) -> np.ndarray:
-    node_list = sorted(G.nodes())
-    node_degree_dict = dict(G.degree())
-    node_clustering_dict = dict(nx.clustering(G))
-    egonets = {n: nx.ego_graph(G, n) for n in node_list}
-
-    degs = [node_degree_dict[n] for n in node_list]
-    clusts = [node_clustering_dict[n] for n in node_list]
-
-    print(egonets)
-
-    neighbor_degs = [
-        np.mean([node_degree_dict[m] for m in egonets[n].nodes if m != n])
-        if node_degree_dict[n] > 0
-        else 0
-        for n in node_list
-    ]
-
-    neighbor_clusts = [
-        np.mean([node_clustering_dict[m] for m in egonets[n].nodes if m != n])
-        if node_degree_dict[n] > 0
-        else 0
-        for n in node_list
-    ]
-
-    return np.nan_to_num(np.stack((degs, clusts, neighbor_degs, neighbor_clusts)).T)
+from cugal.feature_extraction import feature_distance_matrix
 
 
 def dense_gradient(A, B, P, K: torch.Tensor, iteration: int) -> torch.Tensor:
@@ -50,38 +22,42 @@ def sparse_gradient(
     P, K: torch.Tensor,
     iteration: int,
 ) -> torch.Tensor:
+    x1 = A_transpose.mul(P, negate_lhs=True).T
+    x2 = A.mul(P).T
+    torch.cuda.synchronize()
+    y1 = B_transpose.mul(x1).T
+    y2 = B.mul(x2).T
+    torch.cuda.synchronize()
+    return y1 - y2 + K + iteration*(1 - 2*P)
+
     # TODO: Figure out why there are small numeric differences between the non-sparse.
     return B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
         - B.mul(A.mul(P).T).T + K + iteration*(1 - 2*P)
 
 
 def find_quasi_permutation_matrix(
-    A: nx.graph,
-    B: nx.graph,
-    distance: np.ndarray,
+    A, B: nx.Graph | Adjacency,
+    distance: torch.Tensor,
     config: Config,
     profile: Profile,
 ) -> torch.Tensor:
-    n = len(A)
-
-    distance = torch.tensor(distance, dtype=config.dtype, device=config.device)
-
     if config.use_sparse_adjacency:
-        assert not nx.is_directed(
-            A), "graph must be undirected to use sparse adjacency (for now)"
-        assert not nx.is_directed(
-            B), "graph must be undirected to use sparse adjacency (for now)"
-        A, B = Adjacency.from_graph(
-            A, config.device), Adjacency.from_graph(B, config.device)
+        if not type(A) is Adjacency:
+            assert not nx.is_directed(
+                A), "graph must be undirected to use sparse adjacency (for now)"
+            A = Adjacency.from_graph(A, config.device)
+
+        if not type(B) is Adjacency:
+            assert not nx.is_directed(
+                B), "graph must be undirected to use sparse adjacency (for now)"
+            B = Adjacency.from_graph(B, config.device)
     else:
         A = torch.tensor(nx.to_numpy_array(
             A), dtype=config.dtype, device=config.device)
         B = torch.tensor(nx.to_numpy_array(
             B), dtype=config.dtype, device=config.device)
 
-    P = torch.full(size=(n, n), fill_value=1/n,
-                   dtype=config.dtype, device=config.device)
-
+    P = torch.full_like(distance, fill_value=1/len(distance))
     K = config.mu * distance
 
     for i in tqdm(range(config.iter_count)):
@@ -135,8 +111,8 @@ def convert_to_permutation_matrix(
 
 
 def cugal(
-    source: nx.graph,
-    target: nx.graph,
+    source: nx.Graph,
+    target: nx.Graph,
     config: Config,
     profile=Profile(),
 ) -> tuple[np.ndarray, list[tuple[int, int]]]:
@@ -161,12 +137,14 @@ def cugal(
     while target.number_of_nodes() < node_count:
         target.add_node(target.number_of_nodes())
 
-    start_time = TimeStamp(config.device)
-    source_features = feature_extraction(source)
-    target_features = feature_extraction(target)
+    if config.use_sparse_adjacency and "cuda" in config.device:
+        source, target = Adjacency.from_graph(
+            source, config.device), Adjacency.from_graph(target, config.device)
+
+    start_time = TimeStamp("cpu")
+    distance = feature_distance_matrix(source, target, config)
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
 
-    distance = euclidean_distances(source_features, target_features)
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, distance, config, profile)
 

@@ -3,20 +3,18 @@ import numpy as np
 import cuda_kernels
 import torch
 from cugal.adjacency import Adjacency
+from cugal.config import Config
+
+try:
+    import cuda_kernels
+    has_cuda = True
+except ImportError:
+    has_cuda = False
 
 
-def graph_clustering(graph: nx.graph) -> np.ndarray:
-    clustering = nx.clustering(graph)
-    return np.array([clustering[i] for i in graph.nodes()])
-
-
-def graph_degree(graph: nx.graph) -> np.ndarray:
-    degrees = dict(nx.degree(graph))
-    return np.array([degrees[i] for i in graph.nodes()])
-
-
-def extract_features_cuda(graph: nx.graph) -> torch.Tensor:
-    adjacency = Adjacency.from_graph(graph, "cuda")
+def extract_features_cuda(graph: nx.Graph | Adjacency, config: Config) -> torch.Tensor:
+    adjacency = graph if type(
+        graph) == Adjacency else Adjacency.from_graph(graph, config.device)
     clustering = torch.zeros(nx.number_of_nodes(
         graph), dtype=torch.float, device="cuda")
     degrees = torch.zeros(nx.number_of_nodes(
@@ -27,14 +25,16 @@ def extract_features_cuda(graph: nx.graph) -> torch.Tensor:
         graph), dtype=torch.float, device="cuda")
     cuda_kernels.graph_features(
         adjacency.col_indices, adjacency.row_pointers, clustering, degrees)
+    torch.cuda.synchronize()
     cuda_kernels.average_neighbor_features(
         adjacency.col_indices, adjacency.row_pointers, clustering, neighbor_clustering)
     cuda_kernels.average_neighbor_features(
         adjacency.col_indices, adjacency.row_pointers, degrees, neighbor_degrees)
+    torch.cuda.synchronize()
     return torch.stack((degrees, clustering, neighbor_degrees, neighbor_clustering)).T
 
 
-def extract_features(G: nx.graph) -> np.ndarray:
+def extract_features(G: nx.Graph) -> np.ndarray:
     node_list = sorted(G.nodes())
     node_degree_dict = dict(G.degree())
     node_clustering_dict = dict(nx.clustering(G))
@@ -58,3 +58,20 @@ def extract_features(G: nx.graph) -> np.ndarray:
     ]
 
     return np.nan_to_num(np.stack((degs, clusts, neighbor_degs, neighbor_clusts)).T)
+
+
+def feature_distance_matrix(source, target: nx.Graph | Adjacency, config: Config) -> torch.Tensor:
+    use_cuda = has_cuda and "cuda" in config.device
+
+    if use_cuda:
+        source_features = extract_features_cuda(
+            source, config).to(config.dtype)
+        target_features = extract_features_cuda(
+            target, config).to(config.dtype)
+    else:
+        source_features = torch.tensor(extract_features(
+            source), device=config.device, dtype=config.dtype)
+        target_features = torch.tensor(extract_features(
+            target), device=config.device, dtype=config.dtype)
+
+    return torch.cdist(source_features, target_features)

@@ -46,7 +46,7 @@ class Adjacency:
         return cls(col_indices.squeeze(1), row_pointers)
 
     @classmethod
-    def from_graph(cls, graph: nx.graph, device: torch.device):
+    def from_graph(cls, graph: nx.Graph, device: torch.device):
         """Create from networkx graph."""
 
         node_count = graph.number_of_nodes()
@@ -96,11 +96,11 @@ class Adjacency:
         """Convert back to dense representation."""
 
         col_indices = torch.clone(self.col_indices).to(torch.int64)
-        dense = torch.zeros((self.size(), self.size()),
+        dense = torch.zeros((self.number_of_nodes(), self.number_of_nodes()),
                             dtype=dtype, device=col_indices.device)
 
         for row_index, begin in enumerate(self.row_pointers):
-            end = len(col_indices) if row_index == self.size() - \
+            end = len(col_indices) if row_index == self.number_of_nodes() - \
                 1 else self.row_pointers[row_index+1]
             dense[row_index, :].scatter_(
                 0, col_indices[begin:end], 1)
@@ -111,14 +111,14 @@ class Adjacency:
         element_size = 2 if self.col_indices.dtype == torch.int16 else torch.int32
         return element_size * len(self.col_indices) + 4 * len(self.row_pointers)
 
-    def size(self) -> int:
+    def number_of_nodes(self) -> int:
         return len(self.row_pointers)
 
     def mul(self, matrix: torch.Tensor, negate_lhs: bool = False) -> torch.Tensor:
         """Calculate self @ matrix."""
 
-        assert matrix.shape[0] == self.size(
-        ) and matrix.shape[1] == self.size(), "matrix must match size"
+        assert matrix.shape[0] == self.number_of_nodes(
+        ) and matrix.shape[1] == self.number_of_nodes(), "matrix must match size"
 
         use_cuda = \
             has_cuda and "cuda" in str(
@@ -133,9 +133,9 @@ class Adjacency:
         else:
             warnings.warn(
                 "using sparse adjacency matrices on a device other than cuda is very slow")
-            for row_index, col_index in product(range(self.size()), repeat=2):
+            for row_index, col_index in product(range(self.number_of_nodes()), repeat=2):
                 start = self.row_pointers[row_index]
-                end = len(self.col_indices) if row_index == self.size() - \
+                end = len(self.col_indices) if row_index == self.number_of_nodes() - \
                     1 else self.row_pointers[row_index+1]
                 indices = self.col_indices[start:end].to(torch.int32)
                 out[row_index, col_index] = \

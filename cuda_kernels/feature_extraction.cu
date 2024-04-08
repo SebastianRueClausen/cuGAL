@@ -87,9 +87,11 @@ void graph_features(torch::Tensor col_indices, torch::Tensor row_pointers, torch
             clustering.packed_accessor32<float,  1>(),
             degrees.packed_accessor32<float,  1>()
         );
+    } else {
+        printf("invalid data type\n");
+        abort();
     }
 
-    cudaDeviceSynchronize();
 }
 
 template <typename index_t>
@@ -141,8 +143,9 @@ void average_neighbor_features(
             features.packed_accessor32<float,  1>(),
             averages.packed_accessor32<float,  1>()
         );
+    } else {
+        printf("invalid data type\n");
+        abort();
     }
-
-    cudaDeviceSynchronize();
 
 }

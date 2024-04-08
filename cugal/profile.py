@@ -38,7 +38,7 @@ class TimeStamp:
     def elapsed_seconds(self, earlier: Self) -> float:
         if self.is_cuda_event():
             torch.cuda.synchronize()
-            return earlier.time.elapsed_time(self.time) * 1000
+            return earlier.time.elapsed_time(self.time) / 1000
         else:
             return self.time - earlier.time
 

@@ -203,15 +203,19 @@ def compare_against_official():
     print("accuracy:", cugal_accuracy, "official accuracy:", fugal_accuracy)
 
 
+def newmann_watts_benchmark():
+    sizes = [128, 256, 512, 1024, 2048, 4096]
+    profiles = []
+    for _, size in enumerate(sizes):
+        result = test(newmann_watts_experiment(Config(use_sparse_adjacency=True, sinkhorn_method=SinkhornMethod.MIX,
+                                                      dtype=torch.float32, device="cuda"), 0.0, size))
+        profiles.append(result.profile)
+    print(profiles[-1].phase_times)
+    plot_phases(profiles, sizes)
+
+
 if __name__ == "__main__":
     # replicate_figure_4(gpu_log_config)
     # compare_against_official()
-    sizes = [128, 256, 512, 1024]
-    profiles = []
-    for index, size in enumerate(sizes):
-        result = test(newmann_watts_experiment(Config(use_sparse_adjacency=False, sinkhorn_method=SinkhornMethod.STANDARD,
-                                                      dtype=torch.float64, device="cpu"), 0.0, size))
-        profiles.append(result.profile)
-    # print(profiles)
-    plot_phases(profiles, sizes)
+    newmann_watts_benchmark()
     # print(test(multi_magna_experiment(select_device())))
