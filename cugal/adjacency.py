@@ -37,7 +37,7 @@ class Adjacency:
         col_indices = torch.tensor(
             [], dtype=dtype, device=dense.device)
         row_pointers = torch.empty(
-            size=(size,), dtype=torch.int32, device=dense.device)
+            size=(size + 1,), dtype=torch.int32, device=dense.device)
 
         for row_index, row in enumerate(dense):
             row_pointers[row_index] = len(col_indices)
@@ -64,16 +64,16 @@ class Adjacency:
             col_indices = torch.empty(
                 size=(edge_count,), dtype=dtype, device=device)
             row_pointers = torch.empty(
-                size=(node_count,), dtype=torch.int, device=device)
+                size=(node_count + 1,), dtype=torch.int, device=device)
 
             cuda_kernels.create_adjacency(edges, col_indices, row_pointers)
 
             return cls(col_indices, row_pointers)
 
         col_indices, row_pointers = \
-            torch.empty(size=(edge_count,)), torch.empty(size=(node_count,))
+            torch.empty(size=(edge_count,)), torch.empty(size=(node_count + 1,))
 
-        row_pointers[0] = 0
+        row_pointers[0], row_pointers[-1] = 0, edge_count
 
         col_index_count, row_index = 0, 0
         for node_index, node_edges in groupby(sorted(edges), key=lambda edge: edge[0]):
@@ -99,11 +99,9 @@ class Adjacency:
         dense = torch.zeros((self.number_of_nodes(), self.number_of_nodes()),
                             dtype=dtype, device=col_indices.device)
 
-        for row_index, begin in enumerate(self.row_pointers):
-            end = len(col_indices) if row_index == self.number_of_nodes() - \
-                1 else self.row_pointers[row_index+1]
-            dense[row_index, :].scatter_(
-                0, col_indices[begin:end], 1)
+        for row_index, start in enumerate(self.row_pointers):
+            end = self.row_pointers[row_index+1]
+            dense[row_index, :].scatter_(0, col_indices[start:end], 1)
 
         return dense
 
@@ -112,7 +110,7 @@ class Adjacency:
         return element_size * len(self.col_indices) + 4 * len(self.row_pointers)
 
     def number_of_nodes(self) -> int:
-        return len(self.row_pointers)
+        return len(self.row_pointers) - 1
 
     def mul(self, matrix: torch.Tensor, negate_lhs: bool = False) -> torch.Tensor:
         """Calculate self @ matrix."""
@@ -134,9 +132,7 @@ class Adjacency:
             warnings.warn(
                 "using sparse adjacency matrices on a device other than cuda is very slow")
             for row_index, col_index in product(range(self.number_of_nodes()), repeat=2):
-                start = self.row_pointers[row_index]
-                end = len(self.col_indices) if row_index == self.number_of_nodes() - \
-                    1 else self.row_pointers[row_index+1]
+                start, end = self.row_pointers[row_index], self.row_pointers[row_index+1]
                 indices = self.col_indices[start:end].to(torch.int32)
                 out[row_index, col_index] = \
                     torch.sum(

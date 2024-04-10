@@ -5,6 +5,7 @@
 #include <cub/cub.cuh>
 #include <iostream>
 #include "common.cuh"
+#include <cusparse.h>
 
 template <typename index_t>
 __global__ void kernel(
@@ -21,7 +22,7 @@ __global__ void kernel(
     const auto col = blockIdx.y;
 
     const auto start = row_pointers[row];
-    const auto end = row == size - 1 ? col_indices.size(0) : row_pointers[row + 1];
+    const auto end = row_pointers[row + 1];
 
     float sum = 0.0;
 
@@ -74,6 +75,96 @@ void adjacency_matmul_cuda(
     }
 }
 
+void adjacency_matmul_cusparse(
+    torch::Tensor col_indices,
+    torch::Tensor row_pointers,
+    torch::Tensor matrix,
+    torch::Tensor out,
+    bool negate_lhs
+) {
+    const auto size = matrix.size(0);
+
+    // The cusparse needs a value vectors, so we just create one full of ones.
+    const auto fill_value = negate_lhs ? 1.0 : -1.0;
+    const auto values = torch::full_like(col_indices, fill_value);
+
+    // Determine scalar type.
+    cudaDataType scalar_type;
+    switch (values.scalar_type()) {
+        case torch::ScalarType::Half:
+            scalar_type = CUDA_R_16F;
+            break;
+        case torch::ScalarType::Double:
+            scalar_type = CUDA_R_64F;
+            break;
+        default:
+            scalar_type = CUDA_R_32F;
+    }
+
+    // Determine index type.
+    const auto index_type = col_indices.scalar_type() == torch::ScalarType::Half
+        ? CUSPARSE_INDEX_16U : CUSPARSE_INDEX_32I;
+
+    // Create handle for cusparse.
+    cusparseHandle_t handle = nullptr; 
+    cusparseCreate(&handle);
+
+    // Create cusparse sparse matrix.
+    cusparseSpMatDescr_t sparse_descriptor;
+    cusparseCreateCsr(
+        &sparse_descriptor, size, size,
+        col_indices.size(0), row_pointers.data_ptr(), col_indices.data_ptr(), values.data_ptr(),
+        CUSPARSE_INDEX_32I, index_type, CUSPARSE_INDEX_BASE_ZERO, scalar_type
+    );
+
+    // Create cusparse dense matrices.
+    cusparseDnMatDescr_t dense_descriptor, out_descriptor;
+    cusparseCreateDnMat(
+        &dense_descriptor, size, size, size, matrix.data_ptr(), scalar_type, CUSPARSE_ORDER_ROW
+    );
+    cusparseCreateDnMat(
+        &out_descriptor, size, size, size, out.data_ptr(), scalar_type, CUSPARSE_ORDER_ROW
+    );
+
+    // Values multiplied with the sparse matrix.
+    const auto alpha = 1.0f;
+
+    // Value multiplied with out matrix before the result being added.
+    const auto beta = 0.0f;
+
+    // Determine size of buffer.
+    size_t buffer_size;
+    cusparseSpMM_bufferSize(
+        handle,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        &alpha, sparse_descriptor, dense_descriptor, &beta, out_descriptor, scalar_type,
+        CUSPARSE_SPMM_ALG_DEFAULT, &buffer_size
+    );
+
+    // Allocate buffer.
+    void* buffer = nullptr;
+    cudaMalloc(&buffer, buffer_size);
+
+    // Do multiplication.
+    cusparseSpMM(
+        handle,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        &alpha, sparse_descriptor, dense_descriptor, &beta, out_descriptor, scalar_type,
+        CUSPARSE_SPMM_ALG_DEFAULT, buffer
+    );
+
+    // Destroy cusparse objects.
+    cusparseDestroySpMat(sparse_descriptor);
+    cusparseDestroyDnMat(dense_descriptor);
+    cusparseDestroyDnMat(out_descriptor);
+    cusparseDestroy(handle);
+
+    // Free buffer.
+    cudaFree(buffer);
+}
+
 //
 // Create adjacency.
 //
@@ -107,11 +198,13 @@ __global__ void create_row_pointers(
     const auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     const auto stride = blockDim.x * gridDim.x;
 
+    const auto size = edges.size(0);
+    const auto row_count = row_pointers.size(0);
+
     if (tid == 0) {
         row_pointers[0] = 0;
+        row_pointers[row_count - 1] = size;
     }
-
-    const auto size = edges.size(0);
 
     // Go through all edges and check where if there is a change in the row.
     for (auto edge_index = tid; edge_index < size - 1; edge_index += stride) {

@@ -3,6 +3,7 @@
 
 void sinkhorn_step_cuda(torch::Tensor, torch::Tensor, torch::Tensor);
 void adjacency_matmul_cuda(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, bool);
+void adjacency_matmul_cusparse(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, bool);
 void create_adjacency_cuda(torch::Tensor, torch::Tensor, torch::Tensor);
 void graph_features(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor);
 void average_neighbor_features(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor);
@@ -28,6 +29,7 @@ void sinkhorn_step(torch::Tensor K, torch::Tensor add, torch::Tensor out) {
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("sinkhorn_step", &sinkhorn_step, "sinkhorn step");
   m.def("adjacency_matmul", &adjacency_matmul, "multiply adjacency matrix with tensor");
+  m.def("adjacency_matmul_cusparse", &adjacency_matmul_cusparse, "multiply adjacency matrix with tensor using cusparse");
   m.def("create_adjacency", &create_adjacency, "create sparse adjacency matrix");
   m.def("graph_features", &graph_features, "find features of graph");
   m.def("average_neighbor_features", &average_neighbor_features, "find average of features among neighbors of each vertex in the graph");
