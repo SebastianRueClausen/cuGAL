@@ -16,7 +16,6 @@ except ImportError:
 
 
 def determine_index_type(size: int) -> torch.dtype:
-    # return torch.int16 if size < np.iinfo(np.int16).max else torch.int32
     return torch.int32
 
 
@@ -62,8 +61,8 @@ class Adjacency:
         edge_count = len(edges)
 
         if has_cuda and "cuda" in str(device):
-            edges = torch.tensor(sum(edges, ()),
-                                 dtype=dtype, device=device)
+            flat = [value for edge in edges for value in edge]
+            edges = torch.tensor(flat, dtype=dtype, device=device)
             col_indices = torch.empty(
                 size=(edge_count,), dtype=dtype, device=device)
             row_pointers = torch.empty(
@@ -115,6 +114,16 @@ class Adjacency:
 
     def number_of_nodes(self) -> int:
         return len(self.row_pointers) - 1
+
+    def validate(self):
+        col_indices, row_pointers = self.col_indices.cpu(), self.row_pointers.cpu()
+
+        for row_index, start in enumerate(row_pointers):
+            end = row_pointers[row_index + 1]
+            cols = col_indices[start:end].numpy()
+            assert np.all(np.diff(cols) >= 0), "col_indices aren't sorted"
+            assert np.all(cols < self.number_of_nodes()
+                          ), "invalid entries in col_indices"
 
     def mul(self, matrix: torch.Tensor, negate_lhs: bool = False) -> torch.Tensor:
         """Calculate self @ matrix."""

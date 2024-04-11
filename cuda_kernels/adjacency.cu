@@ -7,82 +7,12 @@
 #include "common.cuh"
 #include <cusparse.h>
 
-template <typename index_t>
-__global__ void kernel(
-    const Accessor<index_t, 1> col_indices,
-    const Accessor<int, 1> row_pointers,
-    const Accessor<float, 2> matrix,
-    Accessor<float, 2> out,
-    int size,
-    float sign
-) {
-    const auto tid = threadIdx.x;
-
-    const auto row = blockIdx.x;
-    const auto col = blockIdx.y;
-
-    const auto start = row_pointers[row];
-    const auto end = row_pointers[row + 1];
-
-    float sum = 0.0;
-
-    for (auto i = start + tid; i < end; i += blockDim.x) {
-        sum = fma(sign, matrix[col_indices[i]][col], sum);
-    }
-
-    sum = warp_sum_reduce(sum);
-
-    if (tid == 0) {
-        out[row][col] = sum;
-    }
-}
-
-constexpr size_t block_size = 32;
-
-void adjacency_matmul_cuda(
-    torch::Tensor col_indices,
-    torch::Tensor row_pointers,
-    torch::Tensor matrix,
-    torch::Tensor out,
-    bool negate_lhs
-) {
-    const dim3 blocks(matrix.size(0), matrix.size(1), 1);
-    const auto size = matrix.size(0);
-
-    const auto sign = negate_lhs ? -1.0 : 1.0;
-
-    if (col_indices.scalar_type() == torch::ScalarType::Int) {
-        kernel<int><<<blocks, block_size>>>(
-            col_indices.packed_accessor32<int, 1>(),
-            row_pointers.packed_accessor32<int, 1>(),
-            matrix.packed_accessor32<float, 2>(),
-            out.packed_accessor32<float, 2>(),
-            size,
-            sign
-        );
-    } else if (col_indices.scalar_type() == torch::ScalarType::Short) {
-        kernel<short><<<blocks, block_size>>>(
-            col_indices.packed_accessor32<short, 1>(),
-            row_pointers.packed_accessor32<int, 1>(),
-            matrix.packed_accessor32<float, 2>(),
-            out.packed_accessor32<float, 2>(),
-            size,
-            sign
-        );
-    } else {
-        printf("invalid data type\n");
-        abort();
-    }
-}
-
-
-#define CHECK_CUSPARSE(func)                                                   \
-{                                                                              \
-    cusparseStatus_t status = (func);                                          \
-    if (status != CUSPARSE_STATUS_SUCCESS) {                                   \
-        printf("CUSPARSE API failed at line %d with error: %s (%d)\n",         \
-               __LINE__, cusparseGetErrorString(status), status);              \
-    }                                                                          \
+#define CHECK_CUSPARSE(func) { \
+    cusparseStatus_t status = (func); \
+    if (status != CUSPARSE_STATUS_SUCCESS) { \
+        printf("cusparse failed at line %d with error: %s (%d)\n", \
+               __LINE__, cusparseGetErrorString(status), status); \
+    } \
 }
 
 auto cusparse_data_type(torch::ScalarType scalar_type) {
@@ -96,7 +26,7 @@ auto cusparse_data_type(torch::ScalarType scalar_type) {
     }
 }
 
-void adjacency_matmul_cusparse(
+void adjacency_matmul(
     torch::Tensor col_indices,
     torch::Tensor row_pointers,
     torch::Tensor matrix,
@@ -149,8 +79,8 @@ void adjacency_matmul_cusparse(
     const auto beta = 0.0f;
 
     const auto lhs_op = CUSPARSE_OPERATION_NON_TRANSPOSE;
-    const auto rhs_op = matrix.is_contiguous()
-        ? CUSPARSE_OPERATION_NON_TRANSPOSE : CUSPARSE_OPERATION_TRANSPOSE;
+    const auto rhs_op = rhs_transpose
+        ? CUSPARSE_OPERATION_TRANSPOSE : CUSPARSE_OPERATION_NON_TRANSPOSE;
     const auto algo = CUSPARSE_SPMM_ALG_DEFAULT;
 
     // Determine size of buffer.
@@ -175,6 +105,108 @@ void adjacency_matmul_cusparse(
     cusparseDestroy(handle);
 
     cudaFree(buffer);
+}
+
+void calculate_gradient_symmetric(
+    torch::Tensor A_col_indices,
+    torch::Tensor A_row_pointers,
+    torch::Tensor B_col_indices,
+    torch::Tensor B_row_pointers,
+    torch::Tensor P,
+    torch::Tensor K,
+    torch::Tensor out,
+    int iteration
+) {
+    const auto size = K.size(0);
+
+    cusparseHandle_t handle = nullptr;
+    cusparseCreate(&handle);
+
+    const auto max_cols = std::max(A_col_indices.size(0), B_col_indices.size(0));
+    const auto options = torch::TensorOptions()
+        .dtype(K.dtype())
+        .device(K.device());
+    const auto ones = torch::ones({max_cols}, options);
+
+    const auto temp = torch::empty_like(out);
+
+    const auto scalar_type = cusparse_data_type(K.scalar_type());
+    const auto index_type = CUSPARSE_INDEX_32I;
+    const auto index_base = CUSPARSE_INDEX_BASE_ZERO;
+
+    // Create sparse matrices.
+    cusparseSpMatDescr_t A_desc, B_desc;
+    CHECK_CUSPARSE(cusparseCreateCsr(
+        &A_desc, size, size, A_col_indices.size(0), A_row_pointers.data_ptr(), A_col_indices.data_ptr(), ones.data_ptr(),
+        index_type, index_type, index_base, scalar_type
+    ));
+    CHECK_CUSPARSE(cusparseCreateCsr(
+        &B_desc, size, size, B_col_indices.size(0), B_row_pointers.data_ptr(), B_col_indices.data_ptr(), ones.data_ptr(),
+        index_type, index_type, index_base, scalar_type
+    ));
+
+    // Create cusparse dense matrices.
+    cusparseDnMatDescr_t P_desc, out_desc, temp_desc;
+    CHECK_CUSPARSE(cusparseCreateDnMat(
+        &P_desc, size, size, size, P.data_ptr(), scalar_type, CUSPARSE_ORDER_ROW
+    ));
+    CHECK_CUSPARSE(cusparseCreateDnMat(
+        &out_desc, size, size, size, out.data_ptr(), scalar_type, CUSPARSE_ORDER_COL
+    ));
+    CHECK_CUSPARSE(cusparseCreateDnMat(
+        &temp_desc, size, size, size, temp.data_ptr(), scalar_type, CUSPARSE_ORDER_ROW
+    ));
+
+    const auto no_transpose = CUSPARSE_OPERATION_NON_TRANSPOSE;
+    const auto transpose = CUSPARSE_OPERATION_TRANSPOSE;
+    const auto algo = CUSPARSE_SPMM_ALG_DEFAULT;
+
+    const auto alpha = 1.0f;
+    const auto beta = 0.0f;
+
+    size_t buffer_size1, buffer_size2;
+
+    // temp = (A @ P).T
+    CHECK_CUSPARSE(cusparseSpMM_bufferSize(
+        handle, no_transpose, no_transpose, &alpha, A_desc, P_desc, &beta, temp_desc, scalar_type, algo, &buffer_size1
+    ));
+
+    // out = (B @ temp).T
+    CHECK_CUSPARSE(cusparseSpMM_bufferSize(
+        handle, no_transpose, transpose, &alpha, A_desc, P_desc, &beta, out_desc, scalar_type, algo, &buffer_size2
+    ));
+
+    const auto buffer_size = std::max(buffer_size1, buffer_size2);
+
+    void* buffer = nullptr;
+    cudaMalloc(&buffer, buffer_size);
+
+    // temp = (A @ P).T
+    CHECK_CUSPARSE(cusparseSpMM(
+        handle, no_transpose, no_transpose, &alpha, A_desc, P_desc, &beta, temp_desc, scalar_type, algo, buffer
+    ));
+
+    cudaDeviceSynchronize();
+
+    // out = (B @ temp).T
+    CHECK_CUSPARSE(cusparseSpMM(
+        handle, no_transpose, transpose, &alpha, B_desc, temp_desc, &beta, out_desc, scalar_type, algo, buffer
+    ));
+
+    cudaDeviceSynchronize();
+
+    cusparseDestroySpMat(A_desc);
+    cusparseDestroySpMat(B_desc);
+    cusparseDestroyDnMat(temp_desc);
+    cusparseDestroyDnMat(out_desc);
+    cusparseDestroyDnMat(P_desc);
+    cusparseDestroy(handle);
+
+    cudaFree(buffer);
+
+    out *= -2;
+    out += K;
+    out += (iteration - 2 * iteration * P);
 }
 
 //

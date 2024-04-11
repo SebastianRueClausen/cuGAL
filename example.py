@@ -163,10 +163,38 @@ def multi_magna_experiment(device: str) -> Experiment:
     config = Config(
         device=device,
         sinkhorn_method=SinkhornMethod.MIX,
+        use_sparse_adjacency=True,
         dtype=torch.float32,
         mu=2.0,
     )
     return Experiment(config, *multi_magna_graph())
+
+
+def wiki_graph() -> nx.Graph:
+    import json
+
+    with open("data/graph.json", "r") as file:
+        articles = json.loads(file.read())
+
+    graph = nx.Graph()
+
+    for _, article in articles.items():
+        index = article['index']
+        for neighbor in article['neighbors']:
+            graph.add_edge(index, articles[neighbor]['index'])
+
+    return graph
+
+
+def wiki_experiment(device: str) -> Experiment:
+    config = Config(
+        device=device,
+        sinkhorn_method=SinkhornMethod.MIX,
+        use_sparse_adjacency=True,
+        dtype=torch.float32,
+        mu=2.0,
+    )
+    return Experiment(config, wiki_graph())
 
 
 def newmann_watts_experiment(config: Config, source_noise: float, size: int) -> Experiment:
@@ -219,3 +247,4 @@ if __name__ == "__main__":
     # compare_against_official()
     newmann_watts_benchmark()
     # print(test(multi_magna_experiment(select_device())))
+    # print(test(wiki_experiment(select_device())))

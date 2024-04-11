@@ -11,6 +11,12 @@ from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import feature_distance_matrix
 
+try:
+    import cuda_kernels
+    has_cuda = True
+except ImportError:
+    has_cuda = False
+
 
 def dense_gradient(A, B, P, K: torch.Tensor, iteration: int) -> torch.Tensor:
     return -A.T @ P @ B - A @ P @ B.T + K + iteration*(1 - 2*P)
@@ -22,9 +28,22 @@ def sparse_gradient(
     P, K: torch.Tensor,
     iteration: int,
 ) -> torch.Tensor:
-    # TODO: Figure out why there are small numeric differences between the non-sparse.
-    return B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
-        - B.mul(A.mul(P).T).T + K + iteration*(1 - 2*P)
+    if A is A_transpose and B is B_transpose:
+        if has_cuda and "cuda" in str(K.device):
+            out = torch.empty_like(K)
+            cuda_kernels.calculate_gradient_symmetric(
+                A.col_indices,
+                A.row_pointers,
+                B.col_indices,
+                B.row_pointers,
+                P, K, out, iteration,
+            )
+            return out
+        else:
+            return -2 * B.mul(A.mul(P).T).T + K + (iteration - iteration*2*P)
+    else:
+        return B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
+            - B.mul(A.mul(P).T).T + K + (iteration - iteration*2*P)
 
 
 def find_quasi_permutation_matrix(
@@ -95,11 +114,15 @@ def convert_to_permutation_matrix(
 
     for i in range(n):
         permutation[row_ind[i]][col_ind[i]] = 1
-        if (row_ind[i] >= source_node_count) or (col_ind[i] >= target_node_count):
-            continue
-        mapping.append((int(row_ind[i]), int(col_ind[i])))
+        # if row_ind[i] >= source_node_count or col_ind[i] >= target_node_count:
+        #    continue
+        mapping.append((row_ind[i], col_ind[i]))
 
     return permutation, mapping
+
+
+def max_node(graph: nx.Graph) -> int:
+    return max(graph.nodes())
 
 
 def cugal(
@@ -113,8 +136,8 @@ def cugal(
     Returns permutation matrix and mapping from source to target.
     """
 
-    source_node_count = source.number_of_nodes()
-    target_node_count = target.number_of_nodes()
+    source_node_count = max(source.nodes())
+    target_node_count = max(target.nodes())
     node_count = max(source_node_count, target_node_count)
 
     # For float16 to be aligned properly in cuda, we add an extra dummy node
@@ -122,12 +145,8 @@ def cugal(
     if config.dtype == torch.float16 and node_count % 2 != 0:
         node_count += 1
 
-    # Add dummy nodes to match sizes.
-    while source.number_of_nodes() < node_count:
-        source.add_node(source.number_of_nodes())
-
-    while target.number_of_nodes() < node_count:
-        target.add_node(target.number_of_nodes())
+    source.add_nodes_from(set(range(node_count)) - set(source.nodes()))
+    target.add_nodes_from(set(range(node_count)) - set(target.nodes()))
 
     if config.use_sparse_adjacency and "cuda" in config.device:
         source, target = Adjacency.from_graph(

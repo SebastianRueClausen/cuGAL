@@ -36,7 +36,6 @@ class TestAdjacency(unittest.TestCase):
             sparse_grad = sparse_gradient(Adjacency.from_dense(A), Adjacency.from_dense(
                 B), Adjacency.from_dense(A.T), Adjacency.from_dense(B.T), P, K, 0)
 
-        # This requres a bit high error tolerance.
         assert torch.allclose(grad, sparse_grad, rtol=1e-4, atol=1e-5)
 
     def test_from_graph(self):
@@ -91,5 +90,26 @@ class TestAdjacency(unittest.TestCase):
         sparse_grad = sparse_gradient(Adjacency.from_dense(A), Adjacency.from_dense(
             B), Adjacency.from_dense(A.T), Adjacency.from_dense(B.T), P, K, 0)
 
-        # This requres a bit high error tolerance.
+        assert torch.allclose(grad, sparse_grad, rtol=1e-4, atol=1e-5)
+
+    @unittest.skipUnless(condition=torch.cuda.is_available(), reason="requires CUDA")
+    def test_gradient_cuda_symmetric_adjacency(self):
+        size = random.randint(16, 32)
+        A, B = random_adjacency_matrix(
+            size, "cuda"), random_adjacency_matrix(size, "cuda")
+
+        # Make symmetric.
+        A = A * A.T
+        B = B * B.T
+        assert torch.allclose(A, A.T)
+        assert torch.allclose(B, B.T)
+
+        P = torch.randn(size=(size, size), dtype=torch.float32, device="cuda")
+        K = torch.randn(size=(size, size), dtype=torch.float32, device="cuda")
+
+        grad = dense_gradient(A, B, P, K, 0)
+
+        A, B = Adjacency.from_dense(A), Adjacency.from_dense(B)
+        sparse_grad = sparse_gradient(A, B, A, B, P, K, 0)
+
         assert torch.allclose(grad, sparse_grad, rtol=1e-4, atol=1e-5)
