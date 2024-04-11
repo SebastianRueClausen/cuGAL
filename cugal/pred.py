@@ -22,14 +22,6 @@ def sparse_gradient(
     P, K: torch.Tensor,
     iteration: int,
 ) -> torch.Tensor:
-    x1 = A_transpose.mul(P, negate_lhs=True).T
-    x2 = A.mul(P).T
-    torch.cuda.synchronize()
-    y1 = B_transpose.mul(x1).T
-    y2 = B.mul(x2).T
-    torch.cuda.synchronize()
-    return y1 - y2 + K + iteration*(1 - 2*P)
-
     # TODO: Figure out why there are small numeric differences between the non-sparse.
     return B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
         - B.mul(A.mul(P).T).T + K + iteration*(1 - 2*P)

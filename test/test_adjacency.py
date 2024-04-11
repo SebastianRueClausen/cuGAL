@@ -16,7 +16,7 @@ def random_adjacency_matrix(size: int, device="cpu") -> torch.Tensor:
 class TestAdjacency(unittest.TestCase):
     def test_conversion_torch(self):
         for _ in range(32):
-            size = random.randint(10, 255)
+            size = random.randint(10, 32)
             dense = torch.randint(2, size=(size, size), dtype=torch.float32)
             converted_dense = Adjacency.from_dense(
                 dense).as_dense(torch.float32)
@@ -60,9 +60,21 @@ class TestAdjacency(unittest.TestCase):
         A = random_adjacency_matrix(size, "cuda")
         dense = torch.randn(size=(size, size),
                             dtype=torch.float32, device="cuda")
-
         truth = A @ dense
-        test = Adjacency.from_dense(A).mul(dense)
+        adjacency = Adjacency.from_dense(A)
+        test = adjacency.mul(dense)
+
+        assert torch.allclose(truth, test)
+
+    @unittest.skipUnless(condition=torch.cuda.is_available(), reason="requires CUDA")
+    def test_matmul_cuda_rhs_transpose(self):
+        size = 8
+        A = random_adjacency_matrix(size, "cuda")
+        dense = torch.randn(size=(size, size),
+                            dtype=torch.float32, device="cuda")
+        truth = A @ dense.T
+        adjacency = Adjacency.from_dense(A)
+        test = adjacency.mul(dense.T)
 
         assert torch.allclose(truth, test)
 

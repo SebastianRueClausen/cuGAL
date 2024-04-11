@@ -16,7 +16,8 @@ except ImportError:
 
 
 def determine_index_type(size: int) -> torch.dtype:
-    return torch.int16 if size < np.iinfo(np.int16).max else torch.int32
+    # return torch.int16 if size < np.iinfo(np.int16).max else torch.int32
+    return torch.int32
 
 
 @dataclass
@@ -42,6 +43,8 @@ class Adjacency:
         for row_index, row in enumerate(dense):
             row_pointers[row_index] = len(col_indices)
             col_indices = torch.cat((col_indices, row.nonzero().to(dtype)))
+
+        row_pointers[-1] = len(col_indices)
 
         return cls(col_indices.squeeze(1), row_pointers)
 
@@ -71,7 +74,8 @@ class Adjacency:
             return cls(col_indices, row_pointers)
 
         col_indices, row_pointers = \
-            torch.empty(size=(edge_count,)), torch.empty(size=(node_count + 1,))
+            torch.empty(size=(edge_count,)), torch.empty(
+                size=(node_count + 1,))
 
         row_pointers[0], row_pointers[-1] = 0, edge_count
 
@@ -84,7 +88,7 @@ class Adjacency:
                 col_indices[col_index_count] = to
                 col_index_count += 1
 
-        while row_index < len(row_pointers):
+        while row_index < node_count:
             row_pointers[row_index] = col_index_count
             row_index += 1
 
@@ -99,7 +103,7 @@ class Adjacency:
         dense = torch.zeros((self.number_of_nodes(), self.number_of_nodes()),
                             dtype=dtype, device=col_indices.device)
 
-        for row_index, start in enumerate(self.row_pointers):
+        for row_index, start in enumerate(self.row_pointers[:-1]):
             end = self.row_pointers[row_index+1]
             dense[row_index, :].scatter_(0, col_indices[start:end], 1)
 
@@ -129,6 +133,8 @@ class Adjacency:
                 self.col_indices, self.row_pointers, matrix, out, negate_lhs,
             )
         else:
+            # values = torch.full_like(self.row_pointers[:-1], fill_value=-1 if negate_lhs else 1.0)
+            # out = torch.sparse_csr_tensor(self.row_pointers, self.col_indices, values) @ matrix
             warnings.warn(
                 "using sparse adjacency matrices on a device other than cuda is very slow")
             for row_index, col_index in product(range(self.number_of_nodes()), repeat=2):
