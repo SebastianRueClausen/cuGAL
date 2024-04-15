@@ -89,7 +89,7 @@ def test(experiment: Experiment, use_fugal=False) -> Result:
 
     if experiment.target is None:
         source, target, (source_mapping, _) = generate.generate_graphs(
-            G=experiment.source,
+            graph=experiment.source,
             source_noise=experiment.target_noise,
             target_noise=experiment.target_noise,
             refill=experiment.refill_edges,

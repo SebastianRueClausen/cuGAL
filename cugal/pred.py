@@ -72,7 +72,7 @@ def find_quasi_permutation_matrix(
     K = config.mu * distance
     del distance
 
-    P = torch.full_like(K, fill_value=1/len(distance))
+    P = torch.full_like(K, fill_value=1/len(K))
 
     for λ in tqdm(range(config.iter_count), desc="λ"):
         if config.use_sinkhorn_cache:
@@ -147,6 +147,8 @@ def cugal(
     Returns permutation matrix and mapping from source to target.
     """
 
+    before = TimeStamp('cpu')
+
     source_node_count = max(source.nodes())
     target_node_count = max(target.nodes())
     node_count = max(source_node_count, target_node_count)
@@ -170,5 +172,9 @@ def cugal(
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, distance, config, profile)
 
-    return convert_to_permutation_matrix(
+    output = convert_to_permutation_matrix(
         quasi_permutation, source_node_count, target_node_count, config, profile)
+
+    profile.time = TimeStamp('cpu').elapsed_seconds(before)
+
+    return output
