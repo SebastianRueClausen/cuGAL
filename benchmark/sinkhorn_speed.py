@@ -69,6 +69,25 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
 
     plt.show()
 
+def benchmark_500():
+    config = Config(
+        device="cuda", dtype=torch.float32, sinkhorn_iterations=20,
+        sinkhorn_threshold=np.finfo(np.float32).eps
+    )
+
+    matrix = config.convert_tensor(torch.rand(500, 500))
+    
+    mix_profile = SinkhornProfile()
+    sinkhorn.mixhorn(matrix, config, mix_profile)
+
+    log_profile = SinkhornProfile()
+    sinkhorn.loghorn(matrix, config, log_profile)
+    
+    return mix_profile, log_profile
+
 
 if __name__ == "__main__":
-    benchmark_random_matrices([2500, 5000, 10000, 15000])
+    #benchmark_random_matrices([2500, 5000, 10000, 15000])
+    mix_profile, log_profile = benchmark_500()
+    print(mix_profile.time)
+    print(log_profile.time)
