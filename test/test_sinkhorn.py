@@ -11,8 +11,10 @@ def random_matrix(size: int) -> torch.Tensor:
 
 
 def assert_is_doubly_stochastic(matrix: torch.Tensor):
-    assert torch.allclose(torch.ones_like(matrix), torch.sum(matrix, dim=0))
-    assert torch.allclose(torch.ones_like(matrix), torch.sum(matrix, dim=1))
+    ones = torch.ones((matrix.shape[0], ),
+                      device=matrix.device, dtype=matrix.dtype)
+    assert torch.allclose(ones, torch.sum(matrix, dim=0))
+    assert torch.allclose(ones, torch.sum(matrix, dim=1))
 
 
 class TestSinkhorn(unittest.TestCase):

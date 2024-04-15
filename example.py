@@ -37,7 +37,6 @@ class Experiment:
     config: Config
     source: nx.Graph
     target: nx.Graph | None = None
-    permute: bool = False
     source_noise: float = 0
     target_noise: float = 0
     refill_edges: bool = True
@@ -89,7 +88,7 @@ def test(experiment: Experiment, use_fugal=False) -> Result:
         assert experiment.source.number_of_nodes() == experiment.target.number_of_nodes()
 
     if experiment.target is None:
-        source, target, (source_mapping, target_mapping) = generate.generate_graphs(
+        source, target, (source_mapping, _) = generate.generate_graphs(
             G=experiment.source,
             source_noise=experiment.target_noise,
             target_noise=experiment.target_noise,
@@ -164,10 +163,11 @@ def multi_magna_experiment(device: str) -> Experiment:
         device=device,
         sinkhorn_method=SinkhornMethod.MIX,
         use_sparse_adjacency=True,
+        use_sinkhorn_cache=True,
         dtype=torch.float32,
         mu=2.0,
     )
-    return Experiment(config, *multi_magna_graph())
+    return Experiment(config, *multi_magna_graph(), target_noise=0.05)
 
 
 def wiki_graph() -> nx.Graph:
@@ -191,10 +191,13 @@ def wiki_experiment(device: str) -> Experiment:
         device=device,
         sinkhorn_method=SinkhornMethod.MIX,
         use_sparse_adjacency=True,
+        use_sinkhorn_cache=True,
         dtype=torch.float32,
+        sinkhorn_threshold=1e-3,
+        iter_count=15,
         mu=2.0,
     )
-    return Experiment(config, wiki_graph())
+    return Experiment(config, wiki_graph(), target_noise=0.0)
 
 
 def newmann_watts_experiment(config: Config, source_noise: float, size: int) -> Experiment:
@@ -245,6 +248,6 @@ def newmann_watts_benchmark():
 if __name__ == "__main__":
     # replicate_figure_4(gpu_log_config)
     # compare_against_official()
-    newmann_watts_benchmark()
+    # newmann_watts_benchmark()
     # print(test(multi_magna_experiment(select_device())))
-    # print(test(wiki_experiment(select_device())))
+    print(test(wiki_experiment(select_device())))

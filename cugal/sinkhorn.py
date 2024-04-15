@@ -1,7 +1,7 @@
 import torch
 from cugal.config import Config, SinkhornMethod
-from cugal.profile import SinkhornProfile
-from time import time
+from cugal.profile import SinkhornProfile, TimeStamp
+from dataclasses import dataclass
 
 try:
     import cuda_kernels
@@ -12,27 +12,54 @@ except ImportError:
 M_EPS = 1e-16
 
 
+@dataclass
+class SinkhornCache:
+    u_guess: torch.Tensor | None = None
+
+    def update(self, u: torch.Tensor):
+        if self.u_guess is None:
+            self.u_guess = u
+        else:
+            diff = u - self.u_guess
+            self.u_guess = u - torch.clamp(diff, -1.0, 1.0)
+
+
 def can_use_cuda(config: Config) -> bool:
     return has_cuda and "cuda" in config.device and config.dtype in [
         torch.float32, torch.float16]
 
 
-def sinkhorn(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch.Tensor:
+def sinkhorn(
+    C: torch.Tensor,
+    config: Config,
+    profile=SinkhornProfile(),
+    cache: SinkhornCache | None = None,
+) -> torch.Tensor:
     match config.sinkhorn_method:
         case SinkhornMethod.STANDARD:
-            return sinkhorn_knopp(C, config, profile)
+            return sinkhorn_knopp(C, config, profile, cache)
         case SinkhornMethod.LOG:
-            return loghorn(C, config, profile)
+            return loghorn(C, config, profile, cache)
         case SinkhornMethod.MIX:
-            return mixhorn(C, config, profile)
+            return mixhorn(C, config, profile, cache)
 
 
-def sinkhorn_knopp(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch.Tensor:
-    start_time = time()
+def sinkhorn_knopp(
+    C: torch.Tensor,
+    config: Config,
+    profile=SinkhornProfile(),
+    cache: SinkhornCache | None = None,
+) -> torch.Tensor:
+    start_time = TimeStamp(config.device)
 
     na, _ = C.shape
-    u = torch.full(size=(na,), fill_value=1/na,
-                   device=config.device, dtype=config.dtype)
+
+    if cache is None or cache.u_guess is None:
+        u = torch.full(size=(na,), fill_value=1/na,
+                       device=config.device, dtype=config.dtype)
+    else:
+        u = torch.clone(cache.u_guess)
+
     K = torch.exp(C / -config.sinkhorn_regularization)
 
     for iteration in range(config.sinkhorn_iterations):
@@ -48,14 +75,22 @@ def sinkhorn_knopp(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -
 
     output = u.reshape(-1, 1) * K * v.reshape(1, -1)
 
+    if not cache is None:
+        cache.update(u)
+
     profile.iteration_count = iteration + 1
-    profile.time = time() - start_time
+    profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
 
     return output
 
 
-def loghorn(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch.Tensor:
-    start_time = time()
+def loghorn(
+    C: torch.Tensor,
+    config: Config,
+    profile=SinkhornProfile(),
+    cache: SinkhornCache | None = None,
+) -> torch.Tensor:
+    start_time = TimeStamp(config.device)
 
     use_cuda = can_use_cuda(config)
     na, nb = C.shape
@@ -64,7 +99,11 @@ def loghorn(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch
     if use_cuda:
         K_transpose = K.t().contiguous()
 
-    u = torch.zeros(na, device=config.device, dtype=config.dtype)
+    if cache is None or cache.u_guess is None:
+        u = torch.zeros(na, device=config.device, dtype=config.dtype)
+    else:
+        u = torch.clone(cache.u_guess)
+
     v = torch.zeros(nb, device=config.device, dtype=config.dtype)
 
     for iteration in range(config.sinkhorn_iterations):
@@ -84,22 +123,34 @@ def loghorn(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch
 
     output = torch.exp(K + u[:, None] + v[None, :])
 
+    if not cache is None:
+        cache.update(u)
+
     profile.iteration_count = iteration + 1
-    profile.time = time() - start_time
+    profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
 
     return output
 
 
-def mixhorn(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch.Tensor:
-    start_time = time()
+def mixhorn(
+    C: torch.Tensor,
+    config: Config,
+    profile=SinkhornProfile(),
+    cache: SinkhornCache | None = None,
+) -> torch.Tensor:
+    n, _ = C.shape
+
+    start_time = TimeStamp(config.device)
 
     K = -C / config.sinkhorn_regularization
 
     v = -torch.logsumexp(K, 0)
-    u = -torch.logsumexp(K + v[None, :], 1)
+    K = torch.exp(K + v[None, :])
 
-    K = torch.exp(K + u[:, None] + v[None, :])
-    u = torch.exp(-u)
+    if cache is None or cache.u_guess is None:
+        u = torch.full((n,), 1/n, device=config.device, dtype=config.dtype)
+    else:
+        u = cache.u_guess
 
     for iteration in range(config.sinkhorn_iterations):
         v = 1 / (u @ K + M_EPS)
@@ -113,7 +164,10 @@ def mixhorn(C: torch.Tensor, config: Config, profile=SinkhornProfile()) -> torch
 
     output = u.reshape(-1, 1) * K * v.reshape(1, -1)
 
+    if not cache is None:
+        cache.update(u)
+
     profile.iteration_count = iteration + 1
-    profile.time = time() - start_time
+    profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
 
     return output

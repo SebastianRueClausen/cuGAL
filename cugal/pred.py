@@ -7,6 +7,7 @@ from functools import partial
 
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
+from cugal.sinkhorn import SinkhornCache
 from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import feature_distance_matrix
@@ -71,17 +72,25 @@ def find_quasi_permutation_matrix(
     P = torch.full_like(distance, fill_value=1/len(distance))
     K = config.mu * distance
 
-    for i in tqdm(range(config.iter_count)):
-        for it in range(1, 11):
+    for λ in tqdm(range(config.iter_count), desc="λ"):
+        if config.use_sinkhorn_cache:
+            sinkhorn_cache = SinkhornCache()
+
+        for it in tqdm(range(1, 11), desc="frank-wolfe", leave=False):
             start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
-            gradient = gradient_function(P, K, i)
+            gradient = gradient_function(P, K, λ)
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
             sinkhorn_profile = SinkhornProfile()
-            q = sinkhorn.sinkhorn(gradient, config, sinkhorn_profile)
+
+            sinkhorn_call = partial(
+                sinkhorn.sinkhorn, gradient, config, sinkhorn_profile)
+            q = sinkhorn_call(
+                sinkhorn_cache) if config.use_sinkhorn_cache else sinkhorn_call()
+
             profile.sinkhorn_profiles.append(sinkhorn_profile)
             profile.log_time(start_time, Phase.SINKHORN)
 
@@ -152,7 +161,7 @@ def cugal(
         source, target = Adjacency.from_graph(
             source, config.device), Adjacency.from_graph(target, config.device)
 
-    start_time = TimeStamp("cpu")
+    start_time = TimeStamp(config.device)
     distance = feature_distance_matrix(source, target, config)
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
 
