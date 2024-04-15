@@ -15,10 +15,6 @@ except ImportError:
     has_cuda = False
 
 
-def determine_index_type(size: int) -> torch.dtype:
-    return torch.int32
-
-
 @dataclass
 class Adjacency:
     col_indices: torch.Tensor
@@ -32,7 +28,7 @@ class Adjacency:
         """Create from from dense adjacency matrix."""
 
         size = len(dense)
-        dtype = determine_index_type(size)
+        dtype = torch.int32
 
         col_indices = torch.tensor(
             [], dtype=dtype, device=dense.device)
@@ -52,7 +48,7 @@ class Adjacency:
         """Create from networkx graph."""
 
         node_count = graph.number_of_nodes()
-        dtype = determine_index_type(node_count)
+        dtype = torch.int32
 
         edges = list(nx.edges(graph))
         if not graph.is_directed():
@@ -109,8 +105,7 @@ class Adjacency:
         return dense
 
     def byte_size(self) -> int:
-        element_size = 2 if self.col_indices.dtype == torch.int16 else torch.int32
-        return element_size * len(self.col_indices) + 4 * len(self.row_pointers)
+        return 4 * len(self.col_indices) + 4 * len(self.row_pointers)
 
     def number_of_nodes(self) -> int:
         return len(self.row_pointers) - 1

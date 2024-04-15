@@ -7,6 +7,7 @@ from functools import partial
 
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
+from cugal.sinkhorn import SinkhornCache
 from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import feature_distance_matrix
@@ -68,20 +69,30 @@ def find_quasi_permutation_matrix(
         B = torch.tensor(nx.to_numpy_array(
             B), dtype=config.dtype, device=config.device)
 
-    P = torch.full_like(distance, fill_value=1/len(distance))
     K = config.mu * distance
+    del distance
 
-    for i in tqdm(range(config.iter_count)):
-        for it in range(1, 11):
+    P = torch.full_like(K, fill_value=1/len(K))
+
+    for λ in tqdm(range(config.iter_count), desc="λ"):
+        if config.use_sinkhorn_cache:
+            sinkhorn_cache = SinkhornCache()
+
+        for it in tqdm(range(1, 11), desc="frank-wolfe", leave=False):
             start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
-            gradient = gradient_function(P, K, i)
+            gradient = gradient_function(P, K, λ)
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
             sinkhorn_profile = SinkhornProfile()
-            q = sinkhorn.sinkhorn(gradient, config, sinkhorn_profile)
+
+            sinkhorn_call = partial(
+                sinkhorn.sinkhorn, gradient, config, sinkhorn_profile)
+            q = sinkhorn_call(
+                sinkhorn_cache) if config.use_sinkhorn_cache else sinkhorn_call()
+
             profile.sinkhorn_profiles.append(sinkhorn_profile)
             profile.log_time(start_time, Phase.SINKHORN)
 
@@ -136,6 +147,8 @@ def cugal(
     Returns permutation matrix and mapping from source to target.
     """
 
+    before = TimeStamp('cpu')
+
     source_node_count = max(source.nodes())
     target_node_count = max(target.nodes())
     node_count = max(source_node_count, target_node_count)
@@ -152,12 +165,16 @@ def cugal(
         source, target = Adjacency.from_graph(
             source, config.device), Adjacency.from_graph(target, config.device)
 
-    start_time = TimeStamp("cpu")
+    start_time = TimeStamp(config.device)
     distance = feature_distance_matrix(source, target, config)
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
 
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, distance, config, profile)
 
-    return convert_to_permutation_matrix(
+    output = convert_to_permutation_matrix(
         quasi_permutation, source_node_count, target_node_count, config, profile)
+
+    profile.time = TimeStamp('cpu').elapsed_seconds(before)
+
+    return output

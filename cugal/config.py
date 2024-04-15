@@ -47,6 +47,9 @@ class Config:
     use_sparse_adjacency: bool = False
     """Compress adjacency matrices to bit arrays"""
 
+    use_sinkhorn_cache: bool = False
+    """Use cache to increase the quality of the starting values for Sinkhorn-Knopp."""
+
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:
         """Convert tensor to correct type and dtype."""
         return input.to(dtype=self.dtype, device=self.device)

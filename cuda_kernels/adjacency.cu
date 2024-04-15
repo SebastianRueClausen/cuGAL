@@ -213,32 +213,14 @@ void calculate_gradient_symmetric(
 // Create adjacency.
 //
 
-template <typename index_t>
 struct Edge {
-    index_t col, row;
-
-    __host__ __device__ bool operator <(Edge<index_t> const& rhs) {
-        if (row == rhs.row) {
-            return col < rhs.col;
-        } else {
-            return row < rhs.row;
-        }
-    }
+    int col, row;
 };
-
-template <typename index_t>
-inline bool operator<(const Edge<index_t>& lhs, const Edge<index_t>& rhs) {
-    return lhs < rhs;
-}
 
 // Go through `edges` in parallel. When a thread sees something like
 // "(0, 0), (1, 0)", it knows where row 1 starts, which it can write to
 // `row_pointers` without race conditions.
-template <typename index_t>
-__global__ void create_row_pointers(
-    const Accessor<Edge<index_t>, 1> edges,
-    Accessor<int, 1> row_pointers
-) {
+__global__ void create_row_pointers(const Accessor<Edge, 1> edges, Accessor<int, 1> row_pointers) {
     const auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     const auto stride = blockDim.x * gridDim.x;
 
@@ -264,11 +246,7 @@ __global__ void create_row_pointers(
 }
 
 // Copy the `col` field of each `Each` in `edges` into `col_indices`.
-template<typename index_t>
-__global__ void create_col_indices(
-    const Accessor<Edge<index_t>, 1> edges,
-    Accessor<index_t, 1> col_indices
-) {
+__global__ void create_col_indices(const Accessor<Edge, 1> edges, Accessor<int, 1> col_indices) {
     const auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     const auto stride = blockDim.x * gridDim.x;
 
@@ -279,18 +257,17 @@ __global__ void create_col_indices(
     }
 }
 
-template <typename key_t>
-void sort_edges(key_t* edges, key_t* sorted, long edge_count) {
+void sort_edges(uint64_t* edges, uint64_t* sorted, long edge_count) {
     // This is only to obtain the required temporary storage size.
     size_t tmp_storage_size = 0;
-    cub::DeviceRadixSort::SortKeys<key_t>(nullptr, tmp_storage_size, edges, sorted, edge_count);
+    cub::DeviceRadixSort::SortKeys(nullptr, tmp_storage_size, edges, sorted, edge_count);
 
     // Allocate temporary storage.
     void* tmp_storage = nullptr;
     cudaMalloc(&tmp_storage, tmp_storage_size);
 
     // Sort edges.
-    cub::DeviceRadixSort::SortKeys<key_t>(tmp_storage, tmp_storage_size, edges, sorted, edge_count);
+    cub::DeviceRadixSort::SortKeys(tmp_storage, tmp_storage_size, edges, sorted, edge_count);
     cudaDeviceSynchronize();
 
     // Deallocate temporary storage.
@@ -305,36 +282,19 @@ void create_adjacency_cuda(torch::Tensor edges, torch::Tensor col_indices, torch
     constexpr auto block_count = div_ceil(thread_count, block_size);
 
     auto sorted_edges = torch::empty_like(edges);
+    const auto sorted_edge_ptr = reinterpret_cast<Edge*>(sorted_edges.data_ptr());
 
-    if (edges.scalar_type() == torch::ScalarType::Short) {
-        const auto sorted_edge_ptr = reinterpret_cast<Edge<short>*>(sorted_edges.data_ptr());
+    sort_edges((uint64_t*)edges.data_ptr(), (uint64_t*)sorted_edge_ptr, edge_count);
 
-        sort_edges<uint32_t>((uint32_t*)edges.data_ptr(), (uint32_t*)sorted_edge_ptr, edge_count);
+    const auto stride = edges.stride(0);
+    const auto edges_accessor = Accessor<Edge, 1>(sorted_edge_ptr, &edge_count, &stride);
 
-        const auto stride = edges.stride(0);
-        const auto edges_accessor = Accessor<Edge<short>, 1>(sorted_edge_ptr, &edge_count, &stride);
-
-        create_row_pointers<short><<<block_count, block_size>>>(
-            edges_accessor, row_pointers.packed_accessor32<int, 1>()
-        );
-        create_col_indices<short><<<block_count, block_size>>>(
-            edges_accessor, col_indices.packed_accessor32<short, 1>()
-        );
-    } else if (edges.scalar_type() == torch::ScalarType::Int) {
-        const auto sorted_edge_ptr = reinterpret_cast<Edge<int>*>(sorted_edges.data_ptr());
-
-        sort_edges<uint64_t>((uint64_t*)edges.data_ptr(), (uint64_t*)sorted_edge_ptr, edge_count);
-
-        const auto stride = edges.stride(0);
-        const auto edges_accessor = Accessor<Edge<int>, 1>(sorted_edge_ptr, &edge_count, &stride);
-
-        create_row_pointers<int><<<block_count, block_size>>>(
-            edges_accessor, row_pointers.packed_accessor32<int, 1>()
-        );
-        create_col_indices<int><<<block_count, block_size>>>(
-            edges_accessor, col_indices.packed_accessor32<int, 1>()
-        );
-    }
+    create_row_pointers<<<block_count, block_size>>>(
+        edges_accessor, row_pointers.packed_accessor32<int, 1>()
+    );
+    create_col_indices<<<block_count, block_size>>>(
+        edges_accessor, col_indices.packed_accessor32<int, 1>()
+    );
 
     cudaDeviceSynchronize();
 }
