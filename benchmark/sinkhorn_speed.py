@@ -72,7 +72,7 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
 def benchmark_500():
     config = Config(
         device="cuda", dtype=torch.float32, sinkhorn_iterations=20,
-        sinkhorn_threshold=np.finfo(np.float32).eps
+        sinkhorn_threshold=np.finfo(np.float32).eps, use_sinkhorn_cache=True
     )
 
     matrix = config.convert_tensor(torch.rand(500, 500))
