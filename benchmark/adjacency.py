@@ -1,6 +1,6 @@
 from cugal.adjacency import Adjacency
+from cugal.profile import TimeStamp
 import networkx as nx
-from util import cpu_time, cuda_time
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,9 +9,15 @@ import numpy as np
 def random_test_data(node_count: int) -> tuple[torch.Tensor, torch.Tensor]:
     matrix = torch.randn(size=(node_count, node_count), dtype=torch.float32)
     A = torch.from_numpy(nx.to_numpy_array(
-        nx.newman_watts_strogatz_graph(node_count, 7, 0.01), dtype=np.float32
+        nx.newman_watts_strogatz_graph(node_count, node_count // 16, 0.01), dtype=np.float32
     ))
     return A, matrix
+
+
+def time(function, device: str) -> tuple[float, any]:
+    start = TimeStamp(device)
+    function()
+    return TimeStamp(device).elapsed_seconds(start)
 
 
 def benchmark_random_graphs(graph_sizes: list[int]):
@@ -20,15 +26,15 @@ def benchmark_random_graphs(graph_sizes: list[int]):
 
     for node_count in graph_sizes:
         adjacency, matrix = random_test_data(node_count)
-        dense_cpu_times.append(cpu_time(lambda: adjacency @ matrix)[0])
+        dense_cpu_times.append(time(lambda: adjacency @ matrix, "cpu"))
 
         adjacency = adjacency.to(device="cuda")
         matrix = matrix.to(device="cuda")
 
-        dense_torch_times.append(cuda_time(lambda: adjacency @ matrix)[0])
+        dense_torch_times.append(time(lambda: adjacency @ matrix, "cpu"))
 
         adjacency = Adjacency.from_dense(adjacency)
-        cuda_times.append(cuda_time(lambda: adjacency.mul(matrix))[0])
+        cuda_times.append(time(lambda: adjacency.mul(matrix), "cuda"))
 
         dense_sizes.append(node_count * node_count * 4)
         sparse_sizes.append(adjacency.byte_size())

@@ -69,8 +69,10 @@ def find_quasi_permutation_matrix(
         B = torch.tensor(nx.to_numpy_array(
             B), dtype=config.dtype, device=config.device)
 
-    P = torch.full_like(distance, fill_value=1/len(distance))
     K = config.mu * distance
+    del distance
+
+    P = torch.full_like(K, fill_value=1/len(distance))
 
     for λ in tqdm(range(config.iter_count), desc="λ"):
         if config.use_sinkhorn_cache:
