@@ -2,7 +2,7 @@ from dataclasses import dataclass, fields
 import numpy as np
 from cugal.pred import cugal
 from cugal.config import Config, SinkhornMethod
-from cugal.profile import Phase, Profile, write_phases_as_csv, plot_phases
+from cugal.profile import Phase, Profile, TimeStamp, write_phases_as_csv, plot_phases, plot_times
 import matplotlib.pyplot as plt
 import networkx as nx
 import metrics as metrics
@@ -102,8 +102,10 @@ def test(experiment: Experiment, use_fugal=False) -> Result:
     profile = Profile()
 
     if use_fugal:
+        start_time = TimeStamp('cpu')
         mapping = fugal(source, target, experiment.config.mu,
                         experiment.config.sinkhorn_iterations)
+        profile.time = TimeStamp('cpu').elapsed_seconds(start_time)
     else:
         _, mapping = cugal(source, target, experiment.config, profile)
 
@@ -235,19 +237,19 @@ def compare_against_official():
 
 
 def newmann_watts_benchmark():
-    sizes = [128, 256, 512, 1024, 2048, 4096]
-    profiles = []
+    sizes = [128, 256, 512, 1024]
+    cugal_profiles, fugal_profiles = [], []
     for _, size in enumerate(sizes):
-        result = test(newmann_watts_experiment(Config(use_sparse_adjacency=True, sinkhorn_method=SinkhornMethod.MIX,
-                                                      dtype=torch.float32, device="cuda"), 0.0, size))
-        profiles.append(result.profile)
-    print(profiles[-1].phase_times)
-    plot_phases(profiles, sizes)
+        cugal_profiles.append(test(newmann_watts_experiment(Config(use_sparse_adjacency=True, sinkhorn_method=SinkhornMethod.MIX,
+                                                                   dtype=torch.float32, device="cuda", use_sinkhorn_cache=False), 0.05, size)).profile)
+        # fugal_profiles.append(test(newmann_watts_experiment(Config(), 0.05, size), use_fugal=True).profile)
+    print(cugal_profiles[-1].phase_times)
+    # plot_times([cugal_profiles, fugal_profiles], sizes, ["cugal", "fugal"])
 
 
 if __name__ == "__main__":
     # replicate_figure_4(gpu_log_config)
     # compare_against_official()
-    # newmann_watts_benchmark()
+    newmann_watts_benchmark()
     # print(test(multi_magna_experiment(select_device())))
-    print(test(wiki_experiment(select_device())))
+    # print(test(wiki_experiment(select_device())))

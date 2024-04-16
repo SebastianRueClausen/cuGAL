@@ -1,6 +1,5 @@
 import numpy as np
 import networkx as nx
-import scipy.sparse as sps
 
 
 def refill_edges(edges, n, amount):

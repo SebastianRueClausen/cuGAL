@@ -3,6 +3,7 @@ from time import time
 from typing import Self
 import matplotlib.pyplot as plt
 from dataclasses import dataclass, field
+import numpy as np
 from itertools import chain
 import torch
 import csv
@@ -108,5 +109,16 @@ def plot_phases(profiles: list[Profile], sizes: list[int]):
     )
     plt.xlabel("Graph size")
     plt.ylabel("Time (seconds)")
+    plt.legend()
+    plt.show()
+
+
+def plot_times(profiles: list[list[Profile]], sizes: list[int], labels: list[str]):
+    plt.figure()
+    for profile, label in zip(profiles, labels):
+        plt.plot([p.time for p in profile], label=label)
+    plt.xticks(np.arange(len(sizes)), sizes)
+    plt.xlabel('matrix size')
+    plt.ylabel('time (seconds)')
     plt.legend()
     plt.show()

@@ -1,5 +1,6 @@
 #include <torch/torch.h>
 #include <utility>
+#include <c10/cuda/CUDAGuard.h>
 #include "common.cuh"
 
 __device__ std::pair<int, int> edge_range(const Accessor<int, 1> row_pointers, uint32_t vertex_index) {
@@ -60,6 +61,8 @@ __global__ void vertex_features(
 }
 
 void graph_features(torch::Tensor col_indices, torch::Tensor row_pointers, torch::Tensor clustering, torch::Tensor degrees) {
+    at::cuda::CUDAGuard device_guard(col_indices.device());
+
     constexpr auto block_size = 64;
 
     const auto thread_count = row_pointers.size(0) - 1;
@@ -103,6 +106,8 @@ void average_neighbor_features(
     torch::Tensor features,
     torch::Tensor averages
 ) {
+    at::cuda::CUDAGuard device_guard(col_indices.device());
+
     constexpr auto block_size = 64;
 
     const auto thread_count = row_pointers.size(0) - 1;

@@ -2,6 +2,7 @@
 #include <cuda_runtime.h>
 #include <cuda_fp16.h>
 #include <torch/torch.h>
+#include <c10/cuda/CUDAGuard.h>
 #include "common.cuh"
 
 // Adds `add` to each column of `K` and sums all rows together.
@@ -76,6 +77,8 @@ __global__ void kernel_half2(
 constexpr size_t block_size = 32 * 12;
 
 void sinkhorn_step_cuda(torch::Tensor K, torch::Tensor add, torch::Tensor out) {
+    at::cuda::CUDAGuard device_guard(K.device());
+
     const auto blocks = K.size(0);
 
     if (K.scalar_type() == torch::ScalarType::Float) {

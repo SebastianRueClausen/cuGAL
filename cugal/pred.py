@@ -12,12 +12,6 @@ from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import feature_distance_matrix
 
-try:
-    import cuda_kernels
-    has_cuda = True
-except ImportError:
-    has_cuda = False
-
 
 def dense_gradient(A, B, P, K: torch.Tensor, iteration: int) -> torch.Tensor:
     return -A.T @ P @ B - A @ P @ B.T + K + iteration*(1 - 2*P)
@@ -30,18 +24,7 @@ def sparse_gradient(
     iteration: int,
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
-        if has_cuda and "cuda" in str(K.device):
-            out = torch.empty_like(K)
-            cuda_kernels.calculate_gradient_symmetric(
-                A.col_indices,
-                A.row_pointers,
-                B.col_indices,
-                B.row_pointers,
-                P, K, out, iteration,
-            )
-            return out
-        else:
-            return -2 * B.mul(A.mul(P).T).T + K + (iteration - iteration*2*P)
+        return -2 * B.mul(A.mul(P).T).T + K + (iteration - iteration*2*P)
     else:
         return B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
             - B.mul(A.mul(P).T).T + K + (iteration - iteration*2*P)
