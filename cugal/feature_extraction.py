@@ -13,16 +13,17 @@ except ImportError:
 
 
 def extract_features_cuda(graph: nx.Graph | Adjacency, config: Config) -> torch.Tensor:
+    assert 'cuda' in config.device
     adjacency = graph if type(
         graph) == Adjacency else Adjacency.from_graph(graph, config.device)
     clustering = torch.zeros(nx.number_of_nodes(
-        graph), dtype=torch.float, device="cuda")
+        graph), dtype=torch.float, device=config.device)
     degrees = torch.zeros(nx.number_of_nodes(
-        graph), dtype=torch.float, device="cuda")
+        graph), dtype=torch.float, device=config.device)
     neighbor_clustering = torch.zeros(nx.number_of_nodes(
-        graph), dtype=torch.float, device="cuda")
+        graph), dtype=torch.float, device=config.device)
     neighbor_degrees = torch.zeros(nx.number_of_nodes(
-        graph), dtype=torch.float, device="cuda")
+        graph), dtype=torch.float, device=config.device)
     cuda_kernels.graph_features(
         adjacency.col_indices, adjacency.row_pointers, clustering, degrees)
     torch.cuda.synchronize()
@@ -61,7 +62,7 @@ def extract_features(G: nx.Graph) -> np.ndarray:
 
 
 def feature_distance_matrix(source, target: nx.Graph | Adjacency, config: Config) -> torch.Tensor:
-    use_cuda = has_cuda and "cuda" in config.device
+    use_cuda = has_cuda and 'cuda' in config.device
 
     if use_cuda:
         source_features = extract_features_cuda(
