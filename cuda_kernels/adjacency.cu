@@ -281,8 +281,9 @@ void create_adjacency_cuda(torch::Tensor edges, torch::Tensor col_indices, torch
     const auto edge_count = edges.size(0) / 2;
     constexpr auto block_count = div_ceil(thread_count, block_size);
 
-    auto sorted_edges = torch::empty_like(edges);
-    const auto sorted_edge_ptr = reinterpret_cast<Edge*>(sorted_edges.data_ptr());
+    void* sorted_edges = nullptr;
+    cudaMalloc(&sorted_edges, edges.numel() * 4);
+    const auto sorted_edge_ptr = reinterpret_cast<Edge*>(sorted_edges);
 
     sort_edges((uint64_t*)edges.data_ptr(), (uint64_t*)sorted_edge_ptr, edge_count);
 
