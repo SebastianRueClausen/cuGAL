@@ -298,4 +298,6 @@ void create_adjacency_cuda(torch::Tensor edges, torch::Tensor col_indices, torch
     );
 
     cudaDeviceSynchronize();
+
+    cudaFree(sorted_edges);
 }
