@@ -111,13 +111,17 @@ class Adjacency:
         return len(self.row_pointers) - 1
 
     def validate(self):
-        col_indices, row_pointers = self.col_indices.cpu(), self.row_pointers.cpu()
+        col_indices, row_pointers = self.col_indices.cpu(), self.row_pointers.cpu().numpy()
 
-        for row_index, start in enumerate(row_pointers):
+        assert np.all(np.diff(row_pointers >= 0)), "row_pointers isn't sorted"
+        assert row_pointers[0] == 0, "row_pointers doesn't start with 0"
+        assert row_pointers[-1] == len(col_indices), "row_pointers doesn't end correctly"
+
+        for row_index, start in enumerate(row_pointers[:-1]):
             end = row_pointers[row_index + 1]
             cols = col_indices[start:end].numpy()
-            assert np.all(np.diff(cols) >= 0), "col_indices aren't sorted"
-            assert np.all(cols < self.number_of_nodes()
+            assert np.all(np.diff(cols) >= 0), "col_indices isn't sorted"
+            assert np.all(cols <= self.number_of_nodes()
                           ), "invalid entries in col_indices"
 
     def mul(self, matrix: torch.Tensor, negate_lhs: bool = False) -> torch.Tensor:
