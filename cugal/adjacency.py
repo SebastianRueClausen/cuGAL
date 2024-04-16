@@ -113,7 +113,7 @@ class Adjacency:
     def validate(self):
         col_indices, row_pointers = self.col_indices.cpu(), self.row_pointers.cpu().numpy()
 
-        assert np.all(np.diff(row_pointers >= 0)), "row_pointers isn't sorted"
+        assert np.all(np.diff(row_pointers) >= 0), "row_pointers isn't sorted"
         assert row_pointers[0] == 0, "row_pointers doesn't start with 0"
         assert row_pointers[-1] == len(col_indices), "row_pointers doesn't end correctly"
 

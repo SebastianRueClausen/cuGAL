@@ -2,15 +2,8 @@
 #include <utility>
 #include "common.cuh"
 
-__device__ std::pair<int, int> edge_range(
-    uint32_t edge_count,
-    const Accessor<int, 1> row_pointers,
-    uint32_t vertex_index
-) {
-    return std::make_pair(
-        row_pointers[vertex_index],
-        row_pointers.size(0) == vertex_index + 1 ? edge_count : row_pointers[vertex_index + 1]
-    );
+__device__ std::pair<int, int> edge_range(const Accessor<int, 1> row_pointers, uint32_t vertex_index) {
+    return std::make_pair(row_pointers[vertex_index], row_pointers[vertex_index + 1]);
 }
 
 template <typename index_t>
@@ -20,8 +13,8 @@ __device__ int intersection_size(
     uint32_t vertex_a,
     uint32_t vertex_b
 ) {
-    const auto [a_start, a_end] = edge_range(col_indices.size(0), row_pointers, vertex_a);
-    const auto [b_start, b_end] = edge_range(col_indices.size(0), row_pointers, vertex_b);
+    const auto [a_start, a_end] = edge_range(row_pointers, vertex_a);
+    const auto [b_start, b_end] = edge_range(row_pointers, vertex_b);
 
     int intersection_size = 0;
 
@@ -57,7 +50,7 @@ __global__ void vertex_features(
     }
 
     auto triangle_count = 0;
-    const auto [start, end] = edge_range(col_indices.size(0), row_pointers, vertex_index);
+    const auto [start, end] = edge_range(row_pointers, vertex_index);
     for (auto edge_index = start; edge_index < end; edge_index++) {
         triangle_count += intersection_size(col_indices, row_pointers, vertex_index, col_indices[edge_index]);
     }
@@ -107,7 +100,7 @@ __global__ void vertex_average_neighbor_features(
         return;
     }
 
-    const auto [start, end] = edge_range(col_indices.size(0), row_pointers, vertex_index);
+    const auto [start, end] = edge_range(row_pointers, vertex_index);
 
     float sum = 0.0;
     for (auto edge_index = start; edge_index < end; edge_index++) {
