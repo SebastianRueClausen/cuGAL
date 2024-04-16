@@ -224,16 +224,15 @@ __global__ void create_row_pointers(const Accessor<Edge, 1> edges, Accessor<int,
     const auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     const auto stride = blockDim.x * gridDim.x;
 
-    const auto size = edges.size(0);
-    const auto row_count = row_pointers.size(0);
+    const auto edge_count = edges.size(0);
 
     if (tid == 0) {
         row_pointers[0] = 0;
-        row_pointers[row_count - 1] = size;
+        row_pointers[row_pointers.size(0) - 1] = edge_count;
     }
 
     // Go through all edges and check where if there is a change in the row.
-    for (auto edge_index = tid; edge_index < size - 1; edge_index += stride) {
+    for (auto edge_index = tid; edge_index < edge_count - 1; edge_index += stride) {
         const auto current = edges[edge_index];
         const auto next = edges[edge_index + 1];
 
@@ -250,9 +249,9 @@ __global__ void create_col_indices(const Accessor<Edge, 1> edges, Accessor<int, 
     const auto tid = threadIdx.x + blockIdx.x * blockDim.x;
     const auto stride = blockDim.x * gridDim.x;
 
-    const auto size = edges.size(0);
+    const auto edge_count = edges.size(0);
 
-    for (auto edge_index = tid; edge_index < size; edge_index += stride) {
+    for (auto edge_index = tid; edge_index < edge_count; edge_index += stride) {
         col_indices[edge_index] = edges[edge_index].col;
     }
 }

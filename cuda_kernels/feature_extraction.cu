@@ -6,9 +6,8 @@ __device__ std::pair<int, int> edge_range(const Accessor<int, 1> row_pointers, u
     return std::make_pair(row_pointers[vertex_index], row_pointers[vertex_index + 1]);
 }
 
-template <typename index_t>
 __device__ int intersection_size(
-    const Accessor<index_t, 1> col_indices,
+    const Accessor<int, 1> col_indices,
     const Accessor<int, 1> row_pointers,
     uint32_t vertex_a,
     uint32_t vertex_b
@@ -36,16 +35,16 @@ __device__ int intersection_size(
     return intersection_size;
 }
 
-template <typename index_t>
 __global__ void vertex_features(
-    const Accessor<index_t, 1> col_indices,
+    const Accessor<int, 1> col_indices,
     const Accessor<int, 1> row_pointers,
     Accessor<float, 1> clustering,
     Accessor<float, 1> degrees
 ) {
     const auto vertex_index = threadIdx.x + blockIdx.x * blockDim.x;
+    const auto vertex_count = row_pointers.size(0) - 1;
 
-    if (vertex_index >= row_pointers.size(0)) {
+    if (vertex_index >= vertex_count) {
         return;
     }
 
@@ -63,40 +62,27 @@ __global__ void vertex_features(
 void graph_features(torch::Tensor col_indices, torch::Tensor row_pointers, torch::Tensor clustering, torch::Tensor degrees) {
     constexpr auto block_size = 64;
 
-    const auto thread_count = row_pointers.size(0);
+    const auto thread_count = row_pointers.size(0) - 1;
     const auto block_count = div_ceil(thread_count, block_size);
 
-    if (col_indices.scalar_type() == torch::ScalarType::Short) {
-        vertex_features<short><<<block_count, block_size>>>(
-            col_indices.packed_accessor32<short, 1>(),
-            row_pointers.packed_accessor32<int, 1>(),
-            clustering.packed_accessor32<float,  1>(),
-            degrees.packed_accessor32<float,  1>()
-        );
-    } else if (col_indices.scalar_type() == torch::ScalarType::Int) {
-        vertex_features<int><<<block_count, block_size>>>(
-            col_indices.packed_accessor32<int, 1>(),
-            row_pointers.packed_accessor32<int, 1>(),
-            clustering.packed_accessor32<float,  1>(),
-            degrees.packed_accessor32<float,  1>()
-        );
-    } else {
-        printf("invalid data type\n");
-        abort();
-    }
-
+    vertex_features<<<block_count, block_size>>>(
+        col_indices.packed_accessor32<int, 1>(),
+        row_pointers.packed_accessor32<int, 1>(),
+        clustering.packed_accessor32<float,  1>(),
+        degrees.packed_accessor32<float,  1>()
+    );
 }
 
-template <typename index_t>
 __global__ void vertex_average_neighbor_features(
-    const Accessor<index_t, 1> col_indices,
+    const Accessor<int, 1> col_indices,
     const Accessor<int, 1> row_pointers,
     const Accessor<float, 1> features,
     Accessor<float, 1> averages
 ) {
     const auto vertex_index = threadIdx.x + blockIdx.x * blockDim.x;
+    const auto vertex_count = row_pointers.size(0) - 1;
 
-    if (vertex_index >= row_pointers.size(0)) {
+    if (vertex_index >= vertex_count) {
         return;
     }
 
@@ -119,26 +105,13 @@ void average_neighbor_features(
 ) {
     constexpr auto block_size = 64;
 
-    const auto thread_count = row_pointers.size(0);
+    const auto thread_count = row_pointers.size(0) - 1;
     const auto block_count = div_ceil(thread_count, block_size);
 
-    if (col_indices.scalar_type() == torch::ScalarType::Short) {
-        vertex_average_neighbor_features<short><<<block_count, block_size>>>(
-            col_indices.packed_accessor32<short, 1>(),
-            row_pointers.packed_accessor32<int, 1>(),
-            features.packed_accessor32<float,  1>(),
-            averages.packed_accessor32<float,  1>()
-        );
-    } else if (col_indices.scalar_type() == torch::ScalarType::Int) {
-        vertex_average_neighbor_features<int><<<block_count, block_size>>>(
-            col_indices.packed_accessor32<int, 1>(),
-            row_pointers.packed_accessor32<int, 1>(),
-            features.packed_accessor32<float,  1>(),
-            averages.packed_accessor32<float,  1>()
-        );
-    } else {
-        printf("invalid data type\n");
-        abort();
-    }
-
+    vertex_average_neighbor_features<<<block_count, block_size>>>(
+        col_indices.packed_accessor32<int, 1>(),
+        row_pointers.packed_accessor32<int, 1>(),
+        features.packed_accessor32<float,  1>(),
+        averages.packed_accessor32<float,  1>()
+    );
 }
