@@ -2,7 +2,7 @@ from dataclasses import dataclass, fields
 import numpy as np
 from cugal.pred import cugal
 from cugal.config import Config, SinkhornMethod
-from cugal.profile import Phase, Profile, TimeStamp, write_phases_as_csv, plot_phases, plot_times
+from cugal.profile import Phase, Profile, TimeStamp, write_phases_as_csv, plot_phases, plot_times, plot_sinkhorn_iterations
 import matplotlib.pyplot as plt
 import networkx as nx
 import metrics as metrics
@@ -19,17 +19,7 @@ def select_device() -> str:
         device = 'cuda:0'
     elif torch.backends.mps.is_available():
         device = 'mps'
-    print("selected device:", device)
     return device
-
-
-cpu_config = Config()
-
-gpu_log_config = Config(
-    device=select_device(),
-    sinkhorn_method=SinkhornMethod.LOG,
-    dtype=torch.float16,
-)
 
 
 @dataclass
@@ -52,12 +42,14 @@ class Result:
     profile: Profile
 
     def __str__(self) -> str:
-        metrics = [self.ics, self.ec, self.sss, self.accuracy]
+        metrics = [self.ics, self.ec, self.sss,
+                   self.accuracy, self.profile.time]
         names = [
             "Induced Conserved Structure (ICS)",
             "Edge Correctness (EC)",
             "Symmetric Substructure Score (SSS)",
             "Accuracy",
+            "Time (seconds)",
         ]
         column_width = max(len(name) for name in names)
         return "\n".join(f"{n:<{column_width}} {m}" for n, m in zip(names, metrics))
@@ -169,7 +161,7 @@ def multi_magna_experiment(device: str) -> Experiment:
         dtype=torch.float32,
         mu=2.0,
     )
-    return Experiment(config, *multi_magna_graph(), target_noise=0.05)
+    return Experiment(config, multi_magna_graph()[0], target_noise=0.05)
 
 
 def wiki_graph() -> nx.Graph:
@@ -196,6 +188,11 @@ def wiki_experiment(device: str) -> Experiment:
         use_sinkhorn_cache=True,
         dtype=torch.float32,
         sinkhorn_threshold=1e-3,
+        sinkhorn_iterations=200,
+        sinkhorn_eval_freq=1,
+        sinkhorn_regularization=1,
+        frank_wolfe_iter_count=10,
+        frank_wolfe_threshold=0.01,
         iter_count=15,
         mu=2.0,
     )
@@ -248,8 +245,9 @@ def newmann_watts_benchmark():
 
 
 if __name__ == "__main__":
-    # replicate_figure_4(gpu_log_config)
     # compare_against_official()
-    newmann_watts_benchmark()
+    # newmann_watts_benchmark()
     # print(test(multi_magna_experiment(select_device())))
-    # print(test(wiki_experiment(select_device())))
+    result = test(wiki_experiment(select_device()))
+    print(result)
+    plot_sinkhorn_iterations(result.profile.sinkhorn_profiles)

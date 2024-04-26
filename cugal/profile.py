@@ -122,3 +122,10 @@ def plot_times(profiles: list[list[Profile]], sizes: list[int], labels: list[str
     plt.ylabel('time (seconds)')
     plt.legend()
     plt.show()
+
+
+def plot_sinkhorn_iterations(profiles: list[SinkhornProfile]):
+    plt.figure()
+    plt.plot([p.iteration_count for p in profiles])
+    plt.ylabel('iterations')
+    plt.show()

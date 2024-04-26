@@ -115,7 +115,8 @@ class Adjacency:
 
         assert np.all(np.diff(row_pointers) >= 0), "row_pointers isn't sorted"
         assert row_pointers[0] == 0, "row_pointers doesn't start with 0"
-        assert row_pointers[-1] == len(col_indices), "row_pointers doesn't end correctly"
+        assert row_pointers[-1] == len(
+            col_indices), "row_pointers doesn't end correctly"
 
         for row_index, start in enumerate(row_pointers[:-1]):
             end = row_pointers[row_index + 1]
@@ -132,7 +133,7 @@ class Adjacency:
 
         use_cuda = \
             has_cuda and "cuda" in str(
-                matrix.device) and matrix.dtype == torch.float32
+                matrix.device) and matrix.dtype in [torch.float32, torch.float64]
 
         out = torch.empty_like(matrix)
 

@@ -7,7 +7,7 @@ from functools import partial
 
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
-from cugal.sinkhorn import SinkhornCache
+from cugal.sinkhorn import SinkhornCache, SinkhornResult
 from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import feature_distance_matrix
@@ -55,13 +55,14 @@ def find_quasi_permutation_matrix(
     K = config.mu * distance
     del distance
 
+    if config.use_sinkhorn_cache:
+        u, _ = sinkhorn.sinkhorn(K, config, result=SinkhornResult.SCALING)
+        sinkhorn_cache = SinkhornCache(u_guess=u)
+
     P = torch.full_like(K, fill_value=1/len(K))
 
     for λ in tqdm(range(config.iter_count), desc="λ"):
-        if config.use_sinkhorn_cache:
-            sinkhorn_cache = SinkhornCache()
-
-        for it in tqdm(range(1, 11), desc="frank-wolfe", leave=False):
+        for it in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
             start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
@@ -80,15 +81,19 @@ def find_quasi_permutation_matrix(
             profile.log_time(start_time, Phase.SINKHORN)
 
             alpha = 2.0 / float(2.0 + it)
-            P = P + alpha * (q - P)
+            diff = alpha * (q - P)
+
+            P += diff
+
+            if not config.frank_wolfe_threshold is None:
+                if diff.max() < config.frank_wolfe_threshold:
+                    break
 
     return P.cpu()
 
 
 def convert_to_permutation_matrix(
     quasi_permutation: torch.Tensor,
-    source_node_count: int,
-    target_node_count: int,
     config: Config,
     profile: Profile,
 ) -> tuple[np.ndarray, list[tuple[int, int]]]:
@@ -132,9 +137,7 @@ def cugal(
 
     before = TimeStamp('cpu')
 
-    source_node_count = max(source.nodes())
-    target_node_count = max(target.nodes())
-    node_count = max(source_node_count, target_node_count)
+    node_count = max(max(source.nodes()), max(target.nodes()))
 
     # For float16 to be aligned properly in cuda, we add an extra dummy node
     # with no edges.
@@ -154,9 +157,7 @@ def cugal(
 
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, distance, config, profile)
-
-    output = convert_to_permutation_matrix(
-        quasi_permutation, source_node_count, target_node_count, config, profile)
+    output = convert_to_permutation_matrix(quasi_permutation, config, profile)
 
     profile.time = TimeStamp('cpu').elapsed_seconds(before)
 
