@@ -67,8 +67,8 @@ class Config:
     use_sparse_adjacency: bool = False
     """Use sparse matrix representation for adjacency matrices."""
 
-    use_sinkhorn_cache: bool = False
-    """Use cache to increase the quality of the starting values for Sinkhorn-Knopp."""
+    sinkhorn_cache_size: int = 0
+    """The size of the cache used to warm-start Sinkhorn."""
 
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:
         """Convert tensor to correct type and dtype."""

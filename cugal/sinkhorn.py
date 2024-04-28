@@ -1,8 +1,8 @@
 import torch
+import torch.nn.functional as F
 from cugal.config import Config, SinkhornMethod
 from cugal.profile import SinkhornProfile, TimeStamp
-from dataclasses import dataclass
-from enum import Enum
+from dataclasses import dataclass, field
 import math
 
 try:
@@ -14,26 +14,82 @@ except ImportError:
 M_EPS = 1e-16
 
 
-class SinkhornResult(Enum):
-    """Determines the output of running Sinkhorn."""
-
-    PLAN = 0
-    """Return the optimal transport plan."""
-
-    SCALING = 1
-    """Return the u, v scaling vectors."""
+def initial_u(n: int, config: Config) -> torch.Tensor:
+    match config.sinkhorn_method:
+        case SinkhornMethod.LOG:
+            return torch.zeros(n, device=config.device, dtype=config.dtype)
+        case SinkhornMethod.MIX | SinkhornMethod.STANDARD:
+            return torch.full(size=(n,), fill_value=1/n,
+                              device=config.device, dtype=config.dtype)
 
 
 @dataclass
-class SinkhornCache:
-    """A cache of previous result from running Sinkhorn.
+class FixedInit:
+    def get_u(self, K: torch.Tensor, config: Config) -> torch.Tensor:
+        return initial_u(K.shape[0], config)
 
-    This is used to do a warm start to subsequent Sinkhorn runs on similar matrices."""
+    def update(self, K: torch.Tensor, u: torch.Tensor):
+        pass
 
-    u_guess: torch.Tensor | None = None
 
-    def update(self, u: torch.Tensor):
-        self.u_guess = u
+@dataclass
+class PrevInit:
+    previous: torch.Tensor | None = None
+
+    def get_u(self, K: torch.Tensor, config: Config) -> torch.Tensor:
+        return initial_u(K.shape[0], config) if self.previous is None else self.previous
+
+    def update(self, K: torch.Tensor, u: torch.Tensor):
+        self.previous = u
+
+
+@dataclass
+class CachedMatrix:
+    row_sum: torch.Tensor
+    col_sum: torch.Tensor
+
+    u: torch.Tensor
+
+    def simularity(self, row_sum: torch.Tensor, col_sum: torch.Tensor) -> torch.Tensor:
+        return torch.mean((row_sum - self.row_sum)**2) + torch.mean(((col_sum - self.col_sum)**2))
+
+
+@dataclass
+class SelectiveInit:
+    cache_size: int = 5
+    cached: list[CachedMatrix] = field(default_factory=list)
+
+    def get_u(self, K: torch.Tensor, config: Config) -> torch.Tensor:
+        if len(self.cached) == 0:
+            return initial_u(K.shape[0], config)
+
+        row_sum, col_sum = K.mean(1), K.mean(0)
+
+        # TODO: Make sure this happens in parallel.
+        simularities = [cached.simularity(
+            row_sum, col_sum) for cached in self.cached]
+
+        best_index = min(range(len(simularities)),
+                         key=simularities.__getitem__)
+        return self.cached[best_index].u
+
+    def update(self, K: torch.Tensor, u: torch.Tensor):
+        if len(self.cached) >= self.cache_size:
+            self.cached.pop(0)
+
+        self.cached.append(CachedMatrix(K.mean(1), K.mean(0), u))
+        self.previous = u
+
+
+SinkhornInit = FixedInit | PrevInit | SelectiveInit
+"""Determines how Sinkhorn picks the initial guess for the scaling vectors."""
+
+
+def init_from_cache_size(cache_size: int) -> SinkhornInit:
+    match cache_size:
+        case 0: return FixedInit()
+        case 1: return PrevInit()
+        case _: return SelectiveInit(cache_size=cache_size)
 
 
 def can_use_cuda(config: Config) -> bool:
@@ -49,36 +105,27 @@ def sinkhorn(
     C: torch.Tensor,
     config: Config,
     profile=SinkhornProfile(),
-    cache: SinkhornCache | None = None,
-    result: SinkhornResult = SinkhornResult.PLAN,
-) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    start: SinkhornInit = FixedInit(),
+) -> torch.Tensor:
     match config.sinkhorn_method:
         case SinkhornMethod.STANDARD:
-            return sinkhorn_knopp(C, config, profile, cache, result)
+            return sinkhorn_knopp(C, config, profile, start)
         case SinkhornMethod.LOG:
-            return loghorn(C, config, profile, cache, result)
+            return loghorn(C, config, profile, start)
         case SinkhornMethod.MIX:
-            return mixhorn(C, config, profile, cache, result)
+            return mixhorn(C, config, profile, start)
 
 
 def sinkhorn_knopp(
     C: torch.Tensor,
     config: Config,
     profile=SinkhornProfile(),
-    cache: SinkhornCache | None = None,
-    result: SinkhornResult = SinkhornResult.PLAN,
-) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    start: SinkhornInit = FixedInit(),
+) -> torch.Tensor:
     start_time = TimeStamp(config.device)
 
-    na, _ = C.shape
-
-    if cache is None or cache.u_guess is None:
-        u = torch.full(size=(na,), fill_value=1/na,
-                       device=config.device, dtype=config.dtype)
-    else:
-        u = torch.clone(cache.u_guess)
-
     K = torch.exp(C / -config.sinkhorn_regularization)
+    u = start.get_u(K, config)
 
     for iteration in range(config.sinkhorn_iterations):
         prev_v = v if iteration != 0 else u
@@ -94,14 +141,8 @@ def sinkhorn_knopp(
             ):
                 break
 
-    match result:
-        case SinkhornResult.PLAN:
-            output = u.reshape(-1, 1) * K * v.reshape(1, -1)
-        case SinkhornResult.SCALING:
-            output = u, v
-
-    if not cache is None:
-        cache.update(u)
+    output = u.reshape(-1, 1) * K * v.reshape(1, -1)
+    start.update(K, u)
 
     profile.iteration_count = iteration + 1
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
@@ -113,24 +154,18 @@ def loghorn(
     C: torch.Tensor,
     config: Config,
     profile=SinkhornProfile(),
-    cache: SinkhornCache | None = None,
-    result: SinkhornResult = SinkhornResult.PLAN,
-) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    start: SinkhornInit = FixedInit,
+) -> torch.Tensor:
     start_time = TimeStamp(config.device)
 
-    use_cuda = can_use_cuda(config)
-    na, nb = C.shape
     K = - C / config.sinkhorn_regularization
 
+    use_cuda = can_use_cuda(config)
     if use_cuda:
         K_transpose = K.t().contiguous()
 
-    if cache is None or cache.u_guess is None:
-        u = torch.zeros(na, device=config.device, dtype=config.dtype)
-    else:
-        u = torch.clone(cache.u_guess)
-
-    v = torch.zeros(nb, device=config.device, dtype=config.dtype)
+    u = start.get_u(K, config)
+    v = torch.zeros(K.shape[1], device=config.device, dtype=config.dtype)
 
     for iteration in range(config.sinkhorn_iterations):
         prev_v = v
@@ -151,14 +186,8 @@ def loghorn(
             ):
                 break
 
-    match result:
-        case SinkhornResult.PLAN:
-            output = torch.exp(K + u[:, None] + v[None, :])
-        case SinkhornResult.SCALING:
-            output = u, v
-
-    if not cache is None:
-        cache.update(u)
+    output = torch.exp(K + u[:, None] + v[None, :])
+    start.update(K, u)
 
     profile.iteration_count = iteration + 1
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
@@ -170,9 +199,8 @@ def mixhorn(
     C: torch.Tensor,
     config: Config,
     profile=SinkhornProfile(),
-    cache: SinkhornCache | None = None,
-    result: SinkhornResult = SinkhornResult.PLAN,
-) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    start: SinkhornInit = FixedInit,
+) -> torch.Tensor:
     n, _ = C.shape
 
     start_time = TimeStamp(config.device)
@@ -182,10 +210,7 @@ def mixhorn(
     v = torch.logsumexp(K, 0)
     K = torch.exp(K - v[None, :])
 
-    if cache is None or cache.u_guess is None:
-        u = torch.full((n,), 1/n, device=config.device, dtype=config.dtype)
-    else:
-        u = cache.u_guess
+    u = start.get_u(K, config)
 
     for iteration in range(config.sinkhorn_iterations):
         prev_v = v if iteration != 0 else u
@@ -201,14 +226,8 @@ def mixhorn(
             ):
                 break
 
-    match result:
-        case SinkhornResult.PLAN:
-            output = u.reshape(-1, 1) * K * v.reshape(1, -1)
-        case SinkhornResult.SCALING:
-            output = u, v
-
-    if not cache is None:
-        cache.update(u)
+    output = u.reshape(-1, 1) * K * v.reshape(1, -1)
+    start.update(K, u)
 
     profile.iteration_count = iteration + 1
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)

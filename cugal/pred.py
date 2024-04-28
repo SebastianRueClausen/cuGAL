@@ -7,7 +7,6 @@ from functools import partial
 
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
-from cugal.sinkhorn import SinkhornCache, SinkhornResult
 from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import feature_distance_matrix
@@ -52,12 +51,10 @@ def find_quasi_permutation_matrix(
         B = torch.tensor(nx.to_numpy_array(
             B), dtype=config.dtype, device=config.device)
 
-    K = config.mu * distance
-    del distance
+    distance *= config.mu
+    K = distance
 
-    if config.use_sinkhorn_cache:
-        u, _ = sinkhorn.sinkhorn(K, config, result=SinkhornResult.SCALING)
-        sinkhorn_cache = SinkhornCache(u_guess=u)
+    sinkhorn_cache = sinkhorn.init_from_cache_size(config.sinkhorn_cache_size)
 
     P = torch.full_like(K, fill_value=1/len(K))
 
@@ -72,10 +69,8 @@ def find_quasi_permutation_matrix(
             start_time = TimeStamp(config.device)
             sinkhorn_profile = SinkhornProfile()
 
-            sinkhorn_call = partial(
-                sinkhorn.sinkhorn, gradient, config, sinkhorn_profile)
-            q = sinkhorn_call(
-                sinkhorn_cache) if config.use_sinkhorn_cache else sinkhorn_call()
+            q = sinkhorn.sinkhorn(
+                gradient, config, sinkhorn_profile, sinkhorn_cache)
 
             profile.sinkhorn_profiles.append(sinkhorn_profile)
             profile.log_time(start_time, Phase.SINKHORN)
@@ -113,8 +108,6 @@ def convert_to_permutation_matrix(
 
     for i in range(n):
         permutation[row_ind[i]][col_ind[i]] = 1
-        # if row_ind[i] >= source_node_count or col_ind[i] >= target_node_count:
-        #    continue
         mapping.append((row_ind[i], col_ind[i]))
 
     return permutation, mapping

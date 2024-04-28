@@ -1,5 +1,6 @@
 from dataclasses import dataclass, fields
 import numpy as np
+import cugal
 from cugal.pred import cugal
 from cugal.config import Config, SinkhornMethod
 from cugal.profile import Phase, Profile, TimeStamp, write_phases_as_csv, plot_phases, plot_times, plot_sinkhorn_iterations
@@ -70,11 +71,6 @@ def plot_results(experiments: list[Experiment], results: list[Result], x_axis_fi
     plt.show()
 
 
-def add_missing_nodes(graph: nx.Graph, node_count: int):
-    for i in set(range(node_count)) - set(graph.nodes()):
-        graph.add_node(i)
-
-
 def test(experiment: Experiment, use_fugal=False) -> Result:
     if experiment.target is not None:
         assert experiment.source.number_of_nodes() == experiment.target.number_of_nodes()
@@ -116,11 +112,7 @@ def test(experiment: Experiment, use_fugal=False) -> Result:
     return Result(ics, ec, sss, accuracy, profile)
 
 
-def newmann_watts_graph(
-    node_count: int,
-    node_degree: int,
-    rewriting_prob: float,
-) -> nx.Graph:
+def newmann_watts_graph(node_count: int, node_degree: int, rewriting_prob: float) -> nx.Graph:
     return nx.newman_watts_strogatz_graph(node_count, node_degree, rewriting_prob)
 
 
@@ -156,8 +148,11 @@ def multi_magna_experiment(device: str) -> Experiment:
     config = Config(
         device=device,
         sinkhorn_method=SinkhornMethod.MIX,
+        sinkhorn_iterations=200,
+        sinkhorn_eval_freq=1,
+        frank_wolfe_threshold=0.01,
         use_sparse_adjacency=True,
-        use_sinkhorn_cache=True,
+        sinkhorn_cache_size=10,
         dtype=torch.float32,
         mu=2.0,
     )
@@ -167,7 +162,7 @@ def multi_magna_experiment(device: str) -> Experiment:
 def wiki_graph() -> nx.Graph:
     import json
 
-    with open("data/graph.json", "r") as file:
+    with open("data/wiki.json", "r") as file:
         articles = json.loads(file.read())
 
     graph = nx.Graph()
@@ -185,10 +180,10 @@ def wiki_experiment(device: str) -> Experiment:
         device=device,
         sinkhorn_method=SinkhornMethod.MIX,
         use_sparse_adjacency=True,
-        use_sinkhorn_cache=True,
+        sinkhorn_cache_size=4,
         dtype=torch.float32,
         sinkhorn_threshold=1e-3,
-        sinkhorn_iterations=200,
+        sinkhorn_iterations=300,
         sinkhorn_eval_freq=1,
         sinkhorn_regularization=1,
         frank_wolfe_iter_count=10,
@@ -205,49 +200,21 @@ def newmann_watts_experiment(config: Config, source_noise: float, size: int) -> 
     return Experiment(config, graph, source_noise=source_noise)
 
 
-def replicate_figure_4(config: Config):
-    config = Config(mu=2, sinkhorn_method=SinkhornMethod.LOG,
-                    device=select_device(), dtype=torch.float16)
-    noises = np.linspace(0, 0.25, num=6)
-    experiments = [newmann_watts_experiment(
-        config, source_noise=noise) for noise in noises]
-    results = list(map(test, experiments))
-    plot_results(experiments, results, "source_noise")
-
-
-def compare_against_official():
-    node_count = 1024
-    graph = newmann_watts_graph(
-        node_count=node_count, node_degree=7, rewriting_prob=0.01)
-    config = Config(sinkhorn_method=SinkhornMethod.STANDARD)
-
-    cugal_mapping = cugal(graph, graph, config)
-    cugal_mapping = [x for _, x in cugal_mapping]
-
-    fugal_mapping = fugal(graph, graph, config.mu, config.iter_count)
-    fugal_mapping = [x for _, x in fugal_mapping]
-
-    cugal_accuracy = np.mean(np.arange(node_count) == cugal_mapping)
-    fugal_accuracy = np.mean(np.arange(node_count) == fugal_mapping)
-
-    print("accuracy:", cugal_accuracy, "official accuracy:", fugal_accuracy)
-
-
 def newmann_watts_benchmark():
     sizes = [128, 256, 512, 1024]
     cugal_profiles, fugal_profiles = [], []
     for _, size in enumerate(sizes):
         cugal_profiles.append(test(newmann_watts_experiment(Config(use_sparse_adjacency=True, sinkhorn_method=SinkhornMethod.MIX,
-                                                                   dtype=torch.float32, device="cuda", use_sinkhorn_cache=False), 0.05, size)).profile)
-        # fugal_profiles.append(test(newmann_watts_experiment(Config(), 0.05, size), use_fugal=True).profile)
-    print(cugal_profiles[-1].phase_times)
-    # plot_times([cugal_profiles, fugal_profiles], sizes, ["cugal", "fugal"])
+                                                                   dtype=torch.float32, device="cuda"), 0.05, size)).profile)
+        fugal_profiles.append(test(newmann_watts_experiment(
+            Config(), 0.05, size), use_fugal=True).profile)
+    plot_times([cugal_profiles, fugal_profiles], sizes, ["cugal", "fugal"])
 
 
 if __name__ == "__main__":
     # compare_against_official()
     # newmann_watts_benchmark()
-    # print(test(multi_magna_experiment(select_device())))
+    # result = test(multi_magna_experiment(select_device()), use_fugal=False)
     result = test(wiki_experiment(select_device()))
     print(result)
     plot_sinkhorn_iterations(result.profile.sinkhorn_profiles)
