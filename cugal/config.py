@@ -70,6 +70,9 @@ class Config:
     sinkhorn_cache_size: int = 0
     """The size of the cache used to warm-start Sinkhorn."""
 
+    recompute_features: bool = False 
+    """Avoid storing distance matrix by doing recalculating each iteration."""
+
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:
         """Convert tensor to correct type and dtype."""
 

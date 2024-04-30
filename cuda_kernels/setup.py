@@ -10,6 +10,7 @@ setup(
             'feature_extraction.cu',
             'adjacency.cu',
             'sinkhorn_log.cu',
+            'distance.cu',
         ]),
     ],
     cmdclass={

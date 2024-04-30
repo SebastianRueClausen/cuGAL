@@ -9,29 +9,53 @@ from cugal.adjacency import Adjacency
 from cugal import sinkhorn
 from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
-from cugal.feature_extraction import feature_distance_matrix
+from cugal.feature_extraction import Features
 
 
-def dense_gradient(A, B, P, K: torch.Tensor, iteration: int) -> torch.Tensor:
-    return -A.T @ P @ B - A @ P @ B.T + K + iteration*(1 - 2*P)
+def dense_gradient(
+    A: torch.Tensor,
+    B: torch.Tensor,
+    P: torch.Tensor,
+    features: torch.Tensor | Features,
+    iteration: int,
+    config: Config,
+) -> torch.Tensor:
+    gradient = -A.T @ P @ B - A @ P @ B.T
+
+    if type(features) is Features:
+        gradient = features.add_distance(gradient, config)
+    else:
+        gradient += features
+
+    return gradient + iteration*(1 - 2*P)
 
 
 def sparse_gradient(
     A, B: Adjacency,
-    A_transpose, B_transpose: Adjacency,
-    P, K: torch.Tensor,
+    A_transpose: Adjacency,
+    B_transpose: Adjacency,
+    P: torch.Tensor,
+    features: torch.Tensor | Features,
     iteration: int,
+    config: Config
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
-        return -2 * B.mul(A.mul(P).T).T + K + (iteration - iteration*2*P)
+        gradient = -2 * B.mul(A.mul(P).T).T 
     else:
-        return B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
-            - B.mul(A.mul(P).T).T + K + (iteration - iteration*2*P)
+        gradient = B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
+            - B.mul(A.mul(P).T).T
+
+    if type(features) is Features:
+        gradient = features.add_distance(gradient, config)
+    else:
+        gradient += features
+    
+    return gradient + (iteration - iteration*2*P)
 
 
 def find_quasi_permutation_matrix(
     A, B: nx.Graph | Adjacency,
-    distance: torch.Tensor,
+    features: torch.Tensor | Features,
     config: Config,
     profile: Profile,
 ) -> torch.Tensor:
@@ -51,19 +75,16 @@ def find_quasi_permutation_matrix(
         B = torch.tensor(nx.to_numpy_array(
             B), dtype=config.dtype, device=config.device)
 
-    distance *= config.mu
-    K = distance
-
     sinkhorn_cache = sinkhorn.init_from_cache_size(config.sinkhorn_cache_size)
 
-    P = torch.full_like(K, fill_value=1/len(K))
+    P = torch.full(A.number_of_nodes(), fill_value=1/A.number_of_nodes())
 
     for λ in tqdm(range(config.iter_count), desc="λ"):
         for it in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
             start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
-            gradient = gradient_function(P, K, λ)
+            gradient = gradient_function(P, features, λ, config)
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
@@ -145,11 +166,15 @@ def cugal(
             source, config.device), Adjacency.from_graph(target, config.device)
 
     start_time = TimeStamp(config.device)
-    distance = feature_distance_matrix(source, target, config)
+    features = Features.create(source, target, config)
+
+    if not config.recompute_features:
+        features = features.distance_matrix() * config.mu
+
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
 
     quasi_permutation = find_quasi_permutation_matrix(
-        source, target, distance, config, profile)
+        source, target, features, config, profile)
     output = convert_to_permutation_matrix(quasi_permutation, config, profile)
 
     profile.time = TimeStamp('cpu').elapsed_seconds(before)

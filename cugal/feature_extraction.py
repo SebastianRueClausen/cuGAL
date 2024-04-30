@@ -4,6 +4,7 @@ import cuda_kernels
 import torch
 from cugal.adjacency import Adjacency
 from cugal.config import Config
+from dataclasses import dataclass
 
 try:
     import cuda_kernels
@@ -35,7 +36,7 @@ def extract_features_cuda(graph: nx.Graph | Adjacency, config: Config) -> torch.
     return torch.stack((degrees, clustering, neighbor_degrees, neighbor_clustering)).T
 
 
-def extract_features(G: nx.Graph) -> np.ndarray:
+def extract_features_nx(G: nx.Graph) -> np.ndarray:
     node_list = sorted(G.nodes())
     node_degree_dict = dict(G.degree())
     node_clustering_dict = dict(nx.clustering(G))
@@ -61,18 +62,48 @@ def extract_features(G: nx.Graph) -> np.ndarray:
     return np.nan_to_num(np.stack((degs, clusts, neighbor_degs, neighbor_clusts)).T)
 
 
-def feature_distance_matrix(source, target: nx.Graph | Adjacency, config: Config) -> torch.Tensor:
-    use_cuda = has_cuda and 'cuda' in config.device
+@dataclass
+class Features:
+    """Features of source and target graph."""
 
-    if use_cuda:
-        source_features = extract_features_cuda(
-            source, config).to(config.dtype)
-        target_features = extract_features_cuda(
-            target, config).to(config.dtype)
-    else:
-        source_features = torch.tensor(extract_features(
-            source), device=config.device, dtype=config.dtype)
-        target_features = torch.tensor(extract_features(
-            target), device=config.device, dtype=config.dtype)
+    source: torch.Tensor
+    target: torch.Tensor
 
-    return torch.cdist(source_features, target_features)
+    @classmethod
+    def create(cls, source: nx.Graph | Adjacency, target: nx.Graph | Adjacency, config: Config):
+        """Calculate features of the source and target graph."""
+
+        use_cuda = has_cuda and 'cuda' in config.device
+
+        if use_cuda:
+            source_features = extract_features_cuda(
+                source, config).to(config.dtype)
+            target_features = extract_features_cuda(
+                target, config).to(config.dtype)
+        else:
+            source_features = torch.tensor(extract_features_nx(
+                source), device=config.device, dtype=config.dtype)
+            target_features = torch.tensor(extract_features_nx(
+                target), device=config.device, dtype=config.dtype)
+            
+        return cls(source_features, target_features)
+
+
+    def add_distance(self, out: torch.Tensor, config: Config) -> torch.Tensor:
+        """Calculate `out + self.distance_matrix() * config.mu` efficiently."""
+
+        if has_cuda and 'cuda' in config.device:
+            cuda_kernels.add_distance(self.source, self.target, out, config.mu)
+        else:
+            out += self.distance_matrix() * config.mu
+
+        return out
+
+    def distance_matrix(self) -> torch.Tensor:
+        """Calculate euclidean distance matrix."""
+        return torch.cdist(self.source, self.target)
+
+    
+
+    
+
