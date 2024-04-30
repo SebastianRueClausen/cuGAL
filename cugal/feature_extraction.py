@@ -5,6 +5,7 @@ import torch
 from cugal.adjacency import Adjacency
 from cugal.config import Config
 from dataclasses import dataclass
+import math
 
 try:
     import cuda_kernels
@@ -85,25 +86,22 @@ class Features:
                 source), device=config.device, dtype=config.dtype)
             target_features = torch.tensor(extract_features_nx(
                 target), device=config.device, dtype=config.dtype)
-            
+
+        source_features *= math.sqrt(config.mu)
+        target_features *= math.sqrt(config.mu)
+
         return cls(source_features, target_features)
 
-
-    def add_distance(self, out: torch.Tensor, config: Config) -> torch.Tensor:
+    def add_distance(self, out: torch.Tensor) -> torch.Tensor:
         """Calculate `out + self.distance_matrix() * config.mu` efficiently."""
 
-        if has_cuda and 'cuda' in config.device:
-            cuda_kernels.add_distance(self.source, self.target, out, config.mu)
+        if has_cuda and 'cuda' in str(out.device):
+            cuda_kernels.add_distance(self.source, self.target, out)
         else:
-            out += self.distance_matrix() * config.mu
+            out += self.distance_matrix()
 
         return out
 
     def distance_matrix(self) -> torch.Tensor:
         """Calculate euclidean distance matrix."""
         return torch.cdist(self.source, self.target)
-
-    
-
-    
-

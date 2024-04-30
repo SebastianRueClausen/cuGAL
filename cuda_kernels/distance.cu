@@ -1,16 +1,22 @@
 #include <torch/torch.h>
 #include <c10/cuda/CUDAGuard.h>
+#include <utility>
 #include "common.cuh"
+#include <iostream>
 
-__global__ void kernel(Accessor<float, 2> source, Accessor<float, 2> target, Accessor<float, 2> out, float mu) {
-    const auto size = output.size(0);
+__device__ inline std::pair<int, int> index_to_coord(int index, int size) {
+    return std::make_pair(index / size, index % size);
+}
 
-    const auto x = threadIdx.x + blockIdx.x * blockDim.x;
-    const auto y = threadIdx.y + blockIdx.y * blockDim.y;
+__global__ void kernel(Accessor<float, 2> source, Accessor<float, 2> target, Accessor<float, 2> out, size_t entry_count) {
+    const auto size = out.size(0);
+    const auto index = threadIdx.x + blockIdx.x * blockDim.x;
 
-    if (x >= size || y >= size) {
+    if (index >= entry_count) {
         return;
     }
+
+    const auto [x, y] = index_to_coord(index, size);
 
     const auto a = source[x];
     const auto b = target[y];
@@ -18,26 +24,29 @@ __global__ void kernel(Accessor<float, 2> source, Accessor<float, 2> target, Acc
     auto sum = 0.0;
 
     #pragma unroll
-    for (auto i = 0; i < 5; i++) {
-        sum = fma(a[i] - b[i], sum);
+    for (auto i = 0; i < 4; i++) {
+        const auto diff = a[i] - b[i];
+        sum += diff * diff;
     }
 
-    output[x][y] += sqrtf(sum) * mu;
+    out[x][y] += sqrtf(sum);
 }
 
-void add_distance(torch::Tensor source, torch::Tensor target, float mu, torch::Tensor out, float mu) {
+void add_distance(torch::Tensor source, torch::Tensor target, torch::Tensor out) {
     at::cuda::CUDAGuard device_guard(out.device());
 
-    const dim2 block_size(128, 128);
-    const dim2 block_count(
-        div_ceil(out.size(0), block_size),
-        div_ceil(out.size(1), block_size)
-    );
+    const auto size = out.size(0);
+    const auto entry_count = size * size;
+
+    const auto block_size = 256;
+    const auto block_count = div_ceil(entry_count, block_size);
 
     kernel<<<block_count, block_size>>>(
         source.packed_accessor32<float, 2>(),
         target.packed_accessor32<float, 2>(),
         out.packed_accessor32<float, 2>(),
-        mu
+        entry_count
     );
+
+    cudaDeviceSynchronize();
 }

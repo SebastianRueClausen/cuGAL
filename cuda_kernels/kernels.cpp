@@ -6,7 +6,7 @@ void adjacency_matmul(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor
 void create_adjacency_cuda(torch::Tensor, torch::Tensor, torch::Tensor);
 void graph_features(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor);
 void average_neighbor_features(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor);
-void add_distance(torch::Tensor, torch::Tensor, torch::Tensor, float);
+void add_distance(torch::Tensor, torch::Tensor, torch::Tensor);
 
 void create_adjacency(torch::Tensor edges, torch::Tensor col_indices, torch::Tensor row_pointers) {
   create_adjacency_cuda(edges, col_indices, row_pointers);

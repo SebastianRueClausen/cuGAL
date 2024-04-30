@@ -12,22 +12,23 @@ from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import Features
 
 
+def add_feature_distance(gradient: torch.Tensor, features: torch.Tensor | Features) -> torch.Tensor:
+    if type(features) is Features:
+        gradient = features.add_distance(gradient)
+    else:
+        gradient += features
+    return gradient
+
+
 def dense_gradient(
     A: torch.Tensor,
     B: torch.Tensor,
     P: torch.Tensor,
     features: torch.Tensor | Features,
     iteration: int,
-    config: Config,
 ) -> torch.Tensor:
     gradient = -A.T @ P @ B - A @ P @ B.T
-
-    if type(features) is Features:
-        gradient = features.add_distance(gradient, config)
-    else:
-        gradient += features
-
-    return gradient + iteration*(1 - 2*P)
+    return add_feature_distance(gradient, features) + iteration*(1 - 2*P)
 
 
 def sparse_gradient(
@@ -37,20 +38,13 @@ def sparse_gradient(
     P: torch.Tensor,
     features: torch.Tensor | Features,
     iteration: int,
-    config: Config
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
-        gradient = -2 * B.mul(A.mul(P).T).T 
+        gradient = -2 * B.mul(A.mul(P).T).T
     else:
         gradient = B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
             - B.mul(A.mul(P).T).T
-
-    if type(features) is Features:
-        gradient = features.add_distance(gradient, config)
-    else:
-        gradient += features
-    
-    return gradient + (iteration - iteration*2*P)
+    return add_feature_distance(gradient, features) + (iteration - iteration*2*P)
 
 
 def find_quasi_permutation_matrix(
@@ -77,14 +71,15 @@ def find_quasi_permutation_matrix(
 
     sinkhorn_cache = sinkhorn.init_from_cache_size(config.sinkhorn_cache_size)
 
-    P = torch.full(A.number_of_nodes(), fill_value=1/A.number_of_nodes())
+    P = torch.full([A.number_of_nodes()] * 2, fill_value=1 /
+                   A.number_of_nodes(), device=config.device, dtype=config.dtype)
 
     for λ in tqdm(range(config.iter_count), desc="λ"):
         for it in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
             start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
-            gradient = gradient_function(P, features, λ, config)
+            gradient = gradient_function(P, features, λ)
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
@@ -168,8 +163,8 @@ def cugal(
     start_time = TimeStamp(config.device)
     features = Features.create(source, target, config)
 
-    if not config.recompute_features:
-        features = features.distance_matrix() * config.mu
+    if not config.recompute_distance:
+        features = features.distance_matrix()
 
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
 
