@@ -188,6 +188,7 @@ def wiki_experiment(device: str) -> Experiment:
         sinkhorn_regularization=1,
         frank_wolfe_iter_count=10,
         frank_wolfe_threshold=0.01,
+        recompute_distance=True,
         iter_count=15,
         recompute_features=True,
         mu=2.0,
