@@ -25,6 +25,8 @@ def initial_u(n: int, config: Config) -> torch.Tensor:
 
 @dataclass
 class FixedInit:
+    """Always init with same fixed u."""
+
     def get_u(self, K: torch.Tensor, config: Config) -> torch.Tensor:
         return initial_u(K.shape[0], config)
 
@@ -34,6 +36,8 @@ class FixedInit:
 
 @dataclass
 class PrevInit:
+    """Init with previous result."""
+
     previous: torch.Tensor | None = None
 
     def get_u(self, K: torch.Tensor, config: Config) -> torch.Tensor:
@@ -56,6 +60,8 @@ class CachedMatrix:
 
 @dataclass
 class SelectiveInit:
+    """Init by selecting among the previous n result."""
+
     cache_size: int = 5
     cached: list[CachedMatrix] = field(default_factory=list)
 
@@ -101,6 +107,11 @@ def relative_difference(a: torch.Tensor, b: torch.Tensor) -> float:
     return (abs(a - b).max() / max(abs(a).max(), abs(b).max(), 1)).item()
 
 
+def relative_difference_log(log_a: torch.Tensor, log_b: torch.Tensor) -> float:
+    log_a, log_b = log_a.to(dtype=torch.float64), log_b.to(dtype=torch.float64)
+    return relative_difference(log_a.exp(), log_b.exp())
+
+
 def sinkhorn(
     C: torch.Tensor,
     config: Config,
@@ -134,8 +145,6 @@ def sinkhorn_OT_cpu(
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
 
     return output
-
-
 
 
 def sinkhorn_knopp(
@@ -201,10 +210,9 @@ def loghorn(
             u = -torch.logsumexp(K + v[None, :], 1)
 
         if iteration % config.sinkhorn_eval_freq == 0:
-            # TODO: Figure out how to handle this correctly.
             if (
-                relative_difference(u, prev_u) + relative_difference(v, prev_v)
-                    < math.log(config.sinkhorn_threshold * 2)
+                relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v)
+                    < config.sinkhorn_threshold * 2
             ):
                 break
 
