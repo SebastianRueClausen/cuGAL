@@ -11,6 +11,13 @@ from cugal.config import Config
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import Features
 
+try:
+    import cuda_kernels
+    has_cuda = True
+except ImportError:
+    has_cuda = False
+
+
 
 def add_feature_distance(gradient: torch.Tensor, features: torch.Tensor | Features) -> torch.Tensor:
     if type(features) is Features:
@@ -40,11 +47,20 @@ def sparse_gradient(
     iteration: int,
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
-        gradient = -2 * B.mul(A.mul(P).T).T
+        gradient = B.mul(A.mul(P).T).T
+        gradient *= -2
     else:
         gradient = B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
             - B.mul(A.mul(P).T).T
-    return add_feature_distance(gradient, features) + (iteration - iteration*2*P)
+
+    gradient = add_feature_distance(gradient, features)
+
+    if has_cuda and 'cuda' in str(P.device):
+        cuda_kernels.regularize(gradient, P, iteration)
+    else:
+        gradient += iteration - iteration * 2 * P
+    
+    return gradient
 
 
 def find_quasi_permutation_matrix(
@@ -92,13 +108,17 @@ def find_quasi_permutation_matrix(
             profile.log_time(start_time, Phase.SINKHORN)
 
             alpha = 2.0 / float(2.0 + it)
-            diff = alpha * (q - P)
+            q -= P
+            q *= alpha
+            diff = q
+            del q
 
             P += diff
 
             if not config.frank_wolfe_threshold is None:
                 if diff.max() < config.frank_wolfe_threshold:
                     break
+            del diff
 
     return P.cpu()
 

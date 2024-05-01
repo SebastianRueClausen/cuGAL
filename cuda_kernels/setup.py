@@ -11,7 +11,12 @@ setup(
             'adjacency.cu',
             'sinkhorn_log.cu',
             'distance.cu',
-        ])#, extra_compile_args=['-t 10']),
+            'regularize.cu',
+        ],
+        extra_compile_args={
+            'nvcc': ["--treads", "4",
+                     "-gencode", "arch=compute_87,code=sm_87",]
+        }),
     ],
     cmdclass={
         'build_ext': BuildExtension

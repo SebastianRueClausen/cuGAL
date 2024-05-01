@@ -114,6 +114,28 @@ def sinkhorn(
             return loghorn(C, config, profile, start)
         case SinkhornMethod.MIX:
             return mixhorn(C, config, profile, start)
+        case SinkhornMethod.OT_CPU:
+            return sinkhorn_OT_cpu(C, config, profile, start)
+            
+def sinkhorn_OT_cpu(
+    C: torch.Tensor,
+    config: Config,
+    profile=SinkhornProfile(),
+    start: SinkhornInit = FixedInit(),
+) -> torch.Tensor:
+    import ot
+
+    start_time = TimeStamp(config.device)
+
+    ones = torch.ones(C.shape[0], device=config.device, dtype=config.dtype)
+
+    output = ot.sinkhorn(ones, ones, C.cpu().numpy(), config.sinkhorn_regularization)
+
+    profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
+
+    return output
+
+
 
 
 def sinkhorn_knopp(
@@ -205,7 +227,8 @@ def mixhorn(
 
     start_time = TimeStamp(config.device)
 
-    K = -C / config.sinkhorn_regularization
+    C /= -config.sinkhorn_regularization
+    K = C
 
     v = torch.logsumexp(K, 0)
     K = torch.exp(K - v[None, :])
@@ -226,7 +249,10 @@ def mixhorn(
             ):
                 break
 
-    output = u.reshape(-1, 1) * K * v.reshape(1, -1)
+    K *= v.reshape(1, -1)
+    K *= u.reshape(-1, 1)
+    output = K
+
     start.update(K, u)
 
     profile.iteration_count = iteration + 1
