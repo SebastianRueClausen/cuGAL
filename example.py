@@ -189,9 +189,10 @@ def wiki_experiment(device: str) -> Experiment:
         frank_wolfe_iter_count=10,
         frank_wolfe_threshold=0.01,
         iter_count=15,
+        recompute_features=True,
         mu=2.0,
     )
-    return Experiment(config, wiki_graph(), target_noise=0.0)
+    return Experiment(config, wiki_graph(), target_noise=0.05)
 
 
 def newmann_watts_experiment(config: Config, source_noise: float, size: int) -> Experiment:

@@ -11,7 +11,7 @@ setup(
             'adjacency.cu',
             'sinkhorn_log.cu',
             'distance.cu',
-        ]),
+        ])#, extra_compile_args=['-t 10']),
     ],
     cmdclass={
         'build_ext': BuildExtension
