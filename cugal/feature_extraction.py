@@ -1,6 +1,5 @@
 import networkx as nx
 import numpy as np
-import cuda_kernels
 import torch
 from cugal.adjacency import Adjacency
 from cugal.config import Config

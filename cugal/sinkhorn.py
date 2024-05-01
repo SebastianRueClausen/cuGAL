@@ -103,13 +103,13 @@ def can_use_cuda(config: Config) -> bool:
         torch.float32, torch.float16]
 
 
-def relative_difference(a: torch.Tensor, b: torch.Tensor) -> float:
-    return (abs(a - b).max() / max(abs(a).max(), abs(b).max(), 1)).item()
+def is_close(a: torch.Tensor, b: torch.Tensor, config: Config) -> float:
+    return torch.allclose(a, b, rtol=0.05, atol=config.sinkhorn_threshold) 
 
 
-def relative_difference_log(log_a: torch.Tensor, log_b: torch.Tensor) -> float:
+def is_close_log(log_a: torch.Tensor, log_b: torch.Tensor, config: Config) -> float:
     log_a, log_b = log_a.to(dtype=torch.float64), log_b.to(dtype=torch.float64)
-    return relative_difference(log_a.exp(), log_b.exp())
+    return is_close(log_a.exp(), log_b.exp(), config)
 
 
 def sinkhorn(
@@ -135,15 +135,10 @@ def sinkhorn_OT_cpu(
     start: SinkhornInit = FixedInit(),
 ) -> torch.Tensor:
     import ot
-
     start_time = TimeStamp(config.device)
-
     ones = torch.ones(C.shape[0], device=config.device, dtype=config.dtype)
-
     output = ot.sinkhorn(ones, ones, C.cpu().numpy(), config.sinkhorn_regularization)
-
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
-
     return output
 
 
@@ -166,10 +161,7 @@ def sinkhorn_knopp(
         u = 1 / (K @ v + M_EPS)
 
         if iteration % config.sinkhorn_eval_freq == 0:
-            if (
-                relative_difference(u, prev_u) + relative_difference(v, prev_v)
-                    < config.sinkhorn_threshold * 2
-            ):
+            if is_close(u, prev_u, config) and is_close(v, prev_v, config):
                 break
 
     output = u.reshape(-1, 1) * K * v.reshape(1, -1)
@@ -210,10 +202,7 @@ def loghorn(
             u = -torch.logsumexp(K + v[None, :], 1)
 
         if iteration % config.sinkhorn_eval_freq == 0:
-            if (
-                relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v)
-                    < config.sinkhorn_threshold * 2
-            ):
+            if is_close_log(u, prev_u, config) + is_close_log(v, prev_v, config):
                 break
 
     output = torch.exp(K + u[:, None] + v[None, :])
@@ -251,10 +240,7 @@ def mixhorn(
         u = 1 / (K @ v + M_EPS)
 
         if iteration % config.sinkhorn_eval_freq == 0:
-            if (
-                relative_difference(u, prev_u) + relative_difference(v, prev_v)
-                    < config.sinkhorn_threshold * 2
-            ):
+            if is_close(u, prev_u, config) and is_close(v, prev_v, config):
                 break
 
     K *= v.reshape(1, -1)

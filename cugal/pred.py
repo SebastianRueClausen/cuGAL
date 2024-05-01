@@ -18,12 +18,11 @@ def dense_gradient(
     P: torch.Tensor,
     features: torch.Tensor | Features,
     iteration: int,
-    config: Config,
 ) -> torch.Tensor:
     gradient = -A.T @ P @ B - A @ P @ B.T
 
     if type(features) is Features:
-        gradient = features.add_distance(gradient, config)
+        gradient = features.add_distance(gradient)
     else:
         gradient += features
 
@@ -37,7 +36,6 @@ def sparse_gradient(
     P: torch.Tensor,
     features: torch.Tensor | Features,
     iteration: int,
-    config: Config
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
         gradient = B.mul(A.mul(P).T).T 
@@ -47,7 +45,7 @@ def sparse_gradient(
             - B.mul(A.mul(P).T).T
 
     if type(features) is Features:
-        gradient = features.add_distance(gradient, config)
+        gradient = features.add_distance(gradient)
     else:
         gradient += features
 
