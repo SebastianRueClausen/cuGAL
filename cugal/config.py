@@ -24,7 +24,7 @@ class SinkhornMethod(Enum):
     Sinkhorn-Knopp when the cost matrix has stabilized.
     """
 
-    OT_cpu = 3
+    OT_CPU = 3
     """Use the CPU implementation of the POT library."""
 
 
