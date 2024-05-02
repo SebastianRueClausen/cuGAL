@@ -190,7 +190,6 @@ def wiki_experiment(device: str) -> Experiment:
         frank_wolfe_threshold=0.01,
         recompute_distance=True,
         iter_count=15,
-        recompute_features=True,
         mu=2.0,
     )
     return Experiment(config, wiki_graph(), target_noise=0.05)
@@ -219,4 +218,5 @@ if __name__ == "__main__":
     # result = test(multi_magna_experiment(select_device()), use_fugal=False)
     result = test(wiki_experiment(select_device()))
     print(result)
+    print([p.iteration_count for p in result.profile.sinkhorn_profiles])
     plot_sinkhorn_iterations(result.profile.sinkhorn_profiles)

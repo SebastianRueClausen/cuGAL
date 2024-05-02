@@ -112,6 +112,10 @@ def is_close_log(log_a: torch.Tensor, log_b: torch.Tensor, config: Config) -> fl
     return is_close(log_a.exp(), log_b.exp(), config)
 
 
+def relative_difference(a: torch.Tensor, b: torch.Tensor) -> float:
+    return (abs(a - b).max() / max(abs(a).max(), abs(b).max(), 1)).item()
+
+
 def sinkhorn(
     C: torch.Tensor,
     config: Config,
@@ -203,6 +207,7 @@ def loghorn(
 
         if iteration % config.sinkhorn_eval_freq == 0:
             if is_close_log(u, prev_u, config) + is_close_log(v, prev_v, config):
+            #if relative_difference(u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
 
     output = torch.exp(K + u[:, None] + v[None, :])
