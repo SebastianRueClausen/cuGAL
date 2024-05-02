@@ -87,8 +87,12 @@ def find_quasi_permutation_matrix(
 
     sinkhorn_cache = sinkhorn.init_from_cache_size(config.sinkhorn_cache_size)
 
-    P = torch.full([A.number_of_nodes()] * 2, fill_value=1 /
-                   A.number_of_nodes(), device=config.device, dtype=config.dtype)
+    if type(A) is Adjacency:
+        P = torch.full([A.number_of_nodes()] * 2, fill_value=1 /
+                        A.number_of_nodes(), device=config.device, dtype=config.dtype)
+    else:
+        P = torch.full([A.shape[0]] * 2, fill_value=1 /
+                        A.shape[0], device=config.device, dtype=config.dtype)
 
     for λ in tqdm(range(config.iter_count), desc="λ"):
         for it in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
