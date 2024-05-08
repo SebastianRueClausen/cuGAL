@@ -141,7 +141,7 @@ def sinkhorn_OT_cpu(
     import ot
     start_time = TimeStamp(config.device)
     ones = torch.ones(C.shape[0], device=config.device, dtype=config.dtype)
-    output = ot.sinkhorn(ones, ones, C.cpu(), config.sinkhorn_regularization)
+    output = ot.sinkhorn(ones, ones, C.cpu(), config.sinkhorn_regularization, stopThr=config.sinkhorn_threshold, numItermax=config.sinkhorn_iterations)
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
     return output
 

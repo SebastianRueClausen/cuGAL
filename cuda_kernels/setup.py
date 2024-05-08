@@ -12,10 +12,12 @@ setup(
             'sinkhorn_log.cu',
             'distance.cu',
             'regularize.cu',
+            'hungarian.cu'
         ],
         extra_compile_args={
-            'nvcc': ["--treads", "4",
-                     "-gencode", "arch=compute_87,code=sm_87",]
+            'nvcc': ["--threads", "4",
+                     "-gencode", "arch=compute_87,code=sm_87",
+                     "--library-path=/CuLAP/lib/libculap.a", "--library=libculap",]
         }),
     ],
     cmdclass={

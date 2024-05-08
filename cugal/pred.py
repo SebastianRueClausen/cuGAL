@@ -121,6 +121,7 @@ def find_quasi_permutation_matrix(
 
             if not config.frank_wolfe_threshold is None:
                 if diff.max() < config.frank_wolfe_threshold:
+                    del diff
                     break
             del diff
 
@@ -141,6 +142,8 @@ def convert_to_permutation_matrix(
     start_time = TimeStamp(config.device)
     row_ind, col_ind = scipy.optimize.linear_sum_assignment(
         quasi_permutation, maximize=True)
+    print("HUNGARIAN RETURN:\n", row_ind, "\n", col_ind)
+    #cuda_kernels.hungarian(quasi_permutation)
     profile.log_time(start_time, Phase.HUNGARIAN)
 
     permutation = np.zeros((n, n))
