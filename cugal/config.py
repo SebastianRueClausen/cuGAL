@@ -27,6 +27,17 @@ class SinkhornMethod(Enum):
     OT_CPU = 3
     """Use the CPU implementation of the POT library."""
 
+class HungarianMethod(Enum):
+    """The method used for Hungarian algorithm."""
+
+    SCIPY = 0
+    """Use the scipy implementation of the Hungarian algorithm."""
+    
+    CULAP = 1
+    """Use the CuLAP implementation of the Hungarian algorithm."""
+
+    CUDA = 2
+    """Use the CUDA implementation of the Hungarian algorithm."""
 
 @dataclass
 class Config:
@@ -75,6 +86,9 @@ class Config:
 
     recompute_distance: bool = False
     """Avoid storing distance matrix by doing recalculating each iteration."""
+
+    hungarian_method: HungarianMethod = HungarianMethod.CUDA
+    """The version of Hungarian algorithm used."""
 
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:
         """Convert tensor to correct type and dtype."""

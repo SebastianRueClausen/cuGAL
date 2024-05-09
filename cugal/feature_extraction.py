@@ -9,7 +9,8 @@ import math
 try:
     import cuda_kernels
     has_cuda = True
-except ImportError:
+except ImportError as e:
+    print("IMPORT ERROR:\n", e)
     has_cuda = False
 
 
@@ -74,6 +75,7 @@ class Features:
         """Calculate features of the source and target graph."""
 
         use_cuda = has_cuda and 'cuda' in config.device
+        print(has_cuda, config.device)
 
         if use_cuda:
             source_features = extract_features_cuda(

@@ -7,9 +7,13 @@ from functools import partial
 
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
-from cugal.config import Config
+from cugal.config import Config, HungarianMethod
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import Features
+
+from time import sleep
+
+import cuda_hungarian
 
 try:
     import cuda_kernels
@@ -127,6 +131,43 @@ def find_quasi_permutation_matrix(
 
     return P.cpu()
 
+def hungarian(
+    quasi_permutation: torch.Tensor,
+    config: Config,
+    profile: Profile,
+) -> tuple[np.ndarray, np.ndarray]:
+    match config.hungarian_method:
+        case HungarianMethod.SCIPY:
+            return hungarian_scipy(quasi_permutation, config, profile)
+        case HungarianMethod.CUDA:
+            print("ALNJKSFKDHSHDJKA")
+            return hungarian_cuda(quasi_permutation, config, profile)
+        case _:
+            raise NotImplementedError(f"Unsupported Hungarian method: {config.hungarian_method}")
+        
+def hungarian_scipy(
+    quasi_permutation: torch.Tensor,
+    config: Config,
+    profile: Profile,
+) -> tuple[np.ndarray, np.ndarray]:
+    start_time = TimeStamp(config.device)
+    row_ind, col_ind = scipy.optimize.linear_sum_assignment(
+        quasi_permutation, maximize=True)
+    profile.log_time(start_time, Phase.HUNGARIAN)
+    return row_ind, col_ind
+
+def hungarian_cuda(
+    quasi_permutation: torch.Tensor,
+    config: Config,
+    profile: Profile,
+) -> tuple[np.ndarray, np.ndarray]:
+    print("CUDA_HUNGARIAN")
+    start_time = TimeStamp(config.device)
+    col_ind = cuda_hungarian.hungarian(
+        quasi_permutation.tolist(), maximize=True)
+    profile.log_time(start_time, Phase.HUNGARIAN)
+    return np.array([]), col_ind
+    
 
 def convert_to_permutation_matrix(
     quasi_permutation: torch.Tensor,
@@ -139,19 +180,14 @@ def convert_to_permutation_matrix(
 
     n = len(quasi_permutation)
 
-    start_time = TimeStamp(config.device)
-    row_ind, col_ind = scipy.optimize.linear_sum_assignment(
-        quasi_permutation, maximize=True)
-    print("HUNGARIAN RETURN:\n", row_ind, "\n", col_ind)
-    #cuda_kernels.hungarian(quasi_permutation)
-    profile.log_time(start_time, Phase.HUNGARIAN)
+    row_ind, col_ind = hungarian(quasi_permutation, config, profile)
 
     permutation = np.zeros((n, n))
     mapping = []
 
     for i in range(n):
-        permutation[row_ind[i]][col_ind[i]] = 1
-        mapping.append((row_ind[i], col_ind[i]))
+        permutation[i][col_ind[i]] = 1
+        mapping.append((i, col_ind[i]))
 
     return permutation, mapping
 
