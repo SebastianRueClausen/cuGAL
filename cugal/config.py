@@ -39,6 +39,12 @@ class HungarianMethod(Enum):
     CUDA = 2
     """Use the CUDA implementation of the Hungarian algorithm."""
 
+    CUDA_RAND = 3
+    """Use the CUDA implementation of the Hungarian algorithm with random row order."""
+
+    CUDA_MORE_RAND = 4
+    """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
+
 @dataclass
 class Config:
     """Configuration of the CUGAL algorithm."""

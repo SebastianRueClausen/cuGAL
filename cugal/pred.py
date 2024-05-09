@@ -1,6 +1,7 @@
 import networkx as nx
 import numpy as np
 import scipy
+import scipy.optimize
 import torch
 from tqdm.auto import tqdm
 from functools import partial
@@ -13,7 +14,7 @@ from cugal.feature_extraction import Features
 
 from time import sleep
 
-import cuda_hungarian
+from cugal.hungarian_python import hungarian_algorithm
 
 try:
     import cuda_kernels
@@ -129,7 +130,7 @@ def find_quasi_permutation_matrix(
                     break
             del diff
 
-    return P.cpu()
+    return P
 
 def hungarian(
     quasi_permutation: torch.Tensor,
@@ -140,8 +141,11 @@ def hungarian(
         case HungarianMethod.SCIPY:
             return hungarian_scipy(quasi_permutation, config, profile)
         case HungarianMethod.CUDA:
-            print("ALNJKSFKDHSHDJKA")
-            return hungarian_cuda(quasi_permutation, config, profile)
+            return hungarian_cuda(quasi_permutation, config, profile, rand=0)
+        case HungarianMethod.CUDA_RAND:
+            return hungarian_cuda(quasi_permutation, config, profile, rand=1)
+        case HungarianMethod.CUDA_MORE_RAND:
+            return hungarian_cuda(quasi_permutation, config, profile, rand=3)
         case _:
             raise NotImplementedError(f"Unsupported Hungarian method: {config.hungarian_method}")
         
@@ -150,6 +154,7 @@ def hungarian_scipy(
     config: Config,
     profile: Profile,
 ) -> tuple[np.ndarray, np.ndarray]:
+    quasi_permutation = quasi_permutation.cpu()
     start_time = TimeStamp(config.device)
     row_ind, col_ind = scipy.optimize.linear_sum_assignment(
         quasi_permutation, maximize=True)
@@ -160,11 +165,11 @@ def hungarian_cuda(
     quasi_permutation: torch.Tensor,
     config: Config,
     profile: Profile,
+    rand: int,
 ) -> tuple[np.ndarray, np.ndarray]:
-    print("CUDA_HUNGARIAN")
     start_time = TimeStamp(config.device)
-    col_ind = cuda_hungarian.hungarian(
-        quasi_permutation.tolist(), maximize=True)
+    col_ind = hungarian_algorithm(
+        quasi_permutation, rand=rand)
     profile.log_time(start_time, Phase.HUNGARIAN)
     return np.array([]), col_ind
     
