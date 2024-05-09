@@ -2,10 +2,8 @@
 #include <torch/torch.h>
 #include <vector>
 
-std::vector<float> hungarian(const std::vector<std::vector<float>> &);
+std::vector<int> hungarian(const std::vector<std::vector<float>> &);
 
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
-{
+PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("hungarian", &hungarian, "hungarian algorithm");
-    // m.def("main", &main, "test")
 }
