@@ -1,0 +1,81 @@
+{
+  "acc_names": [
+    "acc"
+  ],
+  "accs": [
+    0
+  ],
+  "algs": [
+    [
+      {
+        "py/repr": "algorithms.FUGAL.Fugal/algorithms.FUGAL.Fugal"
+      },
+      {
+        "iter": 15,
+        "mu": 1,
+        "simple": true
+      },
+      [
+        3
+      ],
+      "FUGAL"
+    ],
+    [
+      {
+        "py/repr": "algorithms.CUGAL.Cugal/algorithms.CUGAL.Cugal"
+      },
+      {
+        "device": "cpu",
+        "iter": 15,
+        "mu": 1,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_method": {
+          "py/reduce": [
+            {
+              "py/type": "cugal.config.SinkhornMethod"
+            },
+            {
+              "py/tuple": [
+                3
+              ]
+            }
+          ]
+        }
+      },
+      [
+        3
+      ],
+      "CUGAL_OT"
+    ]
+  ],
+  "graph_names": [
+    "ca-netscience"
+  ],
+  "graphs": [
+    [
+      {
+        "py/function": "generation.generate.loadnx"
+      },
+      [
+        "data/ca-netscience.txt"
+      ]
+    ]
+  ],
+  "iters": 1,
+  "mall": false,
+  "noises": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "run": [
+    0,
+    6
+  ],
+  "seed": 180381419,
+  "tmp": []
+}
