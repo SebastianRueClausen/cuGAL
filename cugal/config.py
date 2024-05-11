@@ -42,7 +42,7 @@ class HungarianMethod(Enum):
     CUDA_RAND = 3
     """Use the CUDA implementation of the Hungarian algorithm with random row order."""
 
-    CUDA_MORE_RAND = 4
+    BEST_GREEDY = 4
     """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
 
 @dataclass
@@ -93,7 +93,7 @@ class Config:
     recompute_distance: bool = False
     """Avoid storing distance matrix by doing recalculating each iteration."""
 
-    hungarian_method: HungarianMethod = HungarianMethod.CUDA
+    hungarian_method: HungarianMethod = HungarianMethod.MORE_GREEDY
     """The version of Hungarian algorithm used."""
 
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:

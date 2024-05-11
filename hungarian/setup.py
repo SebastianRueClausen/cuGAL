@@ -13,6 +13,7 @@ setup(
             'nvcc': ["--threads", "20",
                      "-gencode", "arch=compute_87,code=sm_87",
                      "-gencode", "arch=compute_86,code=sm_86",
+                     "-std=c++20"
             ]        }),
     ],
     cmdclass={

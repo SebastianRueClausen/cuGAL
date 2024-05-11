@@ -15,6 +15,7 @@ from cugal.feature_extraction import Features
 from time import sleep
 
 from cugal.hungarian_python import hungarian_algorithm
+from cuda_hungarian import hungarian_torch
 
 try:
     import cuda_kernels
@@ -141,14 +142,30 @@ def hungarian(
         case HungarianMethod.SCIPY:
             return hungarian_scipy(quasi_permutation, config, profile)
         case HungarianMethod.CUDA:
-            return hungarian_cuda(quasi_permutation, config, profile, rand=0)
+            #return hungarian_cuda(quasi_permutation, config, profile, rand=0)
+            return hungarian_torch_python(quasi_permutation, config, profile)
         case HungarianMethod.CUDA_RAND:
             return hungarian_cuda(quasi_permutation, config, profile, rand=1)
-        case HungarianMethod.CUDA_MORE_RAND:
+        case HungarianMethod.BEST_GREEDY:
             return hungarian_cuda(quasi_permutation, config, profile, rand=3)
         case _:
             raise NotImplementedError(f"Unsupported Hungarian method: {config.hungarian_method}")
         
+def hungarian_torch_python(
+    quasi_permutation: torch.Tensor,
+    config: Config,
+    profile: Profile,
+) -> tuple[np.ndarray, np.ndarray]:
+    
+    quasi_permutation = quasi_permutation.cpu()
+    quasi_permutation *= -1
+    start_time = TimeStamp(config.device)
+    col_ind = torch.empty(quasi_permutation.size(0), dtype=torch.int32, device='cpu')
+    hungarian_torch(quasi_permutation, col_ind)
+    profile.log_time(start_time, Phase.HUNGARIAN)
+    print(col_ind)
+    return np.array([]), col_ind.tolist()
+
 def hungarian_scipy(
     quasi_permutation: torch.Tensor,
     config: Config,
