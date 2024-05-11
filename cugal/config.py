@@ -93,7 +93,7 @@ class Config:
     recompute_distance: bool = False
     """Avoid storing distance matrix by doing recalculating each iteration."""
 
-    hungarian_method: HungarianMethod = HungarianMethod.MORE_GREEDY
+    hungarian_method: HungarianMethod = HungarianMethod.BEST_GREEDY
     """The version of Hungarian algorithm used."""
 
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:

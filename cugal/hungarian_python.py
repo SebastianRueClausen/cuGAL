@@ -51,7 +51,7 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, rand):
     
     elif rand == 3:
         max_values = cost_matrix.max(dim=1).values
-        [print(", ".join([f"{v:.2f}" for v in V])) for V in cost_matrix.tolist()]
+        #[print(", ".join([f"{v:.2f}" for v in V])) for V in cost_matrix.tolist()]
         order = max_values.argsort(dim=0, descending=True)
 
         taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
