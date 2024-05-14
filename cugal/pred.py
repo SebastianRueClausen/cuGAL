@@ -62,9 +62,9 @@ def sparse_gradient(
     gradient = add_feature_distance(gradient, features)
 
     if has_cuda and 'cuda' in str(P.device):
-        cuda_kernels.regularize(gradient, P, iteration)
+        cuda_kernels.regularize(gradient, P, iteration**2)
     else:
-        gradient += iteration - iteration * 2 * P
+        gradient += iteration - iteration * 2 * P 
     
     return gradient
 
@@ -148,6 +148,8 @@ def hungarian(
             return hungarian_cuda(quasi_permutation, config, profile, rand=1)
         case HungarianMethod.BEST_GREEDY:
             return hungarian_cuda(quasi_permutation, config, profile, rand=3)
+        case HungarianMethod.ENTRO_GREEDY:
+            return hungarian_cuda(quasi_permutation, config, profile, rand=4)
         case _:
             raise NotImplementedError(f"Unsupported Hungarian method: {config.hungarian_method}")
         
@@ -174,7 +176,18 @@ def hungarian_scipy(
     quasi_permutation = quasi_permutation.cpu()
     start_time = TimeStamp(config.device)
     row_ind, col_ind = scipy.optimize.linear_sum_assignment(
-        quasi_permutation, maximize=True)
+        quasi_permutation.clone(), maximize=True)
+    #print(col_ind)
+    scipy_cost = quasi_permutation.clone()[row_ind, col_ind].sum()
+
+    col_ind_greed = hungarian_cuda(quasi_permutation.clone(), config, profile, rand=3)
+    greedy_cost = quasi_permutation.clone()[row_ind, col_ind_greed[1]].sum()
+
+    col_ind_entro = hungarian_cuda(quasi_permutation.clone(), config, profile, rand=4)
+    entro_cost = quasi_permutation.clone()[row_ind, col_ind_entro[1]].sum()
+    
+    print(f"Scipy cost: {scipy_cost}, greedy cost: {greedy_cost}, entro cost: {entro_cost}")
+    print(f"Loss: {scipy_cost - greedy_cost}, {scipy_cost - entro_cost}")
     profile.log_time(start_time, Phase.HUNGARIAN)
     return row_ind, col_ind
 

@@ -45,6 +45,8 @@ class HungarianMethod(Enum):
     BEST_GREEDY = 4
     """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
 
+    ENTRO_GREEDY = 5
+
 @dataclass
 class Config:
     """Configuration of the CUGAL algorithm."""

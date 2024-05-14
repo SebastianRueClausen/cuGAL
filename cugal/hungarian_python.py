@@ -50,9 +50,9 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, rand):
         return res
     
     elif rand == 3:
-        max_values = cost_matrix.max(dim=1).values
-        #[print(", ".join([f"{v:.2f}" for v in V])) for V in cost_matrix.tolist()]
-        order = max_values.argsort(dim=0, descending=True)
+        entropy = cost_matrix.max(dim=1).values
+        [print(", ".join([f"{v:.5f}" for v in V[:10]]), sum(V)) for V in cost_matrix.tolist()[:10]]
+        order = entropy.argsort(dim=0, descending=True)
 
         taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
         res = [0] * n
@@ -60,7 +60,22 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, rand):
             cost_matrix[row] *= taken
             m = cost_matrix[row].argmax()
             taken[m] = 0
-            res[row] = m
+            res[row] = m.item()
+
+        return res
+    elif rand == 4:
+        
+        entropy = -torch.sum(cost_matrix * torch.log(cost_matrix), dim=1)
+        [print(", ".join([f"{v:.5f}" for v in V[:10]]), sum(V)) for V in cost_matrix.tolist()[:10]]
+        order = entropy.argsort(dim=0, descending=False)
+
+        taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
+        res = [0] * n
+        for row in order:
+            cost_matrix[row] *= taken
+            m = cost_matrix[row].argmax()
+            taken[m] = 0
+            res[row] = m.item()
 
         return res
     else:

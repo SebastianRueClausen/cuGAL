@@ -6,6 +6,7 @@ import time
 import scipy
 from sklearn.metrics.pairwise import euclidean_distances
 from fugal import sinkhorn
+from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 
 
 def feature_extraction(G):
@@ -70,7 +71,7 @@ def dist(A, B, P):
     return obj*obj/2
 
 
-def FindQuasiPerm(A, B, D, mu, niter):
+def FindQuasiPerm(A, B, D, mu, niter, profile):
     n = len(A)
     P = torch.ones((n, n), dtype=torch.float64) / n
     ones = torch.ones(n, dtype=torch.float64)
@@ -79,12 +80,19 @@ def FindQuasiPerm(A, B, D, mu, niter):
     K = mu * D
     for i in range(niter):
         for it in range(1, 11):
+            start_time = TimeStamp('cpu')
             G = -torch.mm(torch.mm(A.T, P), B) - \
                 torch.mm(torch.mm(A, P), B.T) + K + i*(mat_ones - 2*P)
+            profile.log_time(start_time, Phase.GRADIENT)
+
+            start_time = TimeStamp('cpu')
             q = sinkhorn.sinkhorn(ones, ones, G, reg,
                                   maxIter=500, stopThr=1e-3)
+            profile.log_time(start_time, Phase.SINKHORN)
+
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)
+
     return P
 
 
@@ -102,7 +110,7 @@ def convertToPermHungarian(M, n1, n2):
     return P, ans
 
 
-def fugal(Gq, Gt, mu, niter):
+def fugal(Gq, Gt, mu, niter, profile: Profile):
     n1 = len(Gq.nodes())
     n2 = len(Gt.nodes())
     n = max(n1, n2)
@@ -111,16 +119,24 @@ def fugal(Gq, Gt, mu, niter):
     for i in range(n2, n):
         Gt.add_node(i)
 
-    A = torch.tensor(nx.to_numpy_array(Gq), dtype=torch.float64)
-    B = torch.tensor(nx.to_numpy_array(Gt), dtype=torch.float64)
+    A = torch.tensor((Gq), dtype=torch.float64)
+    B = torch.tensor((Gt), dtype=torch.float64)
+
+    before = TimeStamp('cpu')
+
     F1 = feature_extraction(Gq)
     F2 = feature_extraction(Gt)
     D = eucledian_dist(F1, F2, n)
     D = torch.tensor(D, dtype=torch.float64)
 
-    P = FindQuasiPerm(A, B, D, mu, niter)
+    profile.log_time(before, Phase.FEATURE_EXTRACTION)
+
+    P = FindQuasiPerm(A, B, D, mu, niter, profile)
+
+    start_time = TimeStamp('cpu')
     P_perm, ans = convertToPermHungarian(P, n1, n2)
-    return ans
+    profile.log_time(start_time, Phase.HUNGARIAN)
+    return P_perm, ans
 
 
 def predict_alignment(queries, targets, mu=1, niter=15):
