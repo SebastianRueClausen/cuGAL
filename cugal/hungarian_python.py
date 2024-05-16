@@ -1,8 +1,9 @@
 import torch
 from random import uniform
 from cugal.config import Config, HungarianMethod
+import numpy as np
 
-def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config):
+def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config) -> np.ndarray:
     """
     Implementation of the Hungarian algorithm using PyTorch.
     
@@ -14,7 +15,7 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config):
     """
     n = cost_matrix.size(1)
     match config.hungarian_method:
-        case HungarianMethod.CUDA:
+        case HungarianMethod.GREEDY:
             res = list()
             taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
             for row in cost_matrix:
@@ -24,7 +25,7 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config):
                 res.append(m)
             return res
 
-        case HungarianMethod.CUDA_RAND:
+        case HungarianMethod.RAND:
             order = torch.randperm(n, device=cost_matrix.device)
             taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
             res = [0] * n
@@ -36,7 +37,7 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config):
 
             return res
     
-        case HungarianMethod.CUDA_MORE_RAND:
+        case HungarianMethod.MORE_RAND:
             order = torch.randperm(n, device=cost_matrix.device)
             taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
             res = [0] * n
@@ -51,7 +52,7 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config):
 
             return res
     
-        case HungarianMethod.BEST_GREEDY:
+        case HungarianMethod.DOUBLE_GREEDY:
             max_values_in_rows = cost_matrix.max(dim=1).values
             #[print(", ".join([f"{v:.4f}" for v in V]), sum(V)) for V in cost_matrix.tolist()]
             #print("number of ones: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)).sum().item())

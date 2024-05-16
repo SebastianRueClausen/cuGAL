@@ -36,16 +36,16 @@ class HungarianMethod(Enum):
     CULAP = 1
     """Use the CuLAP implementation of the Hungarian algorithm."""
 
-    CUDA = 2
+    GREEDY = 2
     """Use the CUDA implementation of the Hungarian algorithm."""
 
-    CUDA_RAND = 3
+    RAND = 3
     """Use the CUDA implementation of the Hungarian algorithm with random row order."""
 
-    CUDA_MORE_RAND = 4
+    MORE_RAND = 4
     """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
 
-    BEST_GREEDY = 5
+    DOUBLE_GREEDY = 5
     """Use the CUDA implementation of the Hungarian algorithm with sorted row order and max column selection."""
 
     ENTRO_GREEDY = 6
@@ -106,7 +106,7 @@ class Config:
     recompute_distance: bool = False
     """Avoid storing distance matrix by doing recalculating each iteration."""
 
-    hungarian_method: HungarianMethod = HungarianMethod.BEST_GREEDY
+    hungarian_method: HungarianMethod = HungarianMethod.DOUBLE_GREEDY
     """The version of Hungarian algorithm used."""
 
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:
