@@ -19,6 +19,8 @@ from time import sleep
 from cugal.hungarian_python import hungarian_algorithm
 from cuda_hungarian import hungarian_torch
 
+from CuLAP import hungarian_algorithm as CuLAP_hungarian
+
 try:
     import cuda_kernels
     has_cuda = True
@@ -143,6 +145,8 @@ def hungarian(
     match config.hungarian_method:
         case HungarianMethod.SCIPY:
             return hungarian_scipy(quasi_permutation, config, profile)
+        case HungarianMethod.CULAP:
+            return CuLAP_hungarian_init(quasi_permutation, config, profile)
         case HungarianMethod.GREEDY:
             return hungarian_torch_python(quasi_permutation, config, profile)
         case HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.ENTRO_GREEDY | HungarianMethod.PARALLEL_GREEDY:
@@ -196,6 +200,17 @@ def jv_hungarian(
     col_ind, _, _ = lapjv.lapjv((quasi_permutation * -1).cpu().numpy())
     profile.log_time(start_time, Phase.HUNGARIAN)
     return col_ind    
+
+def CuLAP_hungarian_init(
+    quasi_permutation: torch.Tensor,
+    config: Config,
+    profile: Profile,
+) -> np.ndarray:
+    start_time = TimeStamp(config.device)
+    col_ind = torch.empty(quasi_permutation.size(0), dtype=torch.int32, device='cpu')
+    CuLAP_hungarian(quasi_permutation.cpu(), col_ind)
+    profile.log_time(start_time, Phase.HUNGARIAN)
+    return col_ind
 
 def convert_to_permutation_matrix(
     quasi_permutation: torch.Tensor,
