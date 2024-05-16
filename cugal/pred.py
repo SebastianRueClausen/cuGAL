@@ -144,12 +144,10 @@ def hungarian(
         case HungarianMethod.CUDA:
             #return hungarian_cuda(quasi_permutation, config, profile, rand=0)
             return hungarian_torch_python(quasi_permutation, config, profile)
-        case HungarianMethod.CUDA_RAND:
-            return hungarian_cuda(quasi_permutation, config, profile, rand=1)
-        case HungarianMethod.BEST_GREEDY:
-            return hungarian_cuda(quasi_permutation, config, profile, rand=3)
-        case HungarianMethod.ENTRO_GREEDY:
-            return hungarian_cuda(quasi_permutation, config, profile, rand=4)
+        case HungarianMethod.CUDA_RAND, HungarianMethod.BEST_GREEDY, HungarianMethod.ENTRO_GREEDY:
+            return hungarian_cuda(quasi_permutation, config, profile)
+        case HungarianMethod.JV:
+            return hungarian_cuda(quasi_permutation, config, profile, rand=5)
         case _:
             raise NotImplementedError(f"Unsupported Hungarian method: {config.hungarian_method}")
         
@@ -165,7 +163,7 @@ def hungarian_torch_python(
     col_ind = torch.empty(quasi_permutation.size(0), dtype=torch.int32, device='cpu')
     hungarian_torch(quasi_permutation, col_ind)
     profile.log_time(start_time, Phase.HUNGARIAN)
-    print(col_ind)
+    #print(col_ind)
     return np.array([]), col_ind.tolist()
 
 def hungarian_scipy(
@@ -199,7 +197,7 @@ def hungarian_cuda(
 ) -> tuple[np.ndarray, np.ndarray]:
     start_time = TimeStamp(config.device)
     col_ind = hungarian_algorithm(
-        quasi_permutation, rand=rand)
+        quasi_permutation, config)
     profile.log_time(start_time, Phase.HUNGARIAN)
     return np.array([]), col_ind
     

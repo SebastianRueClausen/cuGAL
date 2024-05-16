@@ -42,10 +42,17 @@ class HungarianMethod(Enum):
     CUDA_RAND = 3
     """Use the CUDA implementation of the Hungarian algorithm with random row order."""
 
-    BEST_GREEDY = 4
+    CUDA_MORE_RAND = 4
     """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
 
-    ENTRO_GREEDY = 5
+    BEST_GREEDY = 5
+    """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
+
+    ENTRO_GREEDY = 6
+    """Use the CUDA implementation of the Hungarian algorithm with row order based on entropy and max column selection."""
+
+    JV = 7
+    """Use the Jonker-Volgenant Algorithm."""
 
 @dataclass
 class Config:

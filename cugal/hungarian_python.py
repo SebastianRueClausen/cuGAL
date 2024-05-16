@@ -1,7 +1,8 @@
 import torch
 from random import uniform
+from cugal.config import Config, HungarianMethod
 
-def hungarian_algorithm(cost_matrix: torch.Tensor, rand):
+def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config):
     """
     Implementation of the Hungarian algorithm using PyTorch.
     
@@ -12,74 +13,83 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, rand):
         list of tuples: A list of tuples where each tuple contains the row and column indices indicating the assignments.
     """
     n = cost_matrix.size(1)
-    if rand == 0:
-        res = list()
-        taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
-        for row in cost_matrix:
-            row *= taken
-            m = row.argmax()
-            taken[m] = 0
-            res.append(m)
-        return res
+    match config.hungarian_method:
+        case HungarianMethod.CUDA:
+            res = list()
+            taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
+            for row in cost_matrix:
+                row *= taken
+                m = row.argmax()
+                taken[m] = 0
+                res.append(m)
+            return res
 
-    elif rand == 1:
-        order = torch.randperm(n, device=cost_matrix.device)
-        taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
-        res = [0] * n
-        for row in order:
-            cost_matrix[row] *= taken
-            m = cost_matrix[row].argmax()
-            taken[m] = 0
-            res[row] = m
+        case HungarianMethod.CUDA_RAND:
+            order = torch.randperm(n, device=cost_matrix.device)
+            taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
+            res = [0] * n
+            for row in order:
+                cost_matrix[row] *= taken
+                m = cost_matrix[row].argmax()
+                taken[m] = 0
+                res[row] = m
 
-        return res
+            return res
     
-    elif rand == 2:
-        order = torch.randperm(n, device=cost_matrix.device)
-        taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
-        res = [0] * n
-        for row in order:
-            cost_matrix[row] *= taken
-            cumsum = torch.cumsum(cost_matrix[row], dim=0)
-            r = uniform(0, cumsum[-1])
-            mask = r <= cumsum
-            m = mask.nonzero()[0]
-            taken[m] = 0
-            res[row] = m.item()
+        case HungarianMethod.CUDA_MORE_RAND:
+            order = torch.randperm(n, device=cost_matrix.device)
+            taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
+            res = [0] * n
+            for row in order:
+                cost_matrix[row] *= taken
+                cumsum = torch.cumsum(cost_matrix[row], dim=0)
+                r = uniform(0, cumsum[-1])
+                mask = r <= cumsum
+                m = mask.nonzero()[0]
+                taken[m] = 0
+                res[row] = m.item()
 
-        return res
+            return res
     
-    elif rand == 3:
-        entropy = cost_matrix.max(dim=1).values
-        [print(", ".join([f"{v:.5f}" for v in V[:10]]), sum(V)) for V in cost_matrix.tolist()[:10]]
-        order = entropy.argsort(dim=0, descending=True)
-
-        taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
-        res = [0] * n
-        for row in order:
-            cost_matrix[row] *= taken
-            m = cost_matrix[row].argmax()
-            taken[m] = 0
-            res[row] = m.item()
-
-        return res
-    elif rand == 4:
+        case HungarianMethod.BEST_GREEDY:
+            max_values = cost_matrix.max(dim=1).values
+            [print(", ".join([f"{v:.4f}" for v in V]), sum(V)) for V in cost_matrix.tolist()]
+            print("number of ones: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)).sum().item())
+            print("number of half: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.5).sum().item())
+            print("number of thirds: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.333333333333333).sum().item())
+            print("number of fourths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.25).sum().item())
+            print("number of fifths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.2).sum().item())
+            print("number of sixths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.166666666666666).sum().item())
+            print("number of sevenths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.142857142857142).sum().item())
+            print("number of eights: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.125).sum().item())
+            order = max_values.argsort(dim=0, descending=True)
+    
+            taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
+            res = [0] * n
+            for row in order:
+                cost_matrix[row] *= taken
+                m = cost_matrix[row].argmax()
+                taken[m] = 0
+                res[row] = m.item()
+    
+            return res
+        case HungarianMethod.ENTRO_GREEDY:
         
-        entropy = -torch.sum(cost_matrix * torch.log(cost_matrix), dim=1)
-        [print(", ".join([f"{v:.5f}" for v in V[:10]]), sum(V)) for V in cost_matrix.tolist()[:10]]
-        order = entropy.argsort(dim=0, descending=False)
+            entropy = -torch.sum(cost_matrix * torch.log(cost_matrix), dim=1)
+            [print(", ".join([f"{v:.5f}" for v in V[:10]]), sum(V)) for V in cost_matrix.tolist()[:10]]
+            order = entropy.argsort(dim=0, descending=False)
 
-        taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
-        res = [0] * n
-        for row in order:
-            cost_matrix[row] *= taken
-            m = cost_matrix[row].argmax()
-            taken[m] = 0
-            res[row] = m.item()
+            taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
+            res = [0] * n
+            for row in order:
+                cost_matrix[row] *= taken
+                m = cost_matrix[row].argmax()
+                taken[m] = 0
+                res[row] = m.item()
 
-        return res
-    else:
-        raise ValueError("Invalid value for rand. Must be 0, 1, 2 or 3.")
+            return res
+        case _:
+            raise ValueError("Invalid value for rand. Must be 0, 1, 2 or 3.")
 
 
     num_agents, num_tasks = cost_matrix.size()
