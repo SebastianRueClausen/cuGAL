@@ -46,13 +46,17 @@ class HungarianMethod(Enum):
     """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
 
     BEST_GREEDY = 5
-    """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
+    """Use the CUDA implementation of the Hungarian algorithm with sorted row order and max column selection."""
 
     ENTRO_GREEDY = 6
     """Use the CUDA implementation of the Hungarian algorithm with row order based on entropy and max column selection."""
 
     JV = 7
     """Use the Jonker-Volgenant Algorithm."""
+
+    PARALLEL_GREEDY = 8
+    """BEST_GREEDY with parallel computation of the assignements above 0.5"""
+
 
 @dataclass
 class Config:

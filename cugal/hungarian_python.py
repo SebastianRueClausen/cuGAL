@@ -52,17 +52,17 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config):
             return res
     
         case HungarianMethod.BEST_GREEDY:
-            max_values = cost_matrix.max(dim=1).values
-            [print(", ".join([f"{v:.4f}" for v in V]), sum(V)) for V in cost_matrix.tolist()]
-            print("number of ones: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)).sum().item())
-            print("number of half: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.5).sum().item())
-            print("number of thirds: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.333333333333333).sum().item())
-            print("number of fourths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.25).sum().item())
-            print("number of fifths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.2).sum().item())
-            print("number of sixths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.166666666666666).sum().item())
-            print("number of sevenths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.142857142857142).sum().item())
-            print("number of eights: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.125).sum().item())
-            order = max_values.argsort(dim=0, descending=True)
+            max_values_in_rows = cost_matrix.max(dim=1).values
+            #[print(", ".join([f"{v:.4f}" for v in V]), sum(V)) for V in cost_matrix.tolist()]
+            #print("number of ones: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)).sum().item())
+            #print("number of half: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.5).sum().item())
+            #print("number of thirds: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.333333333333333).sum().item())
+            #print("number of fourths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.25).sum().item())
+            #print("number of fifths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.2).sum().item())
+            #print("number of sixths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.166666666666666).sum().item())
+            #print("number of sevenths: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.142857142857142).sum().item())
+            #print("number of eights: \t", cost_matrix.isclose(torch.ones_like(cost_matrix)*0.125).sum().item())
+            order = max_values_in_rows.argsort(dim=0, descending=True)
     
             taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
             res = [0] * n
@@ -73,6 +73,27 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config):
                 res[row] = m.item()
     
             return res
+        
+        case HungarianMethod.PARALLEL_GREEDY:
+            max_values_in_rows, max_col_in_rows = cost_matrix.max(dim=1)
+            order_values, order = max_values_in_rows.sort(dim=0, descending=True)
+            half_mask = order_values > 0.5
+            parallel_rows = order[half_mask]
+
+            res = torch.zeros(n, device=cost_matrix.device, dtype=torch.long)
+            res[parallel_rows] = max_col_in_rows[parallel_rows]
+
+            taken = torch.ones(n, device=cost_matrix.device, dtype=cost_matrix.dtype)
+            taken[max_col_in_rows[parallel_rows]] = 0
+
+            for row in order[~half_mask]:
+                cost_matrix[row] *= taken
+                m = cost_matrix[row].argmax()
+                taken[m] = 0
+                res[row] = m.item()
+    
+            return res
+        
         case HungarianMethod.ENTRO_GREEDY:
         
             entropy = -torch.sum(cost_matrix * torch.log(cost_matrix), dim=1)
@@ -89,7 +110,7 @@ def hungarian_algorithm(cost_matrix: torch.Tensor, config: Config):
 
             return res
         case _:
-            raise ValueError("Invalid value for rand. Must be 0, 1, 2 or 3.")
+            raise ValueError("The method {} is not supported".format(config.hungarian_method))
 
 
     num_agents, num_tasks = cost_matrix.size()
