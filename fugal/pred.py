@@ -119,8 +119,8 @@ def fugal(Gq, Gt, mu, niter, profile: Profile):
     for i in range(n2, n):
         Gt.add_node(i)
 
-    A = torch.tensor((Gq), dtype=torch.float64)
-    B = torch.tensor((Gt), dtype=torch.float64)
+    A = torch.tensor((nx.to_numpy_array(Gq)), dtype=torch.float64)
+    B = torch.tensor((nx.to_numpy_array(Gt)), dtype=torch.float64)
 
     before = TimeStamp('cpu')
 

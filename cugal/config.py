@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
+from _collections_abc import Callable
 
 import torch
 
@@ -108,6 +109,9 @@ class Config:
 
     hungarian_method: HungarianMethod = HungarianMethod.DOUBLE_GREEDY
     """The version of Hungarian algorithm used."""
+
+    lambda_func: Callable[[int], int] = lambda x: x
+    """The function used to compute the regularization parameter."""
 
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:
         """Convert tensor to correct type and dtype."""

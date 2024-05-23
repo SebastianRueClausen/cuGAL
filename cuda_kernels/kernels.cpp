@@ -8,7 +8,6 @@ void graph_features(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor);
 void average_neighbor_features(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor);
 void add_distance(torch::Tensor, torch::Tensor, torch::Tensor);
 void regularize(torch::Tensor, torch::Tensor, int);
-void hungarian(torch::Tensor, torch::Tensor);
 
 void create_adjacency(torch::Tensor edges, torch::Tensor col_indices, torch::Tensor row_pointers)
 {
@@ -29,5 +28,4 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
   m.def("average_neighbor_features", &average_neighbor_features, "find average of features among neighbors of each vertex in the graph");
   m.def("add_distance", &add_distance, "add euclidean distance to matrix");
   m.def("regularize", &regularize, "regularize matrix");
-  m.def("hungarian", &hungarian, "hungarian algorithm from CuLAP library");
 }

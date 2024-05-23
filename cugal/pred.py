@@ -17,9 +17,9 @@ from cugal.feature_extraction import Features
 from time import sleep
 
 from cugal.hungarian_python import hungarian_algorithm
-from cuda_hungarian import hungarian_torch
+#from cuda_hungarian import hungarian_torch
 
-from CuLAP import hungarian_algorithm as CuLAP_hungarian
+#from culap import hungarian as culap_hungarian
 
 try:
     import cuda_kernels
@@ -66,7 +66,7 @@ def sparse_gradient(
     gradient = add_feature_distance(gradient, features)
 
     if has_cuda and 'cuda' in str(P.device):
-        cuda_kernels.regularize(gradient, P, iteration**2)
+        cuda_kernels.regularize(gradient, P, iteration)
     else:
         gradient += iteration - iteration * 2 * P 
     
@@ -109,7 +109,7 @@ def find_quasi_permutation_matrix(
             start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
-            gradient = gradient_function(P, features, λ)
+            gradient = gradient_function(P, features, config.lambda_func(λ))
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
@@ -129,11 +129,14 @@ def find_quasi_permutation_matrix(
 
             P += diff
 
+            #print(torch.trace(P.T @ (1 - P)))
+
             if not config.frank_wolfe_threshold is None:
                 if diff.max() < config.frank_wolfe_threshold:
                     del diff
                     break
             del diff
+
 
     return P
 
@@ -146,7 +149,8 @@ def hungarian(
         case HungarianMethod.SCIPY:
             return hungarian_scipy(quasi_permutation, config, profile)
         case HungarianMethod.CULAP:
-            return CuLAP_hungarian_init(quasi_permutation, config, profile)
+            raise NotImplementedError("CuLAP is not supported in this version")
+            #return CuLAP_hungarian_init(quasi_permutation, config, profile)
         case HungarianMethod.GREEDY:
             return hungarian_torch_python(quasi_permutation, config, profile)
         case HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.ENTRO_GREEDY | HungarianMethod.PARALLEL_GREEDY:
