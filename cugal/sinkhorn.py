@@ -103,18 +103,28 @@ def can_use_cuda(config: Config) -> bool:
         torch.float32, torch.float16]
 
 
-def is_close(a: torch.Tensor, b: torch.Tensor, config: Config) -> float:
-    return torch.allclose(a, b, rtol=0.05, atol=config.sinkhorn_threshold) 
+def is_close(a: torch.Tensor, b: torch.Tensor, config: Config) -> bool:
+    return torch.allclose(a, b, rtol=0, atol=config.sinkhorn_threshold) 
 
 
-def is_close_log(log_a: torch.Tensor, log_b: torch.Tensor, config: Config) -> float:
+def is_close_log(log_a: torch.Tensor, log_b: torch.Tensor, config: Config) -> bool:
     log_a, log_b = log_a.to(dtype=torch.float64), log_b.to(dtype=torch.float64)
-    return is_close(log_a.exp(), log_b.exp(), config)
+    log_a_exp = log_a.exp()
+    log_b_exp = log_b.exp()
+    #print("Percent less than threshold: \n", torch.max(torch.abs(log_a - log_b)))
+    return is_close(log_a_exp, log_b_exp, config)
 
 
 def relative_difference(a: torch.Tensor, b: torch.Tensor) -> float:
-    return (abs(a - b).max() / max(abs(a).max(), abs(b).max(), 1)).item()
+    res = (abs(a - b).max() / max(abs(a).max(), abs(b).max(), 1)).item()
+    #print(res)
+    return res
 
+def relative_difference_log(a: torch.Tensor, b: torch.Tensor) -> float:
+    log_a, log_b = a.to(dtype=torch.float64), b.to(dtype=torch.float64)
+    log_a_exp = log_a.exp()
+    log_b_exp = log_b.exp()
+    return relative_difference(log_a_exp, log_b_exp)
 
 def sinkhorn(
     C: torch.Tensor,
@@ -195,8 +205,8 @@ def loghorn(
     v = torch.zeros(K.shape[1], device=config.device, dtype=config.dtype)
 
     for iteration in range(config.sinkhorn_iterations):
-        prev_v = v
-        prev_u = u
+        prev_v = torch.clone(v)
+        prev_u = torch.clone(u)
 
         if use_cuda:
             cuda_kernels.sinkhorn_step(K_transpose, u, v)
@@ -205,9 +215,11 @@ def loghorn(
             v = -torch.logsumexp(K + u[:, None], 0)
             u = -torch.logsumexp(K + v[None, :], 1)
 
-        if iteration % config.sinkhorn_eval_freq == 0:
-            if is_close_log(u, prev_u, config) + is_close_log(v, prev_v, config):
-            #if relative_difference(u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
+        if iteration % config.sinkhorn_eval_freq == 0 and iteration != 0:
+            #u_close = is_close_log(u, prev_u, config) 
+            #v_close = is_close_log(v, prev_v, config)
+            #if u_close and v_close:
+            if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
 
     output = torch.exp(K + u[:, None] + v[None, :])
@@ -244,9 +256,9 @@ def mixhorn(
         v = 1 / (u @ K + M_EPS)
         u = 1 / (K @ v + M_EPS)
 
-        if iteration % config.sinkhorn_eval_freq == 0:
-            if is_close(u, prev_u, config) and is_close(v, prev_v, config):
-                break
+        #if iteration % config == 0:
+        if relative_difference (u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
+            break
 
     K *= v.reshape(1, -1)
     K *= u.reshape(-1, 1)
