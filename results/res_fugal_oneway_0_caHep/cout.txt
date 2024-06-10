@@ -1,0 +1,1119 @@
+2024-05-31 09:07:55,640 - e.ex - INFO - Running command 'main'
+2024-05-31 09:07:55,645 - e.ex - INFO - Started run with ID "598"
+init1
+[[<function loadnx at 0x7f8dd3c31bc0>, [['data/ca-HepPh-remapped.txt']]]]
+<function loadnx at 0x7f8dd3c31bc0> ['data/ca-HepPh-remapped.txt']
+init2
+C
+##<1>##
+11204 12008
+##<1>##
+11204 12008
+2024-05-31 09:07:57,245 - e.main - INFO - randcheck: (0.8521051667032807, 0.7126428361836165)
+runs/598
+2024-05-31 09:07:57,246 - e.run_exp - INFO - Graph:(1/1)
+2024-05-31 09:07:57,246 - e.run_exp - INFO - Noise_level:(1/1)
+2024-05-31 09:07:57,246 - e.run_exp - INFO - iteration:(1/1)
+2024-05-31 09:07:57,800 - e.run_algs - WARNING - Disc. Source: 11204 < 12008
+2024-05-31 09:07:57,800 - e.run_algs - WARNING - Disc. Target: 11204 < 12008
+args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/598', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+Graphs have been padded to size 12008
+Feature extraction
+/opt/anaconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3504: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/opt/anaconda3/lib/python3.11/site-packages/numpy/core/_methods.py:129: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+Calculating eucledian distance
+Start time:  1717146480.2837791
+Elapsed time:  76.90107011795044
+Finding quasi permutation
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717146557.4454246
+Elapsed time:  13.094093799591064
+Start time:  1717146570.5395863
+Elapsed time:  0.03715705871582031
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [12008], which does not match the required output shape [1, 12008]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Start time:  1717146570.539585
+Elapsed time:  22.60655951499939
+
+frank-wolfe:  10%|█         | 1/10 [00:36<05:26, 36.28s/it][AStart time:  1717146593.722284
+Elapsed time:  13.160871982574463
+Start time:  1717146606.8832057
+Elapsed time:  0.03690075874328613
+Start time:  1717146606.883205
+Elapsed time:  20.957900285720825
+
+frank-wolfe:  20%|██        | 2/10 [01:10<04:42, 35.34s/it][AStart time:  1717146628.4142013
+Elapsed time:  13.306203126907349
+Start time:  1717146641.7204542
+Elapsed time:  0.04284095764160156
+Start time:  1717146641.7204533
+Elapsed time:  22.436272859573364
+
+frank-wolfe:  30%|███       | 3/10 [01:47<04:10, 35.76s/it][AStart time:  1717146664.670688
+Elapsed time:  12.453104972839355
+Start time:  1717146677.1238425
+Elapsed time:  0.041031837463378906
+Start time:  1717146677.1238418
+Elapsed time:  22.733567237854004
+
+frank-wolfe:  40%|████      | 4/10 [02:22<03:34, 35.76s/it][AStart time:  1717146700.4330146
+Elapsed time:  13.016193628311157
+Start time:  1717146713.4492598
+Elapsed time:  0.03692770004272461
+Start time:  1717146713.4492593
+Elapsed time:  24.773261070251465
+
+frank-wolfe:  50%|█████     | 5/10 [03:01<03:03, 36.70s/it][AStart time:  1717146738.796273
+Elapsed time:  12.619180679321289
+Start time:  1717146751.4155023
+Elapsed time:  0.037001848220825195
+Start time:  1717146751.4155016
+Elapsed time:  21.07591724395752
+
+frank-wolfe:  60%|██████    | 6/10 [03:35<02:23, 35.86s/it][AStart time:  1717146773.0257185
+Elapsed time:  12.40996527671814
+Start time:  1717146785.4357345
+Elapsed time:  0.0371088981628418
+Start time:  1717146785.435734
+Elapsed time:  21.515124559402466
+
+frank-wolfe:  70%|███████   | 7/10 [04:10<01:46, 35.40s/it][AStart time:  1717146807.4638183
+Elapsed time:  12.817918539047241
+Start time:  1717146820.28179
+Elapsed time:  0.04206967353820801
+Start time:  1717146820.2817895
+Elapsed time:  25.33044719696045
+
+frank-wolfe:  80%|████████  | 8/10 [04:48<01:12, 36.46s/it][AStart time:  1717146846.1926022
+Elapsed time:  13.131042242050171
+Start time:  1717146859.3236947
+Elapsed time:  0.04235196113586426
+Start time:  1717146859.323694
+Elapsed time:  23.468908071517944
+
+frank-wolfe:  90%|█████████ | 9/10 [05:25<00:36, 36.68s/it][AStart time:  1717146883.3701801
+Elapsed time:  13.398355484008789
+Start time:  1717146896.7685835
+Elapsed time:  0.03685593605041504
+Start time:  1717146896.7685828
+Elapsed time:  21.111512422561646
+
+frank-wolfe: 100%|██████████| 10/10 [06:00<00:00, 36.17s/it][A
+                                                            [Aλ:   7%|▋         | 1/15 [06:00<1:24:13, 360.95s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717146918.3958087
+Elapsed time:  12.395931720733643
+Start time:  1717146930.7917933
+Elapsed time:  0.03701448440551758
+Start time:  1717146930.7917926
+Elapsed time:  20.983720541000366
+
+frank-wolfe:  10%|█         | 1/10 [00:33<05:05, 33.97s/it][AStart time:  1717146952.3692505
+Elapsed time:  12.446988821029663
+Start time:  1717146964.8162894
+Elapsed time:  0.03701186180114746
+Start time:  1717146964.8162885
+Elapsed time:  22.179607629776
+
+frank-wolfe:  20%|██        | 2/10 [01:09<04:37, 34.67s/it][AStart time:  1717146987.5194812
+Elapsed time:  12.510943174362183
+Start time:  1717147000.0304768
+Elapsed time:  0.03716087341308594
+Start time:  1717147000.030476
+Elapsed time:  21.033094882965088
+
+frank-wolfe:  30%|███       | 3/10 [01:43<04:00, 34.42s/it][AStart time:  1717147021.6401558
+Elapsed time:  12.45792293548584
+Start time:  1717147034.0981283
+Elapsed time:  0.03676104545593262
+Start time:  1717147034.0981278
+Elapsed time:  22.64500904083252
+
+frank-wolfe:  40%|████      | 4/10 [02:18<03:29, 34.92s/it][AStart time:  1717147057.3322291
+Elapsed time:  13.822390079498291
+Start time:  1717147071.1546667
+Elapsed time:  0.04285860061645508
+Start time:  1717147071.1546662
+Elapsed time:  22.916979789733887
+
+frank-wolfe:  50%|█████     | 5/10 [02:56<02:58, 35.77s/it][AStart time:  1717147094.5979738
+Elapsed time:  12.874245166778564
+Start time:  1717147107.4722614
+Elapsed time:  0.04189753532409668
+Start time:  1717147107.4722612
+Elapsed time:  24.21387767791748
+
+frank-wolfe:  60%|██████    | 6/10 [03:33<02:25, 36.42s/it][AStart time:  1717147132.2733893
+Elapsed time:  13.588148355484009
+Start time:  1717147145.861586
+Elapsed time:  0.03704643249511719
+Start time:  1717147145.8615856
+Elapsed time:  21.819623231887817
+
+frank-wolfe:  70%|███████   | 7/10 [04:09<01:48, 36.28s/it][AStart time:  1717147168.2846122
+Elapsed time:  13.655397653579712
+Start time:  1717147181.940058
+Elapsed time:  0.04261660575866699
+Start time:  1717147181.9400575
+Elapsed time:  22.814849138259888
+
+frank-wolfe:  80%|████████  | 8/10 [04:46<01:13, 36.51s/it][AStart time:  1717147205.2872589
+Elapsed time:  12.386028289794922
+Start time:  1717147217.6733487
+Elapsed time:  0.03712821006774902
+Start time:  1717147217.6733475
+Elapsed time:  25.43713116645813
+
+frank-wolfe:  90%|█████████ | 9/10 [05:25<00:37, 37.12s/it][AStart time:  1717147243.7287705
+Elapsed time:  14.239795207977295
+Start time:  1717147257.9686115
+Elapsed time:  0.041606903076171875
+Start time:  1717147257.968611
+Elapsed time:  27.09799599647522
+
+frank-wolfe: 100%|██████████| 10/10 [06:07<00:00, 38.61s/it][A
+                                                            [Aλ:  13%|█▎        | 2/15 [12:08<1:19:00, 364.68s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717147285.6791139
+Elapsed time:  14.080595254898071
+Start time:  1717147299.7597632
+Elapsed time:  0.04070901870727539
+Start time:  1717147299.7597625
+Elapsed time:  26.695560455322266
+
+frank-wolfe:  10%|█         | 1/10 [00:41<06:12, 41.43s/it][AStart time:  1717147327.1097536
+Elapsed time:  13.476120710372925
+Start time:  1717147340.5859241
+Elapsed time:  0.042682647705078125
+Start time:  1717147340.5859237
+Elapsed time:  25.099571466445923
+
+frank-wolfe:  20%|██        | 2/10 [01:20<05:20, 40.12s/it][AStart time:  1717147366.3093538
+Elapsed time:  12.70137095451355
+Start time:  1717147379.0107758
+Elapsed time:  0.03757810592651367
+Start time:  1717147379.0107753
+Elapsed time:  21.19610333442688
+
+frank-wolfe:  30%|███       | 3/10 [01:55<04:22, 37.54s/it][AStart time:  1717147400.771992
+Elapsed time:  12.444038152694702
+Start time:  1717147413.216081
+Elapsed time:  0.03704023361206055
+Start time:  1717147413.2160804
+Elapsed time:  21.42528223991394
+
+frank-wolfe:  40%|████      | 4/10 [02:29<03:37, 36.32s/it][AStart time:  1717147435.22574
+Elapsed time:  12.560242652893066
+Start time:  1717147447.7860346
+Elapsed time:  0.03687930107116699
+Start time:  1717147447.7860336
+Elapsed time:  21.64153289794922
+
+frank-wolfe:  50%|█████     | 5/10 [03:04<02:58, 35.78s/it][AStart time:  1717147470.0564475
+Elapsed time:  13.321527004241943
+Start time:  1717147483.3780274
+Elapsed time:  0.04312252998352051
+Start time:  1717147483.378027
+Elapsed time:  22.199584007263184
+
+frank-wolfe:  60%|██████    | 6/10 [03:40<02:23, 35.89s/it][AStart time:  1717147506.1416197
+Elapsed time:  12.43229341506958
+Start time:  1717147518.5739627
+Elapsed time:  0.03706550598144531
+Start time:  1717147518.573962
+Elapsed time:  20.9237220287323
+
+frank-wolfe:  70%|███████   | 7/10 [04:14<01:45, 35.27s/it][AStart time:  1717147540.131018
+Elapsed time:  12.473606824874878
+Start time:  1717147552.6046753
+Elapsed time:  0.03703641891479492
+Start time:  1717147552.6046746
+Elapsed time:  22.238866329193115
+
+frank-wolfe:  80%|████████  | 8/10 [04:49<01:10, 35.29s/it][AStart time:  1717147575.469369
+Elapsed time:  13.256384372711182
+Start time:  1717147588.7258046
+Elapsed time:  0.03697490692138672
+Start time:  1717147588.7258039
+Elapsed time:  21.131288290023804
+
+frank-wolfe:  90%|█████████ | 9/10 [05:24<00:35, 35.18s/it][AStart time:  1717147610.4257581
+Elapsed time:  12.459356784820557
+Start time:  1717147622.8851655
+Elapsed time:  0.037142276763916016
+Start time:  1717147622.8851647
+Elapsed time:  20.885234832763672
+
+frank-wolfe: 100%|██████████| 10/10 [05:58<00:00, 34.79s/it][A
+                                                            [Aλ:  20%|██        | 3/15 [18:06<1:12:23, 361.93s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717147644.332305
+Elapsed time:  12.440033435821533
+Start time:  1717147656.7723885
+Elapsed time:  0.03713083267211914
+Start time:  1717147656.7723877
+Elapsed time:  20.85482883453369
+
+frank-wolfe:  10%|█         | 1/10 [00:33<05:04, 33.87s/it][AStart time:  1717147678.2044423
+Elapsed time:  12.941834449768066
+Start time:  1717147691.1463273
+Elapsed time:  0.042787790298461914
+Start time:  1717147691.1463268
+Elapsed time:  23.802454948425293
+
+frank-wolfe:  20%|██        | 2/10 [01:11<04:47, 35.89s/it][AStart time:  1717147715.5132277
+Elapsed time:  12.704516887664795
+Start time:  1717147728.2177927
+Elapsed time:  0.04082345962524414
+Start time:  1717147728.2177923
+Elapsed time:  25.95739221572876
+
+frank-wolfe:  30%|███       | 3/10 [01:50<04:22, 37.44s/it][AStart time:  1717147754.8034139
+Elapsed time:  12.9550461769104
+Start time:  1717147767.7585073
+Elapsed time:  0.042456626892089844
+Start time:  1717147767.7585068
+Elapsed time:  23.84938383102417
+
+frank-wolfe:  40%|████      | 4/10 [02:27<03:44, 37.43s/it][AStart time:  1717147792.2228172
+Elapsed time:  13.197880268096924
+Start time:  1717147805.420747
+Elapsed time:  0.04257941246032715
+Start time:  1717147805.4207466
+Elapsed time:  23.035481691360474
+
+frank-wolfe:  50%|█████     | 5/10 [03:04<03:06, 37.23s/it][AStart time:  1717147829.0944967
+Elapsed time:  13.466745853424072
+Start time:  1717147842.5612931
+Elapsed time:  0.04210186004638672
+Start time:  1717147842.5612926
+Elapsed time:  24.83102297782898
+
+frank-wolfe:  60%|██████    | 6/10 [03:43<02:31, 37.81s/it][AStart time:  1717147868.0245454
+Elapsed time:  12.93912935256958
+Start time:  1717147880.9637282
+Elapsed time:  0.03924703598022461
+Start time:  1717147880.9637275
+Elapsed time:  24.11168122291565
+
+frank-wolfe:  70%|███████   | 7/10 [04:21<01:53, 37.77s/it][AStart time:  1717147905.7121282
+Elapsed time:  13.5720374584198
+Start time:  1717147919.2842202
+Elapsed time:  0.04101157188415527
+Start time:  1717147919.28422
+Elapsed time:  25.748884916305542
+
+frank-wolfe:  80%|████████  | 8/10 [05:01<01:16, 38.47s/it][AStart time:  1717147945.6712742
+Elapsed time:  14.244242906570435
+Start time:  1717147959.9155707
+Elapsed time:  0.039742231369018555
+Start time:  1717147959.9155705
+Elapsed time:  23.601210594177246
+
+frank-wolfe:  90%|█████████ | 9/10 [05:39<00:38, 38.47s/it][AStart time:  1717147984.1570318
+Elapsed time:  13.606062173843384
+Start time:  1717147997.7631426
+Elapsed time:  0.0379636287689209
+Start time:  1717147997.7631419
+Elapsed time:  22.701019048690796
+
+frank-wolfe: 100%|██████████| 10/10 [06:16<00:00, 38.00s/it][A
+                                                            [Aλ:  27%|██▋       | 4/15 [24:23<1:07:25, 367.78s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717148021.095074
+Elapsed time:  13.219354152679443
+Start time:  1717148034.314484
+Elapsed time:  0.04264354705810547
+Start time:  1717148034.3144832
+Elapsed time:  24.459935188293457
+
+frank-wolfe:  10%|█         | 1/10 [00:38<05:44, 38.33s/it][AStart time:  1717148059.4239511
+Elapsed time:  13.408140420913696
+Start time:  1717148072.8321395
+Elapsed time:  0.03689980506896973
+Start time:  1717148072.832139
+Elapsed time:  23.650235414505005
+
+frank-wolfe:  20%|██        | 2/10 [01:16<05:03, 37.95s/it][AStart time:  1717148097.1131682
+Elapsed time:  13.033171653747559
+Start time:  1717148110.1463962
+Elapsed time:  0.038988351821899414
+Start time:  1717148110.1463954
+Elapsed time:  24.012532711029053
+
+frank-wolfe:  30%|███       | 3/10 [01:53<04:24, 37.83s/it][AStart time:  1717148134.7997324
+Elapsed time:  12.92364239692688
+Start time:  1717148147.7234213
+Elapsed time:  0.036895036697387695
+Start time:  1717148147.723421
+Elapsed time:  21.310571908950806
+
+frank-wolfe:  40%|████      | 4/10 [02:28<03:39, 36.64s/it][AStart time:  1717148169.601752
+Elapsed time:  12.66335153579712
+Start time:  1717148182.2651527
+Elapsed time:  0.04132580757141113
+Start time:  1717148182.2651522
+Elapsed time:  25.112130403518677
+
+frank-wolfe:  50%|█████     | 5/10 [03:06<03:06, 37.25s/it][AStart time:  1717148207.9524674
+Elapsed time:  12.520253896713257
+Start time:  1717148220.4727716
+Elapsed time:  0.037059783935546875
+Start time:  1717148220.4727714
+Elapsed time:  21.354079246520996
+
+frank-wolfe:  60%|██████    | 6/10 [03:41<02:25, 36.32s/it][AStart time:  1717148242.4571595
+Elapsed time:  13.426385879516602
+Start time:  1717148255.8835943
+Elapsed time:  0.04254317283630371
+Start time:  1717148255.8835936
+Elapsed time:  21.96073293685913
+
+frank-wolfe:  70%|███████   | 7/10 [04:17<01:48, 36.20s/it][AStart time:  1717148278.419686
+Elapsed time:  13.269469499588013
+Start time:  1717148291.6892078
+Elapsed time:  0.04248929023742676
+Start time:  1717148291.6892073
+Elapsed time:  23.952575206756592
+
+frank-wolfe:  80%|████████  | 8/10 [04:55<01:13, 36.73s/it][AStart time:  1717148316.2804027
+Elapsed time:  13.744395017623901
+Start time:  1717148330.0248458
+Elapsed time:  0.03965020179748535
+Start time:  1717148330.0248454
+Elapsed time:  27.0877788066864
+
+frank-wolfe:  90%|█████████ | 9/10 [05:36<00:38, 38.22s/it][AStart time:  1717148357.7655187
+Elapsed time:  12.969453811645508
+Start time:  1717148370.7350247
+Elapsed time:  0.04247689247131348
+Start time:  1717148370.7350242
+Elapsed time:  23.98424506187439
+
+frank-wolfe: 100%|██████████| 10/10 [06:14<00:00, 38.02s/it][A
+                                                            [Aλ:  33%|███▎      | 5/15 [30:37<1:01:41, 370.12s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717148395.3523402
+Elapsed time:  13.583356857299805
+Start time:  1717148408.9357495
+Elapsed time:  0.042548179626464844
+Start time:  1717148408.9357488
+Elapsed time:  22.534571409225464
+
+frank-wolfe:  10%|█         | 1/10 [00:36<05:30, 36.71s/it][AStart time:  1717148432.0599725
+Elapsed time:  13.22315001487732
+Start time:  1717148445.2831707
+Elapsed time:  0.04283308982849121
+Start time:  1717148445.2831705
+Elapsed time:  26.007453441619873
+
+frank-wolfe:  20%|██        | 2/10 [01:16<05:08, 38.58s/it][AStart time:  1717148471.9476666
+Elapsed time:  13.272998332977295
+Start time:  1717148485.2207174
+Elapsed time:  0.04082131385803223
+Start time:  1717148485.2207167
+Elapsed time:  24.300126314163208
+
+frank-wolfe:  30%|███       | 3/10 [01:54<04:28, 38.39s/it][AStart time:  1717148510.107404
+Elapsed time:  12.492751121520996
+Start time:  1717148522.6002064
+Elapsed time:  0.03705477714538574
+Start time:  1717148522.6002054
+Elapsed time:  20.919801235198975
+
+frank-wolfe:  40%|████      | 4/10 [02:28<03:39, 36.65s/it][AStart time:  1717148544.1068206
+Elapsed time:  12.685142993927002
+Start time:  1717148556.7920158
+Elapsed time:  0.037110090255737305
+Start time:  1717148556.7920153
+Elapsed time:  21.4971706867218
+
+frank-wolfe:  50%|█████     | 5/10 [03:03<03:00, 36.00s/it][AStart time:  1717148578.9536848
+Elapsed time:  12.539206981658936
+Start time:  1717148591.492941
+Elapsed time:  0.037029266357421875
+Start time:  1717148591.4929402
+Elapsed time:  20.935359477996826
+
+frank-wolfe:  60%|██████    | 6/10 [03:37<02:21, 35.34s/it][AStart time:  1717148613.013804
+Elapsed time:  12.487179040908813
+Start time:  1717148625.5010335
+Elapsed time:  0.03702425956726074
+Start time:  1717148625.501033
+Elapsed time:  20.90452551841736
+
+frank-wolfe:  70%|███████   | 7/10 [04:11<01:44, 34.90s/it][AStart time:  1717148646.989926
+Elapsed time:  12.491027593612671
+Start time:  1717148659.4810047
+Elapsed time:  0.03700089454650879
+Start time:  1717148659.481004
+Elapsed time:  20.878861904144287
+
+frank-wolfe:  80%|████████  | 8/10 [04:45<01:09, 34.60s/it][AStart time:  1717148680.945009
+Elapsed time:  12.503137111663818
+Start time:  1717148693.4481983
+Elapsed time:  0.03697967529296875
+Start time:  1717148693.4481978
+Elapsed time:  20.86751437187195
+
+frank-wolfe:  90%|█████████ | 9/10 [05:19<00:34, 34.40s/it][AStart time:  1717148714.900979
+Elapsed time:  12.514244079589844
+Start time:  1717148727.4152765
+Elapsed time:  0.03704380989074707
+Start time:  1717148727.4152758
+Elapsed time:  20.834864377975464
+
+frank-wolfe: 100%|██████████| 10/10 [05:53<00:00, 34.26s/it][A
+                                                            [Aλ:  40%|████      | 6/15 [36:31<54:40, 364.47s/it]  
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717148748.8479278
+Elapsed time:  12.511224269866943
+Start time:  1717148761.359202
+Elapsed time:  0.03697323799133301
+Start time:  1717148761.3592014
+Elapsed time:  20.895580053329468
+
+frank-wolfe:  10%|█         | 1/10 [00:33<05:05, 33.99s/it][AStart time:  1717148782.841017
+Elapsed time:  12.502475261688232
+Start time:  1717148795.3435466
+Elapsed time:  0.03710579872131348
+Start time:  1717148795.3435462
+Elapsed time:  20.850585460662842
+
+frank-wolfe:  20%|██        | 2/10 [01:07<04:31, 33.96s/it][AStart time:  1717148816.7794244
+Elapsed time:  12.498766422271729
+Start time:  1717148829.2782385
+Elapsed time:  0.03699326515197754
+Start time:  1717148829.278238
+Elapsed time:  20.940958976745605
+
+frank-wolfe:  30%|███       | 3/10 [01:41<03:57, 33.99s/it][AStart time:  1717148850.8088496
+Elapsed time:  12.468506097793579
+Start time:  1717148863.2774048
+Elapsed time:  0.037027835845947266
+Start time:  1717148863.2774038
+Elapsed time:  21.652952432632446
+
+frank-wolfe:  40%|████      | 4/10 [02:16<03:25, 34.29s/it][AStart time:  1717148885.5567746
+Elapsed time:  12.785356283187866
+Start time:  1717148898.3421805
+Elapsed time:  0.03821897506713867
+Start time:  1717148898.34218
+Elapsed time:  21.53959894180298
+
+frank-wolfe:  50%|█████     | 5/10 [02:51<02:52, 34.51s/it][AStart time:  1717148920.4660852
+Elapsed time:  12.590996742248535
+Start time:  1717148933.0571327
+Elapsed time:  0.037682294845581055
+Start time:  1717148933.0571322
+Elapsed time:  20.904261112213135
+
+frank-wolfe:  60%|██████    | 6/10 [03:25<02:17, 34.37s/it][AStart time:  1717148954.5460985
+Elapsed time:  12.489141941070557
+Start time:  1717148967.0352871
+Elapsed time:  0.037021636962890625
+Start time:  1717148967.0352864
+Elapsed time:  20.87088108062744
+
+frank-wolfe:  70%|███████   | 7/10 [03:59<01:42, 34.23s/it][AStart time:  1717148988.4905665
+Elapsed time:  12.464859008789062
+Start time:  1717149000.9554725
+Elapsed time:  0.03699851036071777
+Start time:  1717149000.9554722
+Elapsed time:  20.867026567459106
+
+frank-wolfe:  80%|████████  | 8/10 [04:33<01:08, 34.13s/it][AStart time:  1717149022.407093
+Elapsed time:  12.501302480697632
+Start time:  1717149034.9084446
+Elapsed time:  0.037142038345336914
+Start time:  1717149034.9084442
+Elapsed time:  20.874190092086792
+
+frank-wolfe:  90%|█████████ | 9/10 [05:07<00:34, 34.08s/it][AStart time:  1717149056.3671176
+Elapsed time:  12.500547409057617
+Start time:  1717149068.8677132
+Elapsed time:  0.037137746810913086
+Start time:  1717149068.8677127
+Elapsed time:  20.868051767349243
+
+frank-wolfe: 100%|██████████| 10/10 [05:41<00:00, 34.04s/it][A
+                                                            [Aλ:  47%|████▋     | 7/15 [42:12<47:35, 356.95s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717149090.322182
+Elapsed time:  12.482550382614136
+Start time:  1717149102.8047845
+Elapsed time:  0.03712773323059082
+Start time:  1717149102.804784
+Elapsed time:  20.858648538589478
+
+frank-wolfe:  10%|█         | 1/10 [00:33<05:05, 33.93s/it][AStart time:  1717149124.2493322
+Elapsed time:  12.473738193511963
+Start time:  1717149136.7231216
+Elapsed time:  0.0370633602142334
+Start time:  1717149136.7231212
+Elapsed time:  20.881206512451172
+
+frank-wolfe:  20%|██        | 2/10 [01:07<04:31, 33.94s/it][AStart time:  1717149158.1908066
+Elapsed time:  12.472970485687256
+Start time:  1717149170.6638293
+Elapsed time:  0.037142276763916016
+Start time:  1717149170.6638288
+Elapsed time:  20.909437894821167
+
+frank-wolfe:  30%|███       | 3/10 [01:41<03:57, 33.95s/it][AStart time:  1717149192.1610355
+Elapsed time:  12.472482681274414
+Start time:  1717149204.6335678
+Elapsed time:  0.03692483901977539
+Start time:  1717149204.6335673
+Elapsed time:  21.127863883972168
+
+frank-wolfe:  40%|████      | 4/10 [02:16<03:24, 34.04s/it][AStart time:  1717149226.3475504
+Elapsed time:  12.526322603225708
+Start time:  1717149238.873923
+Elapsed time:  0.03720808029174805
+Start time:  1717149238.8739226
+Elapsed time:  21.23577880859375
+
+frank-wolfe:  50%|█████     | 5/10 [02:50<02:50, 34.15s/it][AStart time:  1717149260.6943884
+Elapsed time:  12.483382225036621
+Start time:  1717149273.1778154
+Elapsed time:  0.037132978439331055
+Start time:  1717149273.177815
+Elapsed time:  20.864094972610474
+
+frank-wolfe:  60%|██████    | 6/10 [03:24<02:16, 34.08s/it][AStart time:  1717149294.6302717
+Elapsed time:  12.491239070892334
+Start time:  1717149307.1215625
+Elapsed time:  0.03698110580444336
+Start time:  1717149307.1215618
+Elapsed time:  20.995178699493408
+
+frank-wolfe:  70%|███████   | 7/10 [03:58<01:42, 34.09s/it][AStart time:  1717149328.7329657
+Elapsed time:  12.785264492034912
+Start time:  1717149341.518288
+Elapsed time:  0.036954402923583984
+Start time:  1717149341.5182874
+Elapsed time:  22.176897048950195
+
+frank-wolfe:  80%|████████  | 8/10 [04:33<01:09, 34.55s/it][AStart time:  1717149364.2894783
+Elapsed time:  12.636911869049072
+Start time:  1717149376.9264398
+Elapsed time:  0.037573814392089844
+Start time:  1717149376.9264388
+Elapsed time:  22.08615493774414
+
+frank-wolfe:  90%|█████████ | 9/10 [05:09<00:34, 34.79s/it][AStart time:  1717149399.6101995
+Elapsed time:  12.613162755966187
+Start time:  1717149412.2234082
+Elapsed time:  0.03732442855834961
+Start time:  1717149412.2234075
+Elapsed time:  22.108319520950317
+
+frank-wolfe: 100%|██████████| 10/10 [05:44<00:00, 34.96s/it][A
+                                                            [Aλ:  53%|█████▎    | 8/15 [47:57<41:11, 353.03s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717149434.948623
+Elapsed time:  12.611661195755005
+Start time:  1717149447.5603251
+Elapsed time:  0.0373690128326416
+Start time:  1717149447.5603242
+Elapsed time:  22.152953147888184
+
+frank-wolfe:  10%|█         | 1/10 [00:35<05:18, 35.41s/it][AStart time:  1717149470.36228
+Elapsed time:  12.632787227630615
+Start time:  1717149482.9951193
+Elapsed time:  0.03814983367919922
+Start time:  1717149482.9951189
+Elapsed time:  22.204392910003662
+
+frank-wolfe:  20%|██        | 2/10 [01:10<04:43, 35.45s/it][AStart time:  1717149505.83301
+Elapsed time:  13.324179410934448
+Start time:  1717149519.157242
+Elapsed time:  0.04250955581665039
+Start time:  1717149519.1572418
+Elapsed time:  23.09627079963684
+
+frank-wolfe:  30%|███       | 3/10 [01:47<04:13, 36.16s/it][AStart time:  1717149542.8451807
+Elapsed time:  12.61085057258606
+Start time:  1717149555.4560802
+Elapsed time:  0.03721332550048828
+Start time:  1717149555.4560797
+Elapsed time:  22.381282567977905
+
+frank-wolfe:  40%|████      | 4/10 [02:23<03:35, 35.94s/it][AStart time:  1717149578.4361894
+Elapsed time:  12.721095561981201
+Start time:  1717149591.1573427
+Elapsed time:  0.03853273391723633
+Start time:  1717149591.157342
+Elapsed time:  21.922654628753662
+
+frank-wolfe:  50%|█████     | 5/10 [02:58<02:58, 35.69s/it][AStart time:  1717149613.679863
+Elapsed time:  12.689175844192505
+Start time:  1717149626.3690927
+Elapsed time:  0.0412907600402832
+Start time:  1717149626.369092
+Elapsed time:  22.087364435195923
+
+frank-wolfe:  60%|██████    | 6/10 [03:34<02:22, 35.60s/it][AStart time:  1717149649.1176274
+Elapsed time:  13.568872451782227
+Start time:  1717149662.686547
+Elapsed time:  0.03713536262512207
+Start time:  1717149662.6865463
+Elapsed time:  22.624284267425537
+
+frank-wolfe:  70%|███████   | 7/10 [04:10<01:48, 36.00s/it][AStart time:  1717149685.9395638
+Elapsed time:  12.948240995407104
+Start time:  1717149698.8878515
+Elapsed time:  0.04146385192871094
+Start time:  1717149698.8878512
+Elapsed time:  22.459392547607422
+
+frank-wolfe:  80%|████████  | 8/10 [04:47<01:12, 36.01s/it][AStart time:  1717149721.9630392
+Elapsed time:  13.040767192840576
+Start time:  1717149735.003861
+Elapsed time:  0.03752589225769043
+Start time:  1717149735.0038602
+Elapsed time:  22.67335295677185
+
+frank-wolfe:  90%|█████████ | 9/10 [05:23<00:36, 36.11s/it][AStart time:  1717149758.2983181
+Elapsed time:  12.632052421569824
+Start time:  1717149770.9304192
+Elapsed time:  0.0369715690612793
+Start time:  1717149770.9304185
+Elapsed time:  21.893434286117554
+
+frank-wolfe: 100%|██████████| 10/10 [05:58<00:00, 35.81s/it][A
+                                                            [Aλ:  60%|██████    | 9/15 [53:55<35:28, 354.73s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717149793.4281313
+Elapsed time:  12.587360858917236
+Start time:  1717149806.0155416
+Elapsed time:  0.037175655364990234
+Start time:  1717149806.015541
+Elapsed time:  21.92077660560608
+
+frank-wolfe:  10%|█         | 1/10 [00:35<05:16, 35.11s/it][AStart time:  1717149828.5397916
+Elapsed time:  12.50259518623352
+Start time:  1717149841.042432
+Elapsed time:  0.03697705268859863
+Start time:  1717149841.0424316
+Elapsed time:  20.870688915252686
+
+frank-wolfe:  20%|██        | 2/10 [01:09<04:35, 34.43s/it][AStart time:  1717149862.5003672
+Elapsed time:  12.444152593612671
+Start time:  1717149874.944572
+Elapsed time:  0.03690075874328613
+Start time:  1717149874.9445715
+Elapsed time:  20.852620601654053
+
+frank-wolfe:  30%|███       | 3/10 [01:42<03:59, 34.18s/it][AStart time:  1717149896.3846662
+Elapsed time:  12.659002304077148
+Start time:  1717149909.0437164
+Elapsed time:  0.03685951232910156
+Start time:  1717149909.0437155
+Elapsed time:  20.973140478134155
+
+frank-wolfe:  40%|████      | 4/10 [02:17<03:25, 34.20s/it][AStart time:  1717149930.607108
+Elapsed time:  12.443405151367188
+Start time:  1717149943.0505598
+Elapsed time:  0.0368189811706543
+Start time:  1717149943.0505593
+Elapsed time:  21.05156183242798
+
+frank-wolfe:  50%|█████     | 5/10 [02:51<02:50, 34.16s/it][AStart time:  1717149964.708731
+Elapsed time:  12.456814289093018
+Start time:  1717149977.1655967
+Elapsed time:  0.03699350357055664
+Start time:  1717149977.1655962
+Elapsed time:  20.94405961036682
+
+frank-wolfe:  60%|██████    | 6/10 [03:25<02:16, 34.11s/it][AStart time:  1717149998.7100782
+Elapsed time:  12.454331874847412
+Start time:  1717150011.1644626
+Elapsed time:  0.03707385063171387
+Start time:  1717150011.1644619
+Elapsed time:  20.90469527244568
+
+frank-wolfe:  70%|███████   | 7/10 [03:59<01:42, 34.06s/it][AStart time:  1717150032.662532
+Elapsed time:  12.460775136947632
+Start time:  1717150045.123361
+Elapsed time:  0.036841392517089844
+Start time:  1717150045.1233604
+Elapsed time:  20.992791891098022
+
+frank-wolfe:  80%|████████  | 8/10 [04:33<01:08, 34.06s/it][AStart time:  1717150066.7332284
+Elapsed time:  12.428498268127441
+Start time:  1717150079.1617794
+Elapsed time:  0.03691244125366211
+Start time:  1717150079.1617787
+Elapsed time:  20.927654027938843
+
+frank-wolfe:  90%|█████████ | 9/10 [05:07<00:34, 34.03s/it][AStart time:  1717150100.7037835
+Elapsed time:  12.468132734298706
+Start time:  1717150113.1719685
+Elapsed time:  0.03698611259460449
+Start time:  1717150113.1719682
+Elapsed time:  20.828214168548584
+
+frank-wolfe: 100%|██████████| 10/10 [05:41<00:00, 33.99s/it][A
+                                                            [Aλ:  67%|██████▋   | 10/15 [59:37<29:12, 350.54s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717150134.5928307
+Elapsed time:  12.436421871185303
+Start time:  1717150147.0293176
+Elapsed time:  0.036995649337768555
+Start time:  1717150147.0293171
+Elapsed time:  20.805721521377563
+
+frank-wolfe:  10%|█         | 1/10 [00:33<05:04, 33.84s/it][AStart time:  1717150168.4323206
+Elapsed time:  12.429760694503784
+Start time:  1717150180.8621335
+Elapsed time:  0.03711652755737305
+Start time:  1717150180.862133
+Elapsed time:  20.89648723602295
+
+frank-wolfe:  20%|██        | 2/10 [01:07<04:31, 33.89s/it][AStart time:  1717150202.350361
+Elapsed time:  12.45468282699585
+Start time:  1717150214.805094
+Elapsed time:  0.036988019943237305
+Start time:  1717150214.8050933
+Elapsed time:  20.8924343585968
+
+frank-wolfe:  30%|███       | 3/10 [01:41<03:57, 33.91s/it][AStart time:  1717150236.291489
+Elapsed time:  12.484553813934326
+Start time:  1717150248.7760937
+Elapsed time:  0.03690981864929199
+Start time:  1717150248.7760935
+Elapsed time:  21.77975368499756
+
+frank-wolfe:  40%|████      | 4/10 [02:16<03:25, 34.28s/it][AStart time:  1717150271.1493797
+Elapsed time:  12.462499141693115
+Start time:  1717150283.6119313
+Elapsed time:  0.03701925277709961
+Start time:  1717150283.6119306
+Elapsed time:  20.897892951965332
+
+frank-wolfe:  50%|█████     | 5/10 [02:50<02:50, 34.17s/it][AStart time:  1717150305.1055872
+Elapsed time:  12.478139162063599
+Start time:  1717150317.5837736
+Elapsed time:  0.03691363334655762
+Start time:  1717150317.5837731
+Elapsed time:  21.402592420578003
+
+frank-wolfe:  60%|██████    | 6/10 [03:25<02:17, 34.29s/it][AStart time:  1717150339.6343732
+Elapsed time:  12.434679746627808
+Start time:  1717150352.0691032
+Elapsed time:  0.03708314895629883
+Start time:  1717150352.0691028
+Elapsed time:  20.812731504440308
+
+frank-wolfe:  70%|███████   | 7/10 [03:58<01:42, 34.14s/it][AStart time:  1717150373.4767973
+Elapsed time:  12.483229875564575
+Start time:  1717150385.9600759
+Elapsed time:  0.03702187538146973
+Start time:  1717150385.9600754
+Elapsed time:  20.929619312286377
+
+frank-wolfe:  80%|████████  | 8/10 [04:32<01:08, 34.10s/it][AStart time:  1717150407.48512
+Elapsed time:  12.468905925750732
+Start time:  1717150419.9540782
+Elapsed time:  0.0369257926940918
+Start time:  1717150419.9540777
+Elapsed time:  20.92302918434143
+
+frank-wolfe:  90%|█████████ | 9/10 [05:06<00:34, 34.07s/it][AStart time:  1717150441.473925
+Elapsed time:  12.46005654335022
+Start time:  1717150453.93403
+Elapsed time:  0.042575836181640625
+Start time:  1717150453.9340296
+Elapsed time:  20.943453311920166
+
+frank-wolfe: 100%|██████████| 10/10 [05:40<00:00, 34.04s/it][A
+                                                            [Aλ:  73%|███████▎  | 11/15 [1:05:18<23:10, 347.59s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717150475.4713666
+Elapsed time:  12.436436176300049
+Start time:  1717150487.9078543
+Elapsed time:  0.03710603713989258
+Start time:  1717150487.9078538
+Elapsed time:  20.94745683670044
+
+frank-wolfe:  10%|█         | 1/10 [00:34<05:06, 34.04s/it][AStart time:  1717150509.5084426
+Elapsed time:  12.456416606903076
+Start time:  1717150521.9649112
+Elapsed time:  0.03703188896179199
+Start time:  1717150521.9649105
+Elapsed time:  20.851046562194824
+
+frank-wolfe:  20%|██        | 2/10 [01:07<04:31, 33.97s/it][AStart time:  1717150543.4261632
+Elapsed time:  12.450646162033081
+Start time:  1717150555.876859
+Elapsed time:  0.03686928749084473
+Start time:  1717150555.876858
+Elapsed time:  20.890928983688354
+
+frank-wolfe:  30%|███       | 3/10 [01:41<03:57, 33.95s/it][AStart time:  1717150577.3621902
+Elapsed time:  12.441121816635132
+Start time:  1717150589.8033624
+Elapsed time:  0.03700709342956543
+Start time:  1717150589.803362
+Elapsed time:  20.877938747406006
+
+frank-wolfe:  40%|████      | 4/10 [02:15<03:23, 33.94s/it][AStart time:  1717150611.2755456
+Elapsed time:  12.45148515701294
+Start time:  1717150623.7270792
+Elapsed time:  0.037032365798950195
+Start time:  1717150623.7270787
+Elapsed time:  20.856186628341675
+
+frank-wolfe:  50%|█████     | 5/10 [02:49<02:49, 33.93s/it][AStart time:  1717150645.179308
+Elapsed time:  12.45087456703186
+Start time:  1717150657.6302285
+Elapsed time:  0.03690052032470703
+Start time:  1717150657.6302283
+Elapsed time:  20.96207332611084
+
+frank-wolfe:  60%|██████    | 6/10 [03:23<02:15, 33.95s/it][AStart time:  1717150679.1861143
+Elapsed time:  12.435149669647217
+Start time:  1717150691.621336
+Elapsed time:  0.037000179290771484
+Start time:  1717150691.621335
+Elapsed time:  20.87974214553833
+
+frank-wolfe:  70%|███████   | 7/10 [03:57<01:41, 33.94s/it][AStart time:  1717150713.0988438
+Elapsed time:  12.454928398132324
+Start time:  1717150725.5538208
+Elapsed time:  0.03695034980773926
+Start time:  1717150725.5538201
+Elapsed time:  20.897305727005005
+
+frank-wolfe:  80%|████████  | 8/10 [04:31<01:07, 33.94s/it][AStart time:  1717150747.0464926
+Elapsed time:  12.49480938911438
+Start time:  1717150759.5413601
+Elapsed time:  0.03679633140563965
+Start time:  1717150759.5413597
+Elapsed time:  20.900206804275513
+
+frank-wolfe:  90%|█████████ | 9/10 [05:05<00:33, 33.96s/it][AStart time:  1717150781.0388231
+Elapsed time:  12.453798770904541
+Start time:  1717150793.4926722
+Elapsed time:  0.03701591491699219
+Start time:  1717150793.4926717
+Elapsed time:  20.98340630531311
+
+frank-wolfe: 100%|██████████| 10/10 [05:39<00:00, 33.98s/it][A
+                                                            [Aλ:  80%|████████  | 12/15 [1:10:57<17:15, 345.16s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717150815.0724964
+Elapsed time:  12.439571857452393
+Start time:  1717150827.5121415
+Elapsed time:  0.03702974319458008
+Start time:  1717150827.5121408
+Elapsed time:  20.908197164535522
+
+frank-wolfe:  10%|█         | 1/10 [00:33<05:05, 33.95s/it][AStart time:  1717150849.0186195
+Elapsed time:  12.488840341567993
+Start time:  1717150861.5075068
+Elapsed time:  0.03689432144165039
+Start time:  1717150861.5075066
+Elapsed time:  20.909650802612305
+
+frank-wolfe:  20%|██        | 2/10 [01:07<04:31, 33.98s/it][AStart time:  1717150883.0241907
+Elapsed time:  12.493775367736816
+Start time:  1717150895.5180144
+Elapsed time:  0.03692913055419922
+Start time:  1717150895.518014
+Elapsed time:  21.165560245513916
+
+frank-wolfe:  30%|███       | 3/10 [01:42<03:58, 34.11s/it][AStart time:  1717150917.2828796
+Elapsed time:  12.469980001449585
+Start time:  1717150929.7529113
+Elapsed time:  0.03702664375305176
+Start time:  1717150929.7529106
+Elapsed time:  20.850892782211304
+
+frank-wolfe:  40%|████      | 4/10 [02:16<03:24, 34.03s/it][AStart time:  1717150951.2028103
+Elapsed time:  12.525533437728882
+Start time:  1717150963.728396
+Elapsed time:  0.036983489990234375
+Start time:  1717150963.7283955
+Elapsed time:  20.84449028968811
+
+frank-wolfe:  50%|█████     | 5/10 [02:50<02:50, 34.01s/it][AStart time:  1717150985.1716826
+Elapsed time:  12.456622123718262
+Start time:  1717150997.6283486
+Elapsed time:  0.0369257926940918
+Start time:  1717150997.628348
+Elapsed time:  20.86691164970398
+
+frank-wolfe:  60%|██████    | 6/10 [03:24<02:15, 33.98s/it][AStart time:  1717151019.092812
+Elapsed time:  12.46809434890747
+Start time:  1717151031.560957
+Elapsed time:  0.03684663772583008
+Start time:  1717151031.5609565
+Elapsed time:  20.830029726028442
+
+frank-wolfe:  70%|███████   | 7/10 [03:57<01:41, 33.95s/it][AStart time:  1717151052.9891677
+Elapsed time:  12.49742603302002
+Start time:  1717151065.4866323
+Elapsed time:  0.04265594482421875
+Start time:  1717151065.4866319
+Elapsed time:  21.14092516899109
+
+frank-wolfe:  80%|████████  | 8/10 [04:32<01:08, 34.04s/it][AStart time:  1717151087.2250202
+Elapsed time:  12.459114789962769
+Start time:  1717151099.6841846
+Elapsed time:  0.03701043128967285
+Start time:  1717151099.6841838
+Elapsed time:  20.873987197875977
+
+frank-wolfe:  90%|█████████ | 9/10 [05:06<00:34, 34.01s/it][AStart time:  1717151121.1603122
+Elapsed time:  12.440196990966797
+Start time:  1717151133.600559
+Elapsed time:  0.036956787109375
+Start time:  1717151133.6005583
+Elapsed time:  21.65746235847473
+
+frank-wolfe: 100%|██████████| 10/10 [05:40<00:00, 34.23s/it][A
+                                                            [Aλ:  87%|████████▋ | 13/15 [1:16:38<11:27, 343.84s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717151155.873982
+Elapsed time:  12.67235279083252
+Start time:  1717151168.546383
+Elapsed time:  0.03705596923828125
+Start time:  1717151168.5463822
+Elapsed time:  21.6897029876709
+
+frank-wolfe:  10%|█         | 1/10 [00:34<05:14, 34.96s/it][AStart time:  1717151190.8309093
+Elapsed time:  12.516331672668457
+Start time:  1717151203.3472946
+Elapsed time:  0.036931753158569336
+Start time:  1717151203.347294
+Elapsed time:  20.905514001846313
+
+frank-wolfe:  20%|██        | 2/10 [01:08<04:35, 34.40s/it][AStart time:  1717151224.846231
+Elapsed time:  12.495299100875854
+Start time:  1717151237.341585
+Elapsed time:  0.0369420051574707
+Start time:  1717151237.3415842
+Elapsed time:  20.895474195480347
+
+frank-wolfe:  30%|███       | 3/10 [01:42<03:59, 34.21s/it][AStart time:  1717151258.8366742
+Elapsed time:  12.47105622291565
+Start time:  1717151271.3077798
+Elapsed time:  0.03714919090270996
+Start time:  1717151271.3077793
+Elapsed time:  21.51397395133972
+
+frank-wolfe:  40%|████      | 4/10 [02:17<03:26, 34.36s/it][AStart time:  1717151293.4185736
+Elapsed time:  12.458680152893066
+Start time:  1717151305.877315
+Elapsed time:  0.036956787109375
+Start time:  1717151305.8773146
+Elapsed time:  21.36397123336792
+
+frank-wolfe:  50%|█████     | 5/10 [02:51<02:51, 34.38s/it][AStart time:  1717151327.839165
+Elapsed time:  12.489853620529175
+Start time:  1717151340.3290668
+Elapsed time:  0.036928415298461914
+Start time:  1717151340.329066
+Elapsed time:  20.858184576034546
+
+frank-wolfe:  60%|██████    | 6/10 [03:25<02:16, 34.23s/it][AStart time:  1717151361.783765
+Elapsed time:  12.45067811012268
+Start time:  1717151374.2344935
+Elapsed time:  0.0370635986328125
+Start time:  1717151374.234493
+Elapsed time:  21.92310929298401
+
+frank-wolfe:  70%|███████   | 7/10 [04:00<01:43, 34.48s/it][AStart time:  1717151396.757794
+Elapsed time:  12.53062105178833
+Start time:  1717151409.288463
+Elapsed time:  0.04083538055419922
+Start time:  1717151409.2884626
+Elapsed time:  22.172013521194458
+
+frank-wolfe:  80%|████████  | 8/10 [04:36<01:09, 34.76s/it][AStart time:  1717151432.1144145
+Elapsed time:  12.574135780334473
+Start time:  1717151444.6885924
+Elapsed time:  0.036830902099609375
+Start time:  1717151444.688592
+Elapsed time:  21.18670678138733
+
+frank-wolfe:  90%|█████████ | 9/10 [05:10<00:34, 34.63s/it][AStart time:  1717151466.454664
+Elapsed time:  12.427206039428711
+Start time:  1717151478.8819084
+Elapsed time:  0.03698229789733887
+Start time:  1717151478.881908
+Elapsed time:  21.183746337890625
+
+frank-wolfe: 100%|██████████| 10/10 [05:44<00:00, 34.49s/it][A
+                                                            [Aλ:  93%|█████████▎| 14/15 [1:22:23<05:44, 344.12s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][AStart time:  1717151500.6449003
+Elapsed time:  12.436944246292114
+Start time:  1717151513.0818832
+Elapsed time:  0.03737497329711914
+Start time:  1717151513.0818827
+Elapsed time:  21.026573657989502
+
+frank-wolfe:  10%|█         | 1/10 [00:34<05:06, 34.05s/it][AStart time:  1717151534.6905434
+Elapsed time:  12.422680377960205
+Start time:  1717151547.1132674
+Elapsed time:  0.037445783615112305
+Start time:  1717151547.113267
+Elapsed time:  21.11957883834839
+
+frank-wolfe:  20%|██        | 2/10 [01:08<04:32, 34.09s/it][AStart time:  1717151568.8146117
+Elapsed time:  12.502259969711304
+Start time:  1717151581.316912
+Elapsed time:  0.036870479583740234
+Start time:  1717151581.3169117
+Elapsed time:  21.16678237915039
+
+frank-wolfe:  30%|███       | 3/10 [01:42<03:59, 34.16s/it][AStart time:  1717151603.0595434
+Elapsed time:  12.42809796333313
+Start time:  1717151615.487689
+Elapsed time:  0.037046194076538086
+Start time:  1717151615.4876885
+Elapsed time:  21.67235827445984
+
+frank-wolfe:  40%|████      | 4/10 [02:17<03:26, 34.39s/it][AStart time:  1717151637.8116999
+Elapsed time:  12.999191999435425
+Start time:  1717151650.8109367
+Elapsed time:  0.038878440856933594
+Start time:  1717151650.8109362
+Elapsed time:  22.5637423992157
+
+frank-wolfe:  50%|█████     | 5/10 [02:53<02:55, 35.04s/it][AStart time:  1717151674.0031345
+Elapsed time:  12.516352415084839
+Start time:  1717151686.5195339
+Elapsed time:  0.037126779556274414
+Start time:  1717151686.5195336
+Elapsed time:  20.965803861618042
+
+frank-wolfe:  60%|██████    | 6/10 [03:27<02:18, 34.70s/it][AStart time:  1717151708.0393224
+Elapsed time:  12.384980916976929
+Start time:  1717151720.4243517
+Elapsed time:  0.03700685501098633
+Start time:  1717151720.4243512
+Elapsed time:  20.861918449401855
+
+frank-wolfe:  70%|███████   | 7/10 [04:01<01:43, 34.41s/it][AStart time:  1717151741.8501537
+Elapsed time:  12.43371057510376
+Start time:  1717151754.2839131
+Elapsed time:  0.036972999572753906
+Start time:  1717151754.2839127
+Elapsed time:  20.946083784103394
+
+frank-wolfe:  80%|████████  | 8/10 [04:35<01:08, 34.26s/it][AStart time:  1717151775.7865224
+Elapsed time:  12.402286767959595
+Start time:  1717151788.1888616
+Elapsed time:  0.03705096244812012
+Start time:  1717151788.188861
+Elapsed time:  20.88681125640869
+
+frank-wolfe:  90%|█████████ | 9/10 [05:08<00:34, 34.13s/it][AStart time:  1717151809.6398044
+Elapsed time:  12.443657159805298
+Start time:  1717151822.0835087
+Elapsed time:  0.036969900131225586
+Start time:  1717151822.0835083
+Elapsed time:  20.89328622817993
+
+frank-wolfe: 100%|██████████| 10/10 [05:42<00:00, 34.06s/it][A
+                                                            [Aλ: 100%|██████████| 15/15 [1:28:06<00:00, 343.75s/it]λ: 100%|██████████| 15/15 [1:28:06<00:00, 352.41s/it]
+Converting to permutation
+Start time:  1717151843.9265935
+Elapsed time:  1.576934576034546
+Wrote times to  runs/598
+2024-05-31 10:37:27,258 - e.run_exp - INFO - 
+[[[0.7382]]]
+2024-05-31 10:37:27,259 - e.ex - INFO - Completed after 1:29:32

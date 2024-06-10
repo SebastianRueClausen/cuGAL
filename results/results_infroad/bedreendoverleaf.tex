@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{xcolor}
+
+\begin{document}
+
+\pgfplotstableread[col sep=comma]{res_infroad_diff.csv}\infroad
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                xmajorgrids=true, ymajorgrids=true,
+                xlabel={Noise}, ylabel={Accuracy difference to FUGAL},
+                xtick=data,
+                xticklabels={0.00, 0.05, 0.10, 0.15, 0.20, 0.25},
+                legend style={at={(0.5,-0.18)}, anchor=north, legend columns=2},
+            ]
+            \addplot table[ x expr=\coordindex, y index=0 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=1 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=2 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=3 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=4 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=5 ] {\infroad};
+            \legend{\textsc{CugalMix}, \textsc{CugalMix} with FW0.1, \textsc{CugalMix} with FW0.2, \textsc{CugalLog}, \textsc{CugalLog} with FW0.1, \textsc{CugalLog} with FW0.2}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Distance of \textsc{Cugal} with different parameters from \textsc{Fugal}}
+    \label{fig:infroad_fugal_diff}
+\end{figure}
+\pgfplotstableread[col sep=comma]{_res6.csv}\infroad
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                xmajorgrids=true, ymajorgrids=true,
+                xlabel={Noise}, ylabel={Accuracy},
+                xtick=data,
+                xticklabels={0.00, 0.05, 0.10, 0.15, 0.20, 0.25},
+                legend style={at={(0.5,-0.18)}, anchor=north, legend columns=2},
+            ]
+            \addplot table[ x expr=\coordindex, y index=0 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=1 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=2 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=3 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=4 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=5 ] {\infroad};
+            \addplot table[ x expr=\coordindex, y index=6 ] {\infroad};
+            \legend{\textsc{Fugal}, \textsc{CugalMix}, \textsc{CugalMix} with FW0.1, \textsc{CugalMix} with FW0.2, \textsc{CugalLog}, \textsc{CugalLog} with FW0.1, \textsc{CugalLog} with FW0.2}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Distance of \textsc{Cugal} with different parameters from \textsc{Fugal}}
+    \label{fig:infroad_fugal}
+\end{figure}
+\end{document}

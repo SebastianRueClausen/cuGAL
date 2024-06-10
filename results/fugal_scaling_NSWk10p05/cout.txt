@@ -1,0 +1,186 @@
+2024-05-15 09:20:12,845 - e.ex - INFO - Running command 'main'
+2024-05-15 09:20:12,852 - e.ex - INFO - Started run with ID "410"
+init1
+[[<function newman_watts_strogatz_graph at 0x7fe417decf40>, [[10, 2, 0.5]]], [<function newman_watts_strogatz_graph at 0x7fe417decf40>, [[128, 10, 0.5]]], [<function newman_watts_strogatz_graph at 0x7fe417decf40>, [[256, 10, 0.5]]], [<function newman_watts_strogatz_graph at 0x7fe417decf40>, [[512, 10, 0.5]]], [<function newman_watts_strogatz_graph at 0x7fe417decf40>, [[1024, 10, 0.5]]], [<function newman_watts_strogatz_graph at 0x7fe417decf40>, [[2048, 10, 0.5]]], [<function newman_watts_strogatz_graph at 0x7fe417decf40>, [[4096, 10, 0.5]]]]
+<function newman_watts_strogatz_graph at 0x7fe417decf40> [10, 2, 0.5]
+<function newman_watts_strogatz_graph at 0x7fe417decf40> [128, 10, 0.5]
+<function newman_watts_strogatz_graph at 0x7fe417decf40> [256, 10, 0.5]
+<function newman_watts_strogatz_graph at 0x7fe417decf40> [512, 10, 0.5]
+<function newman_watts_strogatz_graph at 0x7fe417decf40> [1024, 10, 0.5]
+<function newman_watts_strogatz_graph at 0x7fe417decf40> [2048, 10, 0.5]
+<function newman_watts_strogatz_graph at 0x7fe417decf40> [4096, 10, 0.5]
+init2
+C
+##<1>##
+10 10
+##<1>##
+10 10
+C
+##<1>##
+128 128
+##<1>##
+128 128
+C
+##<1>##
+256 256
+##<1>##
+256 256
+C
+##<1>##
+512 512
+##<1>##
+512 512
+C
+##<1>##
+1024 1024
+##<1>##
+1024 1024
+C
+##<1>##
+2048 2048
+##<1>##
+2048 2048
+C
+##<1>##
+4096 4096
+##<1>##
+4096 4096
+C
+##<1>##
+10 10
+##<1>##
+10 10
+C
+##<1>##
+128 128
+##<1>##
+128 128
+C
+##<1>##
+256 256
+##<1>##
+256 256
+C
+##<1>##
+512 512
+##<1>##
+512 512
+C
+##<1>##
+1024 1024
+##<1>##
+1024 1024
+C
+##<1>##
+2048 2048
+##<1>##
+2048 2048
+C
+##<1>##
+4096 4096
+##<1>##
+4096 4096
+2024-05-15 09:20:13,860 - e.main - INFO - randcheck: (0.9725565381985867, 0.5203516567882581)
+runs/410
+2024-05-15 09:20:13,860 - e.run_exp - INFO - Graph:(1/1)
+2024-05-15 09:20:13,860 - e.run_exp - INFO - Noise_level:(1/2)
+2024-05-15 09:20:13,860 - e.run_exp - INFO - iteration:(1/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [10], which does not match the required output shape [1, 10]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:20:17,549 - e.run_exp - INFO - 
+[[[1.]]]
+2024-05-15 09:20:17,549 - e.run_exp - INFO - iteration:(2/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [128], which does not match the required output shape [1, 128]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:20:22,339 - e.run_exp - INFO - 
+[[[1.]]]
+2024-05-15 09:20:22,339 - e.run_exp - INFO - iteration:(3/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [256], which does not match the required output shape [1, 256]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:20:28,052 - e.run_exp - INFO - 
+[[[1.]]]
+2024-05-15 09:20:28,052 - e.run_exp - INFO - iteration:(4/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [512], which does not match the required output shape [1, 512]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:20:35,304 - e.run_exp - INFO - 
+[[[1.]]]
+2024-05-15 09:20:35,304 - e.run_exp - INFO - iteration:(5/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [1024], which does not match the required output shape [1, 1024]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:20:46,868 - e.run_exp - INFO - 
+[[[1.]]]
+2024-05-15 09:20:46,869 - e.run_exp - INFO - iteration:(6/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [2048], which does not match the required output shape [1, 2048]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:22:06,159 - e.run_exp - INFO - 
+[[[1.]]]
+2024-05-15 09:22:06,159 - e.run_exp - INFO - iteration:(7/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [4096], which does not match the required output shape [1, 4096]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:29:33,461 - e.run_exp - INFO - 
+[[[1.]]]
+2024-05-15 09:29:33,461 - e.run_exp - INFO - Noise_level:(2/2)
+2024-05-15 09:29:33,461 - e.run_exp - INFO - iteration:(1/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [10], which does not match the required output shape [1, 10]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:29:37,276 - e.run_exp - INFO - 
+[[[1.]]]
+2024-05-15 09:29:37,277 - e.run_exp - INFO - iteration:(2/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [128], which does not match the required output shape [1, 128]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:29:42,047 - e.run_exp - INFO - 
+[[[0.0156]]]
+2024-05-15 09:29:42,047 - e.run_exp - INFO - iteration:(3/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [256], which does not match the required output shape [1, 256]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:29:47,877 - e.run_exp - INFO - 
+[[[0.]]]
+2024-05-15 09:29:47,877 - e.run_exp - INFO - iteration:(4/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [512], which does not match the required output shape [1, 512]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:29:54,784 - e.run_exp - INFO - 
+[[[0.8223]]]
+2024-05-15 09:29:54,784 - e.run_exp - INFO - iteration:(5/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [1024], which does not match the required output shape [1, 1024]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:30:06,570 - e.run_exp - INFO - 
+[[[0.0088]]]
+2024-05-15 09:30:06,570 - e.run_exp - INFO - iteration:(6/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [2048], which does not match the required output shape [1, 2048]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:31:29,426 - e.run_exp - INFO - 
+[[[0.0044]]]
+2024-05-15 09:31:29,427 - e.run_exp - INFO - iteration:(7/7)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/410', 'device': 'cpu', 'sinkhorn_method': <SinkhornMethod.STANDARD: 0>, 'dtype': torch.float64, 'use_fugal': True}
+/opt/anaconda3/lib/python3.11/site-packages/fugal/sinkhorn.py:175: UserWarning: An output with one or more elements was resized since it had shape [4096], which does not match the required output shape [1, 4096]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+Wrote times to  runs/410
+2024-05-15 09:39:35,516 - e.run_exp - INFO - 
+[[[0.0012]]]
+2024-05-15 09:39:35,517 - e.ex - INFO - Completed after 0:19:23

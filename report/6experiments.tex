@@ -1,0 +1,185 @@
+
+\section{Experiments}
+To compare our algorithm with \textsc{Fugal}, and verify differences and improvements in speed and accuracy, we run a wide range of benchmarks of graph datasets with both real and synthetic noise. All experiments are performed using the framework presented by \cite{skitsas2023GAEval}. We run all benchmarks of \textsc{cuGAL} on an NVIDIA RTX 3090 GPU, and \textsc{Fugal} on an Intel i9-10940X CPU, using the implementation presented by \cite{fugal2024}.
+
+We run all experiments with the following parameters unless specified otherwise:
+\begin{table}[htbp]
+    \begin{center}
+        \begin{tabular}{ |l|r| }
+            \hline
+            $\mu$    & $2$     \\
+            $\delta$ & $0.001$ \\
+            $T$      & $15$    \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+The same $\mu$ and $T$ is used for both \textsc{Fugal} and \textsc{cuGAL}. $\gamma$ is specified for each algorithm, or if not specified, we always run $10$ Frank-Wolfe iterations. We test using both the Hungarian algorithm and our greedy lap approximator (Algorithm \ref{alg:greedy-lap}), with is indicated by \textsc{Greedy}. In addition, we test using both Sinkhorn-Knopp-log (Algorithm \ref{alg:sinkhorn_log}) and Sinkhorn-Knopp-mix (Algorithm \ref{alg:sinkhorn_mix}), which is indicated by \textsc{Log} and \textsc{Mix}. We measure all times as the total wall time for the algorithms to complete. Due to time limitations, only a single run for each algorithm and noise level is performed.
+
+%\subsection{Synthetic graphs}
+\subsection{Synthetic noise}
+\indent
+\resultplot{inf-Power}{data/res_infpow_accu.csv}{data/res_infpow_time.csv}{12}{true}
+\resultplot{caGrQc}{data/res_caGrQc_accu.csv}{data/res_caGrQc_time.csv}{12}{false}
+\resultplot{erdos}{data/res_erdos_accu.csv}{data/res_erdos_time.csv}{12}{true}
+\resultplot{biodmela}{data/res_dmela_oneway_accu.csv}{data/res_dmela_oneway_time.csv}{12}{false}
+
+\resultplot{ca-netscience}{data/res_oneway_canet_accu.csv}{data/res_oneway_canet_time.csv}{12}{true}
+\resultplot{Arenas}{data/res_oneway_arenas_accu.csv}{data/res_oneway_arenas_time.csv}{12}{false}
+\resultplot{eu-Infroad}{data/res_infroad_accu.csv}{data/res_infroad_time.csv}{12}{true}
+
+
+\noindent
+For graphs with synthetic noise, we test on a selection of large graphs. On bio-dmela with $7 393$ nodes, we see from Figure \ref{fig:biodmela_res} the surprising result that \textsc{cuGAL} achieves higher accuracy than \textsc{Fugal} in all configurations for low amounts of noise. For both no and high amounts of noise, \textsc{Fugal} is competitive with \textsc{cuGAL}, generally ranking between \textsc{cuGAL} with Sinkhorn-Knopp-mix and Sinkhorn-Knopp-log. Similarly on erdos (Figure \ref{fig:erdos_res}), do we observe that \textsc{cuGAL} performs slightly better than \textsc{Fugal} in all cases except for $25\%$ noise. In all other cases does \textsc{Fugal} perform comparable to \textsc{cuGAL} with Sinkhorn-Knopp-log and better than \textsc{cuGAL} with Sinkhorn-Knopp-mix. Using $\gamma = 0.1$ or $\gamma = 0.2$ seems to cause relatively minor decreases to accuracy while providing significant increases in speed. Using greedy rounding varies more. Figure \ref{fig:inf-Power_res} shows a case where greedy rounding causes both significantly lower accuracy and faster performance, indicating that the resulting \textit{quasi-permutation} matrix is a difficult assignment problem for the Hungarian algorithm to solve.
+
+
+\pgfplotstableread[col sep=comma]{data/res_oneway_caAstroPh_accu_no.csv}\accutable
+\pgfplotstableread[col sep=comma]{data/res_oneway_caAstroPh_time_no.csv}\timetable
+
+\begin{minipage}{\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+                name=timeax,
+                xmajorgrids=true, ymajorgrids=true,
+                xlabel={Noise}, ylabel={Accuracy},
+                xtick=data,
+                xticklabels={0, 5, 10, 15, 20, 25},
+                %legend style={at={(0.5,-0.16)}, anchor=north, legend columns=2, font=\footnotesize, legend cell align={left}},
+                width=\textwidth*0.45,
+                height=\textwidth*0.45,
+            ]
+            \pgfplotsforeachungrouped \i in {0,...,11} {
+                    \addplot table[x expr=\coordindex, y index=\i]
+                        {\accutable};
+                }
+        \end{axis}
+        \begin{axis}[
+                at={(timeax.south east)},
+                xshift=2cm,
+                xmajorgrids=true, ymajorgrids=true,
+                xlabel={Noise}, ylabel={Time (s)},
+                xtick=data,
+                xticklabels={0, 5, 10, 15, 20, 25},
+                legend style={at={(-0.25,-0.1)}, anchor=north, legend columns=3, font=\footnotesize, legend cell align={left}},
+                width=\textwidth*0.45,
+                height=\textwidth*0.45,
+            ]
+            \pgfplotsforeachungrouped \i in {0,...,11} {
+                    \addplot table[x expr=\coordindex, y index=\i]
+                        {\timetable};
+                }
+        \end{axis}
+    \end{tikzpicture}
+    \captionof{figure}{Runtime and accuracy on caAstroPh dataset}
+    \label{fig:caAstroPhres}
+\end{minipage}
+
+\pgfplotstableread[col sep=comma]{data/res_oneway_caHep_accu_no.csv}\accutable
+\pgfplotstableread[col sep=comma]{data/res_oneway_caHep_time_no.csv}\timetable
+
+\begin{minipage}{\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+                name=timeax,
+                xmajorgrids=true, ymajorgrids=true,
+                xlabel={Noise}, ylabel={Accuracy},
+                xtick=data,
+                xticklabels={0, 5, 10, 15, 20, 25},
+                width=\textwidth*0.45,
+                height=\textwidth*0.45,
+            ]
+            \pgfplotsforeachungrouped \i in {0,...,11} {
+                    \addplot table[x expr=\coordindex, y index=\i]
+                        {\accutable};
+                }
+        \end{axis}
+        \begin{axis}[
+                at={(timeax.south east)},
+                xshift=2cm,
+                xmajorgrids=true, ymajorgrids=true,
+                xlabel={Noise}, ylabel={Time (s)},
+                xtick=data,
+                xticklabels={0, 5, 10, 15, 20, 25},
+                legend style={at={(-0.25,-0.1)}, anchor=north, legend columns=3, font=\footnotesize, legend cell align={left}},
+                width=\textwidth*0.45,
+                height=\textwidth*0.45,
+            ]
+            \pgfplotsforeachungrouped \i in {0,...,11} {
+                    \addplot table[x expr=\coordindex, y index=\i]
+                        {\timetable};
+                }
+            \legend{\textsc{cuGAL-Mix}, \textsc{cuGAL-Mix} $\gamma$0.1, \textsc{cuGAL-Mix} $\gamma$0.2,\textsc{cuGAL-Mix-Greedy}, \textsc{cuGAL-Mix-Greedy} $\gamma$0.1, \textsc{cuGAL-Mix-Greedy} $\gamma$0.2,\textsc{cuGAL-Log}, \textsc{cuGAL-Log} $\gamma$0.1, \textsc{cuGAL-Log} $\gamma$0.2, \textsc{cuGAL-Log-Greedy}, \textsc{cuGAL-Log-Greedy} $\gamma$0.1, \textsc{cuGAL-Log-Greedy} $\gamma$0.2}
+        \end{axis}
+    \end{tikzpicture}
+    \captionof{figure}{Runtime and accuracy on caHep dataset}
+    \label{fig:caHepres}
+\end{minipage}
+
+For some of the graphs we attempted to test, \textsc{Fugal} experienced numerical instability, resulting in NaNs when running Sinkhorn-Knopp. \textsc{cuGAL} however, was able to run on these datasets. In particular, we look at the graphs from the caAstroPh and caHep datasets, with $17 903$ and $12 008$ nodes respectively. Here, in Figure \ref{fig:caAstroPhres} and Figure \ref{fig:caHepres}, we observe the advantage of \textsc{cuGAL-LOG}s increased numerical stability and how the greedy LAP algorithm improves speed when noise is high as the Hungarian algorithm takes a long time finding an optimal assignment.
+
+Focusing on the improvements to run-time over \textsc{Fugal}, we observe that \textsc{cuGAL} is an order of magnitude faster in all experiments. This gap widens even further as the size of the graphs increases.
+
+\resultplot{email-Enron}{}{}{12}{true}
+\pgfplotsset{
+    % initialize Set1-5:
+    cycle list/Set3-12,
+    % combine it with 'mark list*':
+    cycle multiindex* list={
+            mark list*\nextlist
+            Set3-12\nextlist
+        },
+}
+\pgfplotstableread[col sep=comma]{data/res_enron_accu.csv}\accutable
+\pgfplotstableread[col sep=comma]{data/res_enron_time.csv}\timetable
+
+\begin{minipage}{\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+                name=timeax,
+                xmajorgrids=true, ymajorgrids=true,
+                xlabel={Noise}, ylabel={Accuracy},
+                xtick=data,
+                xticklabels={0, 5, 10, 15, 20, 25},
+                %legend style={at={(0.5,-0.16)}, anchor=north, legend columns=2, font=\footnotesize, legend cell align={left}},
+                width=\textwidth*0.45,
+                height=\textwidth*0.45,
+            ]
+            \pgfplotsforeachungrouped \i in {0,...,12} {
+                    \addplot table[x expr=\coordindex, y index=\i]
+                        {\accutable};
+                }
+            %\legend{\textsc{Fugal}, \textsc{CugalMix}, \textsc{CugalMix} $\gamma$0.1, \textsc{CugalMix} $\gamma$0.2,\textsc{CugalMixGreedy}, \textsc{CugalMixGreedy} $\gamma$0.1, \textsc{CugalMixGreedy} $\gamma$0.2,\textsc{CugalLog}, \textsc{CugalLog} $\gamma$0.1, \textsc{CugalLog} $\gamma$0.2, \textsc{CugalLogGreedy}, \textsc{CugalLogGreedy} $\gamma$0.1, \textsc{CugalLogGreedy} $\gamma$0.2}
+        \end{axis}
+        \begin{semilogyaxis}[
+                at={(timeax.south east)},
+                xshift=2cm,
+                xmajorgrids=true, ymajorgrids=true,
+                xlabel={Noise}, ylabel={Time (s)},
+                xtick=data,
+                xticklabels={0, 5, 10, 15, 20, 25},
+                legend style={at={(-0.25,-0.1)}, anchor=north, legend columns=3, font=\footnotesize, legend cell align={left}},
+                width=\textwidth*0.45,
+                height=\textwidth*0.45,
+            ]
+            \pgfplotsforeachungrouped \i in {0,...,#4} {
+                    \addplot table[x expr=\coordindex, y index=\i]
+                        {\timetable};
+                }
+            \legend{\textsc{Fugal}, \textsc{cuGAL-Mix}, \textsc{cuGAL-Mix} $\gamma=0.1$, \textsc{cuGAL-Mix} $\gamma=0.2$,\textsc{cuGAL-Mix-Greedy}, \textsc{cuGAL-Mix-Greedy} $\gamma=0.1$, \textsc{cuGAL-Mix-Greedy} $\gamma=0.2$,\textsc{cuGAL-Log}, \textsc{cuGAL-Log} $\gamma=0.1$, \textsc{cuGAL-Log} $\gamma=0.2$, \textsc{cuGAL-Log-Greedy}, \textsc{cuGAL-Log-Greedy} $\gamma=0.1$, \textsc{cuGAL-Log-Greedy} $\gamma=0.2$}
+        \end{semilogyaxis}
+    \end{tikzpicture}
+    \captionof{figure}{Runtime and accuracy on #1 dataset}
+    \label{fig:#1_res}
+\end{minipage}
+The largest dataset we were able to align with our implementation, was the email-Enron graph. Here, \textsc{Fugal} was only run on one of the noise levels, as the one run took 78591 seconds, or almost 22 hours. The limiting factor for \textsc{cuGAL} is memory, demonstrated by this dataset, where 21.56 Gigabytes of memory was used. Here we also observe a how \textsc{cuGAL-LOG} sometimes becomes much slow than \textsc{cuGAL-MIX}.
+
+\subsection{Real noise}
+\indent
+\resultplot{MultiMagna}{data/res_magna_accu.csv}{data/res_magna_time.csv}{12}{false}
+\resultplot{Voles}{data/res_voles_accu.csv}{data/res_voles_time.csv}{12}{true}
+
+We test on graphs with real noise to confirm that the performance of \textsc{cuGAL} transfers to applications of graph alignment where the distribution of noise is unknown. We test on two graphs, MultiMagna (Figure \ref{fig:MultiMagna_res}) and Voles (Figure \ref{fig:Voles_res}), which model protein interactions in yeast and contact patterns of voles respectively. Both are tested with $\mu = 0.5$. We observe similar results to synthetic noise. \textsc{Fugal} performs similarly or slightly worse than \textsc{cuGAL} with Sinkhorn-Knopp-log but better than \textsc{cuGAL} with Sinkhorn-Knopp-mix. Performance wise, we now see that the log-variant of Sinkhorn-Knopp performs better than the mix-variant, which we attribute to the small sizes of MultiMagna and Voles.
+
+\subsection{Accuracy and Speed}
+We introduce options for \textsc{cuGAL} such as early return from Frank-Wolfe, greedy LAP approximator and Sinkhorn-Knopp-mix that generally results in a small loss to accuracy while providing significant increases to speed for large graphs. The exact effect on accuracy and speed depends on the dataset, but generally a correlation is seen between speed-ups and slight losses of accuracy. We still consider these options useful, as they make it feasible to analyse larger graphs, including in future research.

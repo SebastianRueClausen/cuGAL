@@ -1,0 +1,2703 @@
+2024-06-04 14:02:15,356 - e.ex - INFO - Running command 'main'
+2024-06-04 14:02:15,365 - e.ex - INFO - Started run with ID "634"
+init1
+[[<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a2a0>, [['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast5_Y2H1.txt', None]]], [<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a3e0>, [['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast10_Y2H1.txt', None]]], [<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a660>, [['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast15_Y2H1.txt', None]]], [<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a7a0>, [['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast20_Y2H1.txt', None]]], [<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a840>, [['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast25_Y2H1.txt', None]]]]
+<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a2a0> ['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast5_Y2H1.txt', None]
+<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a3e0> ['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast10_Y2H1.txt', None]
+<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a660> ['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast15_Y2H1.txt', None]
+<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a7a0> ['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast20_Y2H1.txt', None]
+<function graphss.<locals>.<listcomp>.<lambda> at 0x7f940c27a840> ['data/real world/MultiMagna/yeast0_Y2H1.txt', 'data/real world/MultiMagna/yeast25_Y2H1.txt', None]
+init2
+A
+Just checking False
+Just checking False
+[[   0    1    2 ... 1001 1002 1003]
+ [   0    1    2 ... 1001 1002 1003]]
+A
+Just checking False
+Just checking False
+[[   0    1    2 ... 1001 1002 1003]
+ [   0    1    2 ... 1001 1002 1003]]
+A
+Just checking False
+Just checking False
+[[   0    1    2 ... 1001 1002 1003]
+ [   0    1    2 ... 1001 1002 1003]]
+A
+Just checking False
+Just checking False
+[[   0    1    2 ... 1001 1002 1003]
+ [   0    1    2 ... 1001 1002 1003]]
+A
+Just checking False
+Just checking False
+[[   0    1    2 ... 1001 1002 1003]
+ [   0    1    2 ... 1001 1002 1003]]
+2024-06-04 14:02:16,143 - e.main - INFO - randcheck: (0.8521051667032807, 0.3840180948836637)
+runs/634
+2024-06-04 14:02:16,144 - e.run_exp - INFO - Graph:(1/1)
+2024-06-04 14:02:16,144 - e.run_exp - INFO - Noise_level:(1/1)
+2024-06-04 14:02:16,144 - e.run_exp - INFO - iteration:(1/5)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5}
+Fugal
+/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:177: UserWarning: An output with one or more elements was resized since it had shape [1004], which does not match the required output shape [1, 1004]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:01<00:10,  1.12s/it][A
+frank-wolfe:  20%|██        | 2/10 [00:01<00:06,  1.19it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:02<00:05,  1.33it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:02<00:03,  1.62it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:03<00:02,  2.13it/s][A
+frank-wolfe:  70%|███████   | 7/10 [00:03<00:00,  3.62it/s][A
+frank-wolfe:  90%|█████████ | 9/10 [00:03<00:00,  5.42it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:03<00:47,  3.38s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  6.97it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  6.87it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 11.34it/s][A
+frank-wolfe: 100%|██████████| 10/10 [00:00<00:00, 26.91it/s][A
+                                                            [Aλ:  13%|█▎        | 2/15 [00:03<00:21,  1.69s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  5.79it/s][A
+frank-wolfe:  70%|███████   | 7/10 [00:00<00:00, 29.44it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:04<00:12,  1.06s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 26.19it/s][A
+frank-wolfe:  90%|█████████ | 9/10 [00:00<00:00, 42.44it/s][A
+                                                           [Aλ:  27%|██▋       | 4/15 [00:04<00:08,  1.36it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 73.36it/s][A
+                                                           [Aλ:  33%|███▎      | 5/15 [00:04<00:05,  1.94it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 36.04it/s][A
+                                                           [Aλ:  40%|████      | 6/15 [00:04<00:03,  2.43it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:04<00:01,  5.21it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  80%|████████  | 12/15 [00:05<00:00,  8.20it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:05<00:00, 11.23it/s]λ: 100%|██████████| 15/15 [00:05<00:00,  2.93it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  39.873333333333335
+Max memory used:  25645056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  4.21it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.11it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:01<00:03,  1.83it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:01<00:02,  2.04it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:02<00:01,  2.57it/s][A
+frank-wolfe:  70%|███████   | 7/10 [00:02<00:00,  4.24it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:02<00:33,  2.36s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  7.74it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  6.50it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 10.11it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:02<00:16,  1.25s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  4.94it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:03<00:09,  1.21it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  8.41it/s][A
+                                                           [Aλ:  27%|██▋       | 4/15 [00:03<00:06,  1.70it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 37.01it/s][A
+                                                           [Aλ:  40%|████      | 6/15 [00:03<00:03,  2.89it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 28.90it/s][A
+                                                           [Aλ:  47%|████▋     | 7/15 [00:03<00:02,  3.43it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  80%|████████  | 12/15 [00:03<00:00,  8.88it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:03<00:00,  3.83it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  80.93055555555556
+Max memory used:  25190400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  4.28it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.11it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:01<00:03,  1.82it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:01<00:02,  2.03it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:02<00:01,  2.56it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:02<00:31,  2.23s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  8.13it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  6.03it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:02<00:15,  1.17s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  4.48it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:03<00:09,  1.24it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  6.64it/s][A
+                                                           [Aλ:  27%|██▋       | 4/15 [00:03<00:06,  1.75it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:03<00:01,  4.20it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:03<00:01,  5.73it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:03<00:00,  4.24it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  122.34042553191489
+Max memory used:  25190400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  5.66it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  6.22it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00,  9.99it/s][A
+frank-wolfe:  90%|█████████ | 9/10 [00:00<00:00, 21.79it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:08,  1.74it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 25.37it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:00<00:04,  2.95it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  8.57it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:00<00:03,  3.80it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:01<00:01,  6.93it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:01<00:00,  9.57it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:01<00:00, 13.75it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  87%|████████▋ | 13/15 [00:01<00:00, 16.91it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 10.31it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  48.18666666666667
+Max memory used:  25247744
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  4.27it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.12it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:01<00:03,  1.84it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:01<00:02,  2.29it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:01<00:01,  3.16it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:27,  2.00s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 13.56it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:02<00:12,  1.04it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 15.44it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:02<00:07,  1.69it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  60%|██████    | 6/10 [00:00<00:00, 59.61it/s][A
+                                                           [Aλ:  27%|██▋       | 4/15 [00:02<00:04,  2.48it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:02<00:02,  4.45it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:02<00:00,  8.06it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:02<00:00,  5.39it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  75.8051948051948
+Max memory used:  25190400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  8.56it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  4.33it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:01,  3.74it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:01,  4.16it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:01<00:00,  5.24it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:15,  1.09s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 12.81it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:01<00:07,  1.75it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:00,  9.11it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:01<00:04,  2.53it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:01<00:03,  3.56it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:01<00:01,  7.87it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:01<00:00,  9.58it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00,  8.05it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  130.3409090909091
+Max memory used:  25190400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 11.58it/s][A
+frank-wolfe:  60%|██████    | 6/10 [00:00<00:00, 23.86it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.21it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  6.56it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00, 12.45it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 21.93it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 18.60it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  48.18666666666667
+Max memory used:  25247744
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 11.97it/s][A
+frank-wolfe:  60%|██████    | 6/10 [00:00<00:00, 24.44it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.43it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  7.22it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 15.31it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 22.92it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  92.77777777777777
+Max memory used:  25247744
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  6.69it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  6.72it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 10.51it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:06,  2.18it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 19.77it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:00<00:03,  3.73it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:00,  9.20it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:00<00:02,  4.56it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00,  9.98it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:00<00:00, 16.82it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 14.41it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  132.2340425531915
+Max memory used:  25247744
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  6.45it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  6.60it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 10.38it/s][A
+frank-wolfe:  90%|█████████ | 9/10 [00:00<00:00, 22.36it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:07,  1.82it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 25.23it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:00<00:04,  3.02it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  8.62it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:00<00:03,  3.88it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:01<00:01,  7.01it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:01<00:00,  9.64it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:01<00:00, 13.79it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  87%|████████▋ | 13/15 [00:01<00:00, 16.94it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 10.43it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  48.18666666666667
+Max memory used:  25247744
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  6.66it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  6.66it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 10.45it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:07,  1.91it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 24.36it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:00<00:03,  3.29it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  8.39it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:00<00:02,  4.22it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:01,  7.22it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:01<00:00, 11.70it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 12.78it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  96.33333333333333
+Max memory used:  25247744
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 11.55it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:03,  3.74it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  7.54it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 19.09it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 25.18it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  134.8695652173913
+Max memory used:  25247744
+Wrote times to  runs/634
+2024-06-04 14:04:31,807 - e.run_exp - INFO - 
+[[[0.8227]]
+
+ [[0.8307]]
+
+ [[0.8227]]
+
+ [[0.8167]]
+
+ [[0.8307]]
+
+ [[0.8416]]
+
+ [[0.8446]]
+
+ [[0.8416]]
+
+ [[0.8347]]
+
+ [[0.8217]]
+
+ [[0.8287]]
+
+ [[0.8078]]
+
+ [[0.8227]]]
+2024-06-04 14:04:31,808 - e.run_exp - INFO - iteration:(2/5)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5}
+Fugal
+/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:177: UserWarning: An output with one or more elements was resized since it had shape [1004], which does not match the required output shape [1, 1004]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.50it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.50it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:01<00:02,  2.57it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:01<00:01,  3.29it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:19,  1.42s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 29.57it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 40.01it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:01<00:09,  1.39it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 45.00it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:01<00:05,  2.12it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 48.06it/s][A
+                                                           [Aλ:  27%|██▋       | 4/15 [00:01<00:03,  2.95it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:02<00:01,  5.00it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:02<00:00, 11.94it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:02<00:00, 16.86it/s]λ: 100%|██████████| 15/15 [00:02<00:00,  6.43it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  35.266666666666666
+Max memory used:  25193984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.48it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.55it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:01<00:02,  2.57it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:01<00:01,  3.29it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:19,  1.39s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 24.00it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:01<00:08,  1.45it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 38.73it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:01<00:05,  2.34it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 28.10it/s][A
+                                                           [Aλ:  27%|██▋       | 4/15 [00:01<00:03,  3.20it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 47.04it/s][A
+                                                           [Aλ:  33%|███▎      | 5/15 [00:01<00:02,  4.04it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:02<00:00, 10.09it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:02<00:00,  6.98it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  59.81395348837209
+Max memory used:  25193984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.55it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.61it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:01<00:02,  2.58it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:01<00:01,  3.26it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:19,  1.37s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:01<00:05,  2.37it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:01<00:02,  3.60it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:01<00:00,  7.85it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00,  7.54it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  108.42222222222222
+Max memory used:  25193984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 11.36it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 18.59it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.00it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  7.17it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00, 12.97it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 22.09it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 26.33it/s]λ: 100%|██████████| 15/15 [00:00<00:00, 18.37it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  901
+Mean Sinkhorn iterations:  38.93333333333333
+Max memory used:  25251328
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.77it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.64it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:01<00:02,  2.59it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:01<00:01,  3.31it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:19,  1.39s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 38.57it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:01<00:08,  1.49it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 36.70it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:01<00:05,  2.39it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 27.36it/s][A
+                                                           [Aλ:  27%|██▋       | 4/15 [00:01<00:03,  3.17it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:01<00:02,  4.19it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:02<00:00,  8.60it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:02<00:00,  7.07it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  62.58536585365854
+Max memory used:  25193984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.62it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.10it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:01<00:03,  2.30it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:01<00:01,  3.05it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:21,  1.50s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:01<00:05,  2.21it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:01<00:02,  3.38it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:02<00:01,  6.28it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:02<00:00,  7.07it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  106.02173913043478
+Max memory used:  25193984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 12.36it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 19.56it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.28it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  7.16it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 16.18it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 22.32it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 19.67it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  901
+Mean Sinkhorn iterations:  38.93333333333333
+Max memory used:  25251328
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 11.95it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 15.65it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.21it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  7.94it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 16.90it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 24.54it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  901
+Mean Sinkhorn iterations:  65.9367088607595
+Max memory used:  25251328
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 12.01it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 15.55it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:03,  3.52it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  8.72it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 24.70it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 28.17it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  901
+Mean Sinkhorn iterations:  99.54166666666667
+Max memory used:  25251328
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 12.18it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 19.13it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.23it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  7.24it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 16.16it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 22.76it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 27.63it/s]λ: 100%|██████████| 15/15 [00:00<00:00, 19.43it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  901
+Mean Sinkhorn iterations:  38.93333333333333
+Max memory used:  25251328
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 12.92it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 19.70it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.41it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  7.86it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 19.89it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 24.63it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  901
+Mean Sinkhorn iterations:  64.45679012345678
+Max memory used:  25251328
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:00,  9.44it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  7.84it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:05,  2.72it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  7.55it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 19.24it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 23.29it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  901
+Mean Sinkhorn iterations:  95.2
+Max memory used:  25251328
+Wrote times to  runs/634
+2024-06-04 14:06:12,791 - e.run_exp - INFO - 
+[[[0.7869]]
+
+ [[0.7918]]
+
+ [[0.7849]]
+
+ [[0.761 ]]
+
+ [[0.8008]]
+
+ [[0.7978]]
+
+ [[0.7639]]
+
+ [[0.7928]]
+
+ [[0.8167]]
+
+ [[0.8048]]
+
+ [[0.7978]]
+
+ [[0.7948]]
+
+ [[0.7998]]]
+2024-06-04 14:06:12,792 - e.run_exp - INFO - iteration:(3/5)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5}
+Fugal
+/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:177: UserWarning: An output with one or more elements was resized since it had shape [1004], which does not match the required output shape [1, 1004]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.57it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.57it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:01,  3.65it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:01<00:00, 12.30it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:15,  1.08s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 26.56it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:01<00:07,  1.82it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 77.23it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:01<00:04,  2.82it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:01<00:01,  5.00it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:01<00:01,  7.06it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:01<00:00, 12.95it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 18.30it/s]λ: 100%|██████████| 15/15 [00:01<00:00,  7.92it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  27.866666666666667
+Max memory used:  25197056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.65it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.60it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:01,  3.77it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:01<00:00, 12.03it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:15,  1.08s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 38.04it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:01<00:06,  1.96it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:01<00:03,  3.07it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:01<00:01,  5.41it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:01<00:01,  7.95it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:01<00:00, 12.38it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00,  8.59it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  48.26190476190476
+Max memory used:  25197056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.66it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.13it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:01<00:02,  3.17it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:15,  1.10s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 18.97it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:01<00:07,  1.83it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:01<00:02,  3.83it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:01<00:01,  5.87it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:01<00:00, 11.20it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00,  8.42it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  80.89795918367346
+Max memory used:  25197056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  8.92it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  7.12it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00,  7.19it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00,  7.56it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:08,  1.58it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:02,  4.88it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 12.93it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  80%|████████  | 12/15 [00:00<00:00, 18.24it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 14.26it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  671
+Mean Sinkhorn iterations:  35.6
+Max memory used:  25254400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.62it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.62it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:01,  3.63it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:01<00:00, 12.34it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:15,  1.08s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 36.14it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:01<00:06,  1.95it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:01<00:03,  3.07it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:01<00:01,  5.56it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:01<00:01,  7.54it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:01<00:00, 13.31it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00,  8.64it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  48.392857142857146
+Max memory used:  25197056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.52it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.58it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:01,  3.69it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:13,  1.03it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 18.94it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:01<00:06,  2.02it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:01<00:02,  4.19it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:01<00:01,  6.28it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:01<00:00, 10.27it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00,  9.20it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  80.12244897959184
+Max memory used:  25197056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:01,  7.40it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 11.78it/s][A
+frank-wolfe:  70%|███████   | 7/10 [00:00<00:00, 22.10it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:05,  2.49it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  6.58it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 15.15it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 20.95it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 17.74it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  671
+Mean Sinkhorn iterations:  35.6
+Max memory used:  25254400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 18.27it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 21.99it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.49it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:00, 12.16it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 19.43it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 25.43it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  671
+Mean Sinkhorn iterations:  56.48780487804878
+Max memory used:  25254400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 19.02it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:03,  4.25it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:00, 17.13it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 31.14it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 30.58it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  671
+Mean Sinkhorn iterations:  87.45833333333333
+Max memory used:  25254400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 16.68it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 22.72it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.28it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:00, 11.06it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 17.69it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  87%|████████▋ | 13/15 [00:00<00:00, 25.37it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 20.35it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  671
+Mean Sinkhorn iterations:  35.6
+Max memory used:  25254400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 16.54it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 21.73it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.42it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:00, 11.89it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 20.58it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 35.78it/s]λ: 100%|██████████| 15/15 [00:00<00:00, 24.92it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  671
+Mean Sinkhorn iterations:  57.5
+Max memory used:  25254400
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 19.94it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 19.60it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:03,  4.22it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:00, 16.75it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 30.68it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 30.36it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  671
+Mean Sinkhorn iterations:  87.45833333333333
+Max memory used:  25254400
+Wrote times to  runs/634
+2024-06-04 14:07:55,158 - e.run_exp - INFO - 
+[[[0.751 ]]
+
+ [[0.7141]]
+
+ [[0.6912]]
+
+ [[0.6922]]
+
+ [[0.7629]]
+
+ [[0.7112]]
+
+ [[0.6783]]
+
+ [[0.7659]]
+
+ [[0.7679]]
+
+ [[0.751 ]]
+
+ [[0.7629]]
+
+ [[0.7649]]
+
+ [[0.749 ]]]
+2024-06-04 14:07:55,159 - e.run_exp - INFO - iteration:(4/5)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5}
+Fugal
+/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:177: UserWarning: An output with one or more elements was resized since it had shape [1004], which does not match the required output shape [1, 1004]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  3.50it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:02,  3.66it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 16.82it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:09,  1.46it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 46.15it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:00<00:04,  2.69it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:01<00:02,  5.27it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:01<00:01,  7.94it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:01<00:00, 12.27it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  87%|████████▋ | 13/15 [00:01<00:00, 17.49it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 10.71it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  24.14666666666667
+Max memory used:  25200640
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  3.49it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:02,  3.71it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:09,  1.54it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:02,  4.35it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:01,  6.97it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:01<00:00, 10.82it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:01<00:00, 14.83it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 12.19it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  40.30232558139535
+Max memory used:  25200640
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  3.48it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:02,  3.72it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:08,  1.70it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:02,  4.91it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 11.57it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:00<00:00, 15.58it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 14.97it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  69.5625
+Max memory used:  25200640
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 27.43it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 38.10it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:03,  4.17it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  9.81it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:00, 12.93it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 14.80it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  80%|████████  | 12/15 [00:00<00:00, 24.39it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 20.01it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  511
+Mean Sinkhorn iterations:  36.86666666666667
+Max memory used:  25257984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  3.20it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:02,  3.39it/s][A
+frank-wolfe:  90%|█████████ | 9/10 [00:00<00:00, 17.84it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:10,  1.40it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  13%|█▎        | 2/15 [00:00<00:04,  2.78it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:01,  5.82it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:01<00:00, 10.23it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:01<00:00, 16.33it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 12.18it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  41.11904761904762
+Max memory used:  25200640
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  3.20it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:02,  3.40it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:09,  1.55it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:02,  4.43it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00,  9.01it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:01<00:00, 12.82it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 13.23it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  70.97872340425532
+Max memory used:  25200640
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  30%|███       | 3/10 [00:00<00:00, 25.54it/s][A
+frank-wolfe:  70%|███████   | 7/10 [00:00<00:00, 32.73it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:03,  3.90it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  9.41it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00, 16.16it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:00<00:00, 23.26it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 29.61it/s]λ: 100%|██████████| 15/15 [00:00<00:00, 21.61it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  511
+Mean Sinkhorn iterations:  36.8
+Max memory used:  25257984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 14.96it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 14.47it/s][A
+frank-wolfe:  70%|███████   | 7/10 [00:00<00:00, 19.12it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:05,  2.40it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  6.11it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00, 11.18it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 13.00it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  80%|████████  | 12/15 [00:00<00:00, 19.24it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 15.99it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  511
+Mean Sinkhorn iterations:  58.875
+Max memory used:  25257984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 14.86it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 14.30it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.05it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  13%|█▎        | 2/15 [00:00<00:02,  5.03it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:01,  9.47it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 20.34it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  80%|████████  | 12/15 [00:00<00:00, 22.28it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 18.51it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  511
+Mean Sinkhorn iterations:  88.75510204081633
+Max memory used:  25257984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 14.95it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 14.48it/s][A
+frank-wolfe:  70%|███████   | 7/10 [00:00<00:00, 19.40it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:06,  2.22it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 78.10it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:00<00:03,  3.93it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:01,  6.94it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 10.93it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:01<00:00, 14.31it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  87%|████████▋ | 13/15 [00:01<00:00, 16.98it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 12.27it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  511
+Mean Sinkhorn iterations:  36.666666666666664
+Max memory used:  25257984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 14.86it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 14.42it/s][A
+frank-wolfe:  70%|███████   | 7/10 [00:00<00:00, 19.09it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:05,  2.39it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  6.10it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00, 11.16it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 14.97it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  80%|████████  | 12/15 [00:00<00:00, 18.59it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 15.95it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  511
+Mean Sinkhorn iterations:  59.9873417721519
+Max memory used:  25257984
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 14.98it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 14.42it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  3.07it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  13%|█▎        | 2/15 [00:00<00:02,  5.08it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:00, 11.55it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:00<00:00, 18.52it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 18.70it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  511
+Mean Sinkhorn iterations:  88.75510204081633
+Max memory used:  25257984
+Wrote times to  runs/634
+2024-06-04 14:09:32,306 - e.run_exp - INFO - 
+[[[0.7161]]
+
+ [[0.6215]]
+
+ [[0.6145]]
+
+ [[0.6205]]
+
+ [[0.751 ]]
+
+ [[0.6066]]
+
+ [[0.5966]]
+
+ [[0.744 ]]
+
+ [[0.75  ]]
+
+ [[0.7371]]
+
+ [[0.746 ]]
+
+ [[0.7331]]
+
+ [[0.7241]]]
+2024-06-04 14:09:32,307 - e.run_exp - INFO - iteration:(5/5)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5}
+Fugal
+/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:177: UserWarning: An output with one or more elements was resized since it had shape [1004], which does not match the required output shape [1, 1004]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.28it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:02,  3.49it/s][A
+frank-wolfe: 100%|██████████| 10/10 [00:00<00:00, 20.76it/s][A
+                                                            [Aλ:   7%|▋         | 1/15 [00:00<00:10,  1.39it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:02,  4.06it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:01,  6.71it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:01<00:00,  9.15it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:01<00:00, 12.93it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  93%|█████████▎| 14/15 [00:01<00:00, 18.87it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 11.05it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  20.633333333333333
+Max memory used:  25203712
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  3.20it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  4.29it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:07,  1.76it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:02,  5.03it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00,  9.86it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 13.32it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 23.61it/s]λ: 100%|██████████| 15/15 [00:01<00:00, 14.02it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  34.305882352941175
+Max memory used:  25203712
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  3.20it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  4.30it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:07,  1.86it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:02,  5.49it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 12.61it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 18.27it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 15.33it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  58.958333333333336
+Max memory used:  25203712
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 30.09it/s][A
+frank-wolfe:  90%|█████████ | 9/10 [00:00<00:00, 38.67it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:03,  3.95it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  9.44it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00, 16.20it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:00<00:00, 22.51it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 29.36it/s]λ: 100%|██████████| 15/15 [00:00<00:00, 21.47it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  421
+Mean Sinkhorn iterations:  37.46666666666667
+Max memory used:  25261056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:02,  3.16it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:01,  4.24it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:08,  1.74it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:02,  4.99it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00,  9.80it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 13.59it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  93%|█████████▎| 14/15 [00:01<00:00, 22.01it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 14.10it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  34.81927710843374
+Max memory used:  25203712
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.MIX: 2>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  10%|█         | 1/10 [00:00<00:05,  1.57it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:03,  2.10it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:01<00:15,  1.09s/it]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 19.41it/s][A
+                                                           [Aλ:  20%|██        | 3/15 [00:01<00:04,  2.70it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:01<00:02,  4.70it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  47%|████▋     | 7/15 [00:01<00:01,  6.83it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:01<00:00,  9.87it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  80%|████████  | 12/15 [00:01<00:00, 11.50it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 15.14it/s]λ: 100%|██████████| 15/15 [00:01<00:00,  7.74it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  1000
+Mean Sinkhorn iterations:  58.208333333333336
+Max memory used:  25203712
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 18.90it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 16.93it/s][A
+frank-wolfe:  60%|██████    | 6/10 [00:00<00:00, 17.82it/s][A
+frank-wolfe: 100%|██████████| 10/10 [00:00<00:00, 25.41it/s][A
+                                                            [Aλ:   7%|▋         | 1/15 [00:00<00:06,  2.25it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 78.03it/s][A
+                                                           [Aλ:  13%|█▎        | 2/15 [00:00<00:03,  3.98it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:01,  7.05it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00, 10.13it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 12.00it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:01<00:00, 15.25it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  93%|█████████▎| 14/15 [00:01<00:00, 17.87it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 12.18it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  421
+Mean Sinkhorn iterations:  37.53333333333333
+Max memory used:  25261056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 18.84it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 16.90it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  2.94it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:01, 10.21it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 19.59it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 23.03it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  421
+Mean Sinkhorn iterations:  59.39506172839506
+Max memory used:  25261056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 18.37it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 16.73it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  2.93it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  13%|█▎        | 2/15 [00:00<00:02,  5.00it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:00, 11.73it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:00<00:00, 21.62it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  87%|████████▋ | 13/15 [00:00<00:00, 23.85it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 18.68it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  421
+Mean Sinkhorn iterations:  86.8
+Max memory used:  25261056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 18.98it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 17.00it/s][A
+frank-wolfe:  70%|███████   | 7/10 [00:00<00:00, 21.03it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:05,  2.58it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  6.83it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:01,  9.46it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 12.44it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 15.29it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  93%|█████████▎| 14/15 [00:01<00:00, 17.65it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:01<00:00, 13.35it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  421
+Mean Sinkhorn iterations:  37.53333333333333
+Max memory used:  25261056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.1}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 18.62it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 16.75it/s][A
+frank-wolfe:  60%|██████    | 6/10 [00:00<00:00, 17.60it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:05,  2.45it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  20%|██        | 3/15 [00:00<00:01,  6.10it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00, 10.87it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 13.57it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 24.19it/s]λ: 100%|██████████| 15/15 [00:00<00:00, 15.52it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  421
+Mean Sinkhorn iterations:  57.86746987951807
+Max memory used:  25261056
+Wrote times to  runs/634
+args:  {'iter': 15, 'simple': True, 'mu': 0.5, 'path': 'runs/634', 'sparse': True, 'cache': 1, 'sinkhorn_method': <SinkhornMethod.LOG: 1>, 'sinkhorn_iterations': 1000, 'sinkhorn_threshold': 0.001, 'hungarian': <HungarianMethod.DOUBLE_GREEDY: 5>, 'frank_wolfe_threshold': 0.2}
+FE CUDA Check:	 True cuda:1
+λ:   0%|          | 0/15 [00:00<?, ?it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+frank-wolfe:  20%|██        | 2/10 [00:00<00:00, 17.62it/s][A
+frank-wolfe:  40%|████      | 4/10 [00:00<00:00, 16.41it/s][A
+                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:04,  2.87it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  13%|█▎        | 2/15 [00:00<00:02,  4.90it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  33%|███▎      | 5/15 [00:00<00:00, 11.55it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  67%|██████▋   | 10/15 [00:00<00:00, 20.39it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [A
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ:  93%|█████████▎| 14/15 [00:00<00:00, 24.96it/s]
+frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
+                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 18.24it/s]
+Sinkhorn threshold:  0.001
+Max Sinkhorn iterations:  421
+Mean Sinkhorn iterations:  87.6
+Max memory used:  25261056
+Wrote times to  runs/634
+2024-06-04 14:11:37,058 - e.run_exp - INFO - 
+[[[0.6703]]
+
+ [[0.508 ]]
+
+ [[0.4871]]
+
+ [[0.4582]]
+
+ [[0.7261]]
+
+ [[0.489 ]]
+
+ [[0.4582]]
+
+ [[0.7102]]
+
+ [[0.7271]]
+
+ [[0.7141]]
+
+ [[0.7221]]
+
+ [[0.7201]]
+
+ [[0.7112]]]
+2024-06-04 14:11:37,059 - e.ex - INFO - Completed after 0:09:22

@@ -1,0 +1,7 @@
+
+\section{Conclusion}
+The goal of this project was to speed up the solving of graph alignment problems. This was to be achieved by taking advantage of \textsc{Fugal}s parallelisable nature and implementing an algorithm on graphics hardware. To achieve this we develop the \textsc{cuGAL} algorithm, starting from \textsc{Fugal}. Through extensive experimentation we have discovered additional modifications and additions to \textsc{Fugal} that provide significant speed ups with no or minor decreases in accuracy. This was achieved by looking at each sub-process and algorithm of \textsc{Fugal} in turn, analysing what the most time consuming steps and improving these one by one. This resulted in an algorithm, with a number of parameters and different methods. These were then tuned through a series of tests to arrive at a few different versions of the algorithm. \textsc{cuGAL} was then implemented efficiently in CUDA and PyTorch.
+
+Finally, this implementation was then tested on a series of datasets to show that improvements to both speed and accuracy were achieved in many different scenarios. This results in largely shifting the restricting factor for solving graph alignment problems from speed to memory. 
+
+Although these tests do show large speed-ups, we believe that more improvements could be made, as described in Future Work, Section \ref{future-work}. This could be through further tuning of parameters, but also through architectural changes, such as implementing streaming problems continually to the GPU, or utilising multiple GPUs. 

@@ -1,0 +1,221 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[round]{natbib}
+\usepackage{amsmath, amssymb}
+\usepackage{dsfont}
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+\usepackage{bbm}
+\usepackage{pdfpages}
+\usepackage{float}
+\usepackage[a4paper]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{ifthen}
+
+
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{xcolor}
+\usepackage{caption}
+\usetikzlibrary{pgfplots.colorbrewer}
+
+\newcommand{\lstfont}[1]{\color{#1}\scriptsize\ttfamily}
+
+\lstset{
+    language=[ANSI]C++,
+    showstringspaces=false,
+    backgroundcolor=\color{white!90},
+    basicstyle=\lstfont{black},
+    identifierstyle=\lstfont{black},
+    keywordstyle=\lstfont{purple},
+    commentstyle=\lstfont{green!50!black},
+    emph={
+        cudaMalloc, cudaFree,
+        __global__, __shared__, __device__, __host__,
+        __syncthreads, cudaDeviceSynchronize, pragma, unroll
+    },
+    emphstyle={\lstfont{blue}},
+    breaklines=true
+}
+
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{plotmarks}
+
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepgfplotslibrary{external}
+\pgfplotsset{compat=1.5}
+
+\usepackage{xcolor}
+\newcommand\todo[1]{\textcolor{red}{#1}}
+
+\newcommand\R{\mathds{R}}
+
+\newcommand{\resultplot}[5]{%
+    \pgfplotsset{
+        % initialize Set1-5:
+        cycle list/Set3-12,
+        % combine it with 'mark list*':
+        cycle multiindex* list={
+            mark list*\nextlist
+            Set3-12\nextlist
+        },
+    }
+    \pgfplotstableread[col sep=comma]{#2}\accutable
+    \pgfplotstableread[col sep=comma]{#3}\timetable
+
+    \begin{minipage}{\textwidth}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    name=timeax,
+                    xmajorgrids=true, ymajorgrids=true,
+                    xlabel={Noise}, ylabel={Accuracy},
+                    xtick=data,
+                    xticklabels={0, 5, 10, 15, 20, 25},
+                    %legend style={at={(0.5,-0.16)}, anchor=north, legend columns=2, font=\footnotesize, legend cell align={left}},
+                    width=\textwidth*0.45,
+                    height=\textwidth*0.45,
+                ]
+                \pgfplotsforeachungrouped \i in {0,...,#4} {
+                    \addplot table[x expr=\coordindex, y index=\i] 
+                    {\accutable};
+                }
+                %\legend{\textsc{Fugal}, \textsc{CugalMix}, \textsc{CugalMix} $\gamma$0.1, \textsc{CugalMix} $\gamma$0.2,\textsc{CugalMixGreedy}, \textsc{CugalMixGreedy} $\gamma$0.1, \textsc{CugalMixGreedy} $\gamma$0.2,\textsc{CugalLog}, \textsc{CugalLog} $\gamma$0.1, \textsc{CugalLog} $\gamma$0.2, \textsc{CugalLogGreedy}, \textsc{CugalLogGreedy} $\gamma$0.1, \textsc{CugalLogGreedy} $\gamma$0.2}
+            \end{axis}
+            \begin{semilogyaxis}[
+                    at={(timeax.south east)},
+                    xshift=2cm,
+                    xmajorgrids=true, ymajorgrids=true,
+                    xlabel={Noise}, ylabel={Time (s)},
+                    xtick=data,
+                    xticklabels={0, 5, 10, 15, 20, 25},
+                    legend style={at={(-0.25,-0.1)}, anchor=north, legend columns=3, font=\footnotesize, legend cell align={left}},
+                    width=\textwidth*0.45,
+                    height=\textwidth*0.45,
+                ]
+                \pgfplotsforeachungrouped \i in {0,...,#4} {
+                    \addplot table[x expr=\coordindex, y index=\i] 
+                    {\timetable};
+                }
+                \ifthenelse{\equal{#5}{true}}{
+                \legend{\textsc{Fugal}, \textsc{cuGAL-Mix}, \textsc{cuGAL-Mix} $\gamma=0.1$, \textsc{cuGAL-Mix} $\gamma=0.2$,\textsc{cuGAL-Mix-Greedy}, \textsc{cuGAL-Mix-Greedy} $\gamma=0.1$, \textsc{cuGAL-Mix-Greedy} $\gamma=0.2$,\textsc{cuGAL-Log}, \textsc{cuGAL-Log} $\gamma=0.1$, \textsc{cuGAL-Log} $\gamma=0.2$, \textsc{cuGAL-Log-Greedy}, \textsc{cuGAL-Log-Greedy} $\gamma=0.1$, \textsc{cuGAL-Log-Greedy} $\gamma=0.2$}
+                }{}
+            \end{semilogyaxis}
+        \end{tikzpicture}
+        \captionof{figure}{Runtime and accuracy on #1 dataset}
+        \label{fig:#1_res}
+    \end{minipage}
+}
+
+
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=black,
+}
+
+
+\title{cuGAL: Graph Alignment on the GPU}
+\author{Sebastian Rue Clausen, Andreas H. H. Hansen}
+\date{\today}
+
+\begin{document}
+
+\begin{titlepage}
+    \maketitle
+    \centering
+    \begin{tikzpicture}[scale=2]
+    % Graph 1 nodes
+    \path
+    (1, 0) node[circle, draw] (A1) {}
+    (0, 1) node[circle, draw] (B1) {}
+    (2, 1) node[circle, draw] (C1) {}
+    (1, 2) node[circle, draw] (D1) {}
+    (0, 3) node[circle, draw] (E1) {}
+    (2, 3) node[circle, draw] (F1) {}
+    (1, 4) node[circle, draw] (G1) {}
+    ;
+
+    % Graph 1 edges
+    \draw (A1) -- (B1);
+    \draw (A1) -- (C1);
+    \draw (B1) -- (C1);
+    \draw (B1) -- (D1);
+    \draw (C1) -- (D1);
+    \draw (C1) -- (F1);
+    \draw (D1) -- (E1);
+    \draw (D1) -- (F1);
+    \draw (E1) -- (G1);
+
+    % Graph 2 nodes (rotated)
+    \path
+    (5, 1) node[circle, draw] (A2) {}
+    (6, 2) node[circle, draw] (B2) {}
+    (4, 2) node[circle, draw] (C2) {}
+    (5, 5) node[circle, draw] (D2) {}
+    (5, 4) node[circle, draw] (E2) {}
+    (6, 3) node[circle, draw] (F2) {}
+    (4, 4) node[circle, draw] (G2) {}
+    ;
+
+    % Graph 2 edges
+    \draw (A2) -- (B2);
+    \draw (A2) -- (C2);
+    \draw (B2) -- (C2);
+    \draw (B2) -- (D2);
+    \draw (C2) -- (D2);
+    \draw (C2) -- (F2);
+    \draw (D2) -- (E2);
+    \draw (D2) -- (F2);
+    \draw (E2) -- (G2);
+
+    % Matching edges
+    \draw[dashed] (A1) -- (A2);
+    \draw[dashed] (B1) -- (B2);
+    \draw[dashed] (C1) -- (C2);
+    \draw[dashed] (D1) -- (D2);
+    \draw[dashed] (E1) -- (E2);
+    \draw[dashed] (F1) -- (F2);
+    \draw[dashed] (G1) -- (G2);
+
+\end{tikzpicture}
+\end{titlepage}
+
+\include{abstract}
+
+\tableofcontents
+
+\include{0introduction}
+
+\include{1background}
+
+\include{2related_work}
+
+\include{3fugal}
+
+\include{4gpu_architecture}
+
+\include{5cugal}
+
+\include{6experiments}
+
+\include{7future}
+
+\include{8conclusion}
+
+\newpage
+\bibliographystyle{apalike}
+\bibliography{literature}
+
+\include{appendix}
+
+
+\end{document}

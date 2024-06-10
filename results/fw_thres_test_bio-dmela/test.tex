@@ -1,0 +1,106 @@
+\documentclass{article}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{xcolor}
+\usetikzlibrary{plotmarks}
+\pgfplotsset{compat=1.18}
+
+\definecolor{figcol0}{HTML}{1b9e77}  
+\definecolor{figcol1}{HTML}{d95f02}  
+\definecolor{figcol2}{HTML}{7570b3}
+\definecolor{figcol3}{HTML}{e7298a} 
+\definecolor{figcol4}{HTML}{66a61e}  
+\definecolor{figcol5}{HTML}{e6ab02}
+\definecolor{figcol6}{HTML}{a6761d}  
+
+\pgfplotstableread[col sep=comma]{fw_thres_bd_time_per_accu_thres_noise.csv}\fwbdtptn
+
+\begin{document}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                xlabel={X axis label}, % Replace with your x-axis label
+                ylabel={Y axis label}, % Replace with your y-axis label
+                legend style={at={(1.05,1)}, anchor=north west}
+                xmajorgrids=true,
+                ymajorgrids=true,
+            ]
+            \addplot[
+                scatter,
+                only marks,
+                mark size=3pt,
+                scatter/@pre marker code/.append style={
+                        /utils/exec=\pgfplotstablegetelem{\coordindex}{shape}\of{\fwbdtptn},
+                        /tikz/mark=\pgfplotsretval,
+                    },
+                scatter/@pre marker code/.append style={
+                        /utils/exec=\pgfplotstablegetelem{\coordindex}{color}\of{\fwbdtptn},
+                        /tikz/color=\pgfplotsretval,
+                    },
+            ] table[x index=0, y index=1] {\fwbdtptn};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Caption2}
+    \label{fig:enter-label}
+\end{figure}
+\newpage
+\pgfplotstableread[col sep=comma]{fw_thresh_bio-dmela.csv}\fwtbm
+\pgfplotstableread[col sep=comma]{fw_thres_bd_times.csv}\fwtbmt
+
+\begin{figure}[h]
+    \begin{tikzpicture}
+        \begin{semilogyaxis}[
+                width=\linewidth,
+                ybar stacked,
+                log origin=infty,
+                ylabel={Time $(s)$},
+                xlabel={Noise},
+                x label style={at={(0.5, -0.07)}},
+                bar width=6pt,
+                legend pos=south west,
+                xtick=\empty,%{3.5, 10.5, 17.5, 24.5, 31.5, 38.5},
+                %xticklabels={0, 5, 10, 15, 20, 25},
+                %x tick label style={\empty}
+                %extra x tick style={xshift=,},
+                legend style={at={(0.5,-0.12)}, anchor=north, legend columns=-1},
+                %yticklabel={\pgfmathprintnumber[fixed,precision=2]{\tick}},
+                ymajorgrids=true,
+                xmajorgrids=true,
+            ]
+            \pgfplotsforeachungrouped \i in {0,1,2,3} {
+                    \addplot table[x expr=\coordindex, y index=\i]
+                        {\fwtbmt};
+                }
+
+            %\legend{$ \displaystyle { \text{Sinkhorn-} \atop \text{Knopp} }$, $ \displaystyle { \text{Feature} \atop \text{Extraction} }$, Gradient, Hungarian};
+            \legend{Sinkhorn-Knopp-mix \ref{alg:sinkhorn_mix}, Feature Extraction, Gradient \ref{alg:cugal-calculate-gradient}, Hungarian};
+            \coordinate (brace1start) at (axis cs:00.5,2.6e-3);
+            \coordinate (brace1end)   at (axis cs:07.5,2.6e-3);
+            \coordinate (brace2end)   at (axis cs:14.5,2.6e-3);
+            \coordinate (brace3end)   at (axis cs:21.5,2.6e-3);
+            \coordinate (brace4end)   at (axis cs:28.5,2.6e-3);
+            \coordinate (brace5end)   at (axis cs:35.5,2.6e-3);
+            \coordinate (brace6end)   at (axis cs:42.5,2.6e-3);
+
+        \end{semilogyaxis}
+        % Adding the braces
+        \draw [decorate,decoration={brace,amplitude=10pt,mirror,raise=4ex}]
+        (brace1start) -- (brace1end) node[midway,yshift=-3.5em]{0};
+        \draw [decorate,decoration={brace,amplitude=10pt,mirror,raise=4ex}]
+        (brace1end) -- (brace2end) node[midway,yshift=-3.5em]{5};
+        \draw [decorate,decoration={brace,amplitude=10pt,mirror,raise=4ex}]
+        (brace2end) -- (brace3end) node[midway,yshift=-3.5em]{10};
+        \draw [decorate,decoration={brace,amplitude=10pt,mirror,raise=4ex}]
+        (brace3end) -- (brace4end) node[midway,yshift=-3.5em]{15};
+        \draw [decorate,decoration={brace,amplitude=10pt,mirror,raise=4ex}]
+        (brace4end) -- (brace5end) node[midway,yshift=-3.5em]{20};
+        \draw [decorate,decoration={brace,amplitude=10pt,mirror,raise=4ex}]
+        (brace5end) -- (brace6end) node[midway,yshift=-3.5em]{25};
+
+    \end{tikzpicture}
+    \caption{Speed of different levels of $\gamma$. There are six levels of increasing noise, each tested with six increasing $\gamma$ thresholds.}
+    \label{fig:FW_speed}
+\end{figure}
+\end{document}

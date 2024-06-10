@@ -1,0 +1,402 @@
+{
+  "acc_names": [
+    "acc"
+  ],
+  "accs": [
+    0
+  ],
+  "algs": [
+    [
+      {
+        "py/repr": "algorithms.CUGAL.Cugal/algorithms.CUGAL.Cugal"
+      },
+      {
+        "device": "cpu",
+        "dtype": {
+          "py/object": "torch.dtype"
+        },
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_method": {
+          "py/reduce": [
+            {
+              "py/type": "cugal.config.SinkhornMethod"
+            },
+            {
+              "py/tuple": [
+                0
+              ]
+            }
+          ]
+        },
+        "use_fugal": true
+      },
+      [
+        3
+      ],
+      "CUGAL_CPU"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/reduce": [
+            {
+              "py/type": "cugal.config.SinkhornMethod"
+            },
+            {
+              "py/tuple": [
+                2
+              ]
+            }
+          ]
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_Sparse_MIX"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "frank_wolfe_threshold": 0.1,
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 12
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_FW_010"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "frank_wolfe_threshold": 0.2,
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 12
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_FW_020"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "hungarian": {
+          "py/reduce": [
+            {
+              "py/type": "cugal.config.HungarianMethod"
+            },
+            {
+              "py/tuple": [
+                5
+              ]
+            }
+          ]
+        },
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/reduce": [
+            {
+              "py/type": "cugal.config.SinkhornMethod"
+            },
+            {
+              "py/tuple": [
+                1
+              ]
+            }
+          ]
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_HUNGARIAN_MORE_GREEDy"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "frank_wolfe_threshold": 0.1,
+        "hungarian": {
+          "py/id": 23
+        },
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 12
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_HUNGARIAN_MORE_GREEDY_FW_10"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "frank_wolfe_threshold": 0.2,
+        "hungarian": {
+          "py/id": 23
+        },
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 12
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_HUNGARIAN_MORE_GREEDY_FW_20"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 22
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_Sparse_LOG"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "frank_wolfe_threshold": 0.1,
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 22
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_LOG_FW_010"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "frank_wolfe_threshold": 0.2,
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 22
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_LOG_FW_020"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "hungarian": {
+          "py/id": 23
+        },
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 22
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_LOG_HUNGARIAN_MORE_GREEDY"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "frank_wolfe_threshold": 0.1,
+        "hungarian": {
+          "py/id": 23
+        },
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 22
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_LOG_HUNGARIAN_MORE_GREEDY_FW_10"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "frank_wolfe_threshold": 0.2,
+        "hungarian": {
+          "py/id": 23
+        },
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 22
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_LOG_HUNGARIAN_MORE_GREEDY_FW_20"
+    ]
+  ],
+  "graph_names": [
+    "ca-netscience"
+  ],
+  "graphs": [
+    [
+      {
+        "py/function": "generation.generate.loadnx"
+      },
+      [
+        [
+          "data/ca-netscience.txt"
+        ]
+      ]
+    ]
+  ],
+  "iters": 1,
+  "mall": false,
+  "noise_type": 1,
+  "noises": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "run": [
+    25,
+    5,
+    10,
+    11,
+    20,
+    55,
+    22,
+    4,
+    50,
+    51,
+    52,
+    53,
+    54
+  ],
+  "seed": 71632855,
+  "tmp": []
+}

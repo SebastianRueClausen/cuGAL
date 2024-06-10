@@ -1,0 +1,95 @@
+{
+  "acc_names": [
+    "acc"
+  ],
+  "accs": [
+    0
+  ],
+  "algs": [
+    [
+      {
+        "py/repr": "algorithms.CUGAL.Cugal/algorithms.CUGAL.Cugal"
+      },
+      {
+        "cache": 0,
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/reduce": [
+            {
+              "py/type": "cugal.config.SinkhornMethod"
+            },
+            {
+              "py/tuple": [
+                2
+              ]
+            }
+          ]
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_Sparse"
+    ],
+    [
+      {
+        "py/id": 5
+      },
+      {
+        "cache": 1,
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_iterations": 1000,
+        "sinkhorn_method": {
+          "py/id": 7
+        },
+        "sinkhorn_threshold": 0.001,
+        "sparse": true
+      },
+      [
+        3
+      ],
+      "CUGAL_Sparse_MIX"
+    ]
+  ],
+  "graph_names": [
+    "bio-dmela"
+  ],
+  "graphs": [
+    [
+      {
+        "py/function": "generation.generate.loadnx"
+      },
+      [
+        [
+          "data/bio-dmela.txt"
+        ]
+      ]
+    ]
+  ],
+  "iters": 1,
+  "mall": false,
+  "noise_type": 1,
+  "noises": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "run": [
+    2,
+    5
+  ],
+  "seed": 71632855,
+  "tmp": []
+}
