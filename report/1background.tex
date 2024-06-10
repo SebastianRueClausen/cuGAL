@@ -1,0 +1,87 @@
+\section{Background}
+\subsection{The Graph Alignment Problem}
+%Something general
+The graph alignment problem involves finding a bijective function $f: V_1 \rightarrow V_2$, that maps each node in graph $G_1 = (V_1, E_1)$ to each node in graph $G_2 = (V_2, E_2)$. The objective is to find a mapping such that a similarity of the connected nodes is maximised. The measure of similarity may vary dependent on the problem being solved.\\
+
+\noindent
+\textbf{Unrestricted:} The objective of \textsc{Fugal} is the problem of \textit{unrestricted} graph alignment. \textit{Unrestricted} graph alignment only considers the topology of the graph to determine an alignment. Given adjacency matrices $A$ and $B$ of $G_1$ and $G_2$ respectively, we find a permutation such that the number of edge disagreements is minimised:
+
+\begin{equation}\label{original_qap}
+\min_{P \in \mathds{P}^n} \lVert AP-PB \rVert^2_F
+\end{equation}
+
+where $\mathds{P}^n$ is a $n \times n$ permutation matrices. This is an instance of QAP (Quadratic assignment problem) \citep{fan2020spectral}, which is NP-hard \citep{sahni1972qap}.\\
+
+\noindent
+\textbf{Restricted:} For \textit{restricted} graph alignment, an alignment is determined based on both graph topology and vertex features. This may be required to sufficiently model real world problems. We further expand on this in Chapter \ref{related_work}.
+
+\subsection{Approaches to Graph Alignment}
+Existing algorithm tackle the graph alignment problem in very different ways. \cite{fugal2024} splits these into two categories:\\
+
+\noindent
+\textbf{Mediated:} Algorithms that take a \textit{mediated} approach to graph alignment, compute graph representations of $G_1$ and $G_2$, which is used to compute similarity scores between nodes. By stating this as a LAP (Linear Assignment Problem), an alignment can be found in polynomial time. We go further into detail on \textit{mediated} graph alignment in Chapter \ref{related_work}.\\
+
+\noindent
+\textbf{Unmediated:} For \textit{unmediated} graph alignment, algorithms work directly with the adjacency matrices of $G_1$ and $G_2$. This has the advantage that algorithms can base their alignment on the full and unmediated structure of the graphs. \textit{Unmediated} approaches can more directly tackle the QAP of \textit{unrestricted} graph alignment (Equation \ref{original_qap}). The algorithms of \citep{vogelstein2015fast} and \citep{fugal2024} both relaxes the constraints of the QAP to find an approximation in polynomial time. Both generally achieves excellent results compared to \textit{mediated} approaches. \citep{fugal2024} shows that an \textit{unmediated} approach also can be feasible for relatively large graphs.
+
+
+\iffalse
+\noindent
+\textbf{Input:} The algorithm may work with either \textit{unrestricted} or \textit{restricted} graph alignment. With \textit{unrestricted} graph alignment, only the topology of the graphs are considered. An example of a problem where this would be useful, is for modelling relationships. For other problems, such as modelling biological networks \citep{singh2008isorank}, \textit{restricted} graph alignment is often used, see \ref{related_work}\\
+
+\noindent
+\textbf{Representation:} An algorithm must decide on a representation of the graphs. % popular representation is node embeddings. This nodes in relation to the topology of the graph. Embeddings may also contain information about the node features. This is at times referred to as \textit{mediated} graph alignment. The problem can now be solved by mapping similar embeddings, which can be solved in polynomial time. Algorithms such as GRAAL \citep{kuchaiev2010topological}, REGAL \citep{bayati2009algorithms} and CONE \citep{chen2020cone} all use embeddings in various ways. 
+One option is to work with adjacency matrices directly, called \textit{unmediated} graph alignment. This can be computationally expensive, as adjacency matrices become large, but allows the algorithm to have access to the full topology of the graphs. Algorithms such as \textsc{Fugal} \citep{fugal2024} and \textsc{Faq} \citep{vogelstein2015fast} work in this manner.\\
+
+%Lastly, the method used for assignment must be chosen. This is the method which, based on the similarity found before, chooses which pairs of nodes should be matched between the two bipartite graphs. This can be done through a variety of means, depending on the previous steps an algorithm has taken. Examples include assigning one node at a time, either greedily choosing nodes of highest similarity, using a sorting or a nearest neighbor approach, which repeatedly assigns the unmatched node with the highest similarity, or algorithms which directly solve the LAP, like the Hungarian algorithm or Maximum Weighted Matching (\cite{skitsas2023GAEval, fugal2024})
+\fi
+
+\subsection{GPU computation}
+Although GPUs (Graphical Processing Units) were originally developed for processing 3D graphics, today they are often used to speed up computationally expensive and parallelizable tasks. The use of GPUs for general computation has become increasingly prevalent since the early 2000s. This has especially been the case for linear algebra operations such as matrix multiplication \citep{gpgpu2007}, which now powers the explosive success of deep learning. With the development of the CUDA programming framework from NVIDIA, programmers have been able exploit the raw compute power of increasingly powerful GPUs with relative ease.
+
+GPUs are able to achieve their impressive compute throughput by being able to run vastly more threads concurrently compared to CPUs. However, utilising the threads optimally remains a significant challenge even for easily parallizable problems. Therefore, porting algorithms to GPUs requires many considerations about managing threads and memory, including transferring memory between GPU and CPU memory and keeping threads busy.
+
+\subsection{Graphs}
+We test on a large variety of both synthetic and real world graphs. When testing, we always permute the indices of the nodes of $G_2$ using a random permutation $\sigma : V_2 \rightarrow V_2$:
+\begin{equation}
+    G_2 \gets (V_2, \{ (\sigma(i), \sigma(j)) \vert (i, j) \in E_2 \})    
+\end{equation}
+
+When testing with no noise, then $E_1 = E_2$. We work with two main categories of noise: real noise and synthetic noise. With real noise, $G_1$ and $G_2$ are two different but related graphs. For synthetic noise, we use one of the noise types defined by \cite{skitsas2023GAEval}, namely \textit{one-way} noise, defined as randomly removing a percentage $t \in [0, 1]$ of edges from $G_2$:
+\begin{equation}
+    E_2 \gets E_2 \setminus \textit{Sample}(E_2, t)
+\end{equation}
+
+We choose to only evaluate a single metric of quality, namely accuracy. We define the accuracy of a mapping $f : V_1 \rightarrow V_2$ as:
+\begin{equation}
+    \frac{1}{|V_1 \cap V_2|} \sum_{i \in V_1 \cap V_2} \begin{cases}
+        1 & \sigma(i) = f(i)\\
+        0 & \sigma(i) \neq f(i)\\
+    \end{cases} 
+\end{equation}
+
+Throughout the report, we test on graphs from the following datasets:
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{ |l|r|r| } 
+ \hline
+ \textbf{Graph} & $n$ & $m$ \\ 
+ \hline
+ Newmann-Watts (NW) \citep{newman2001random} & - & - \\ 
+ ASTRO-PH \citep{leskovec2007graph} & 17 903 & 197 031 \\ 
+ HEP-PH \citep{kosowska2016evolving} & 12 008 & 118 521 \\ 
+ inf-euroroad \citep{bader2012graph} & 1 174 & 1 417 \\ 
+ email-Enron \citep{leskovec2009community} & 36 692 & 183 831 \\ 
+ bio-dmela \citep{nr2015} & 7 393 & 25 569 \\
+ vole \citep{davis2014spatial} & 712 & 2 391 \\
+ MultiMagna \citep{vijayan2017multiple} & 1 004 & 8 323 \\
+ inf-power \citep{nr2015} & 4 941 & 6 594\\
+ ca-GrQc \citep{nr2015} & 4 158 & 14 422\\
+ ca-netscience \citep{nr2015} & 379 & 5 818\\
+ Arenas \citep{kunegis2013konect} & 1 133 & 5 451\\
+ \hline
+\end{tabular}
+\end{center}
+\caption{$n$ is the number of nodes, $m$ is the number of edges. Note that Newmann-Watts is a synthetic graph which we generate with specified parameters dependent on the use case. All graphs are undirected.}
+\end{table}

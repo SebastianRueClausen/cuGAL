@@ -1,0 +1,105 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{xcolor}
+\usepackage{caption}
+\usetikzlibrary{pgfplots.colorbrewer}
+
+\newcommand{\resultplot}[3]{%
+    \pgfplotsset{
+        % initialize Set1-5:
+        cycle list/Set3-12,
+        % combine it with 'mark list*':
+        cycle multiindex* list={
+            mark list*\nextlist
+            Set3-12\nextlist
+        },
+    }
+    \pgfplotstableread[col sep=comma]{#2}\accutable
+    \pgfplotstableread[col sep=comma]{#3}\timetable
+
+    \begin{minipage}{.5\textwidth}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xmajorgrids=true, ymajorgrids=true,
+                    xlabel={Noise}, ylabel={Accuracy},
+                    xtick=data,
+                    xticklabels={0, 5, 10, 15, 20, 25},
+                    legend style={at={(0.5,-0.25)}, anchor=north, legend columns=1, font=\small},
+                    width=\textwidth,
+                    height=\textwidth,
+                ]
+                \pgfplotsforeachungrouped \i in {0,1,2,3,4,5,6,7,8,9,10,11,12} {
+                    \addplot table[x expr=\coordindex, y index=\i] 
+                    {\accutable};
+                }
+                \legend{\textsc{Fugal}, \textsc{CugalMix}, \textsc{CugalMix} FW0.1, \textsc{CugalMix} FW0.2,\textsc{CugalMixGreedy}, \textsc{CugalMixGreedy} FW0.1, \textsc{CugalMixGreedy} FW0.2,\textsc{CugalLog}, \textsc{CugalLog} FW0.1, \textsc{CugalLog} FW0.2, \textsc{CugalLogGreedy}, \textsc{CugalLogGreedy} FW0.1, \textsc{CugalLogGreedy} FW0.2}
+            \end{axis}
+        \end{tikzpicture}
+        \captionof{figure}{Accuracy on #1 dataset}
+        \label{fig:#1_accu} 
+    \end{minipage}
+    \begin{minipage}{.5\textwidth}
+        \begin{tikzpicture}
+            \begin{semilogyaxis}[
+                    xmajorgrids=true, ymajorgrids=true,
+                    xlabel={Noise}, ylabel={Time (s)},
+                    xtick=data,
+                    xticklabels={0, 5, 10, 15, 20, 25},
+                    legend style={at={(0.5,-0.25)}, anchor=north, legend columns=1, font=\small},
+                    width=\textwidth,
+                    height=\textwidth,
+                ]
+                \pgfplotsforeachungrouped \i in {0,1,2,3,4,5,6,7,8,9,10,11,12} {
+                    \addplot table[x expr=\coordindex, y index=\i] 
+                    {\timetable};
+                }
+                \legend{\textsc{Fugal}, \textsc{CugalMix}, \textsc{CugalMix} FW0.1, \textsc{CugalMix} FW0.2,\textsc{CugalMixGreedy}, \textsc{CugalMixGreedy} FW0.1, \textsc{CugalMixGreedy} FW0.2,\textsc{CugalLog}, \textsc{CugalLog} FW0.1, \textsc{CugalLog} FW0.2, \textsc{CugalLogGreedy}, \textsc{CugalLogGreedy} FW0.1, \textsc{CugalLogGreedy} FW0.2}
+            \end{semilogyaxis}
+        \end{tikzpicture}
+        \captionof{figure}{Runtime on #1 dataset}
+        \label{fig:#1_time} 
+    \end{minipage}
+}
+
+\begin{document}
+
+%\resultplot{infroad}{data/res_infroad_accu.csv}{data/res_infroad_sum_times.csv}
+%\resultplot{biodmela}{data/res_biodmela_accu.csv}{data/res_biodmela_sum_times.csv}
+%\resultplot{caAstroPh}{data/res_oneway_caAstroph_accu.csv}{data/res_oneway_caAstroph_time.csv}
+%\resultplot{caHep}{data/res_oneway_caHep_accu.csv}{data/res_oneway_caHep_time.csv}
+%\resultplot{ca-netscience}{data/res_oneway_canet_accu.csv}{data/res_oneway_canet_time.csv}
+\resultplot{Arenas}{data/res_oneway_arenas_accu.csv}{data/res_oneway_arenas_time.csv}
+\ref{fig:Arenas_accu}
+
+
+\end{document}
+
+
+\begin{document}
+
+\resultplot{infroad}{data/res_infroad_accu.csv}{data/res_infroad_sum_times.csv}
+\end{document}
+\pgfplotstableread[col sep=comma]{data/res_infroad_diff.csv}\infroaddiff
+
+\iffalse
+\begin{minipage}{.5\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+                xmajorgrids=true, ymajorgrids=true,
+                xlabel={Noise}, ylabel={Accuracy difference to FUGAL},
+                xtick=data,
+                xticklabels={0.00, 0.05, 0.10, 0.15, 0.20, 0.25},
+                legend style={at={(0.5,-0.18)}, anchor=north, legend columns=1, font=\small},
+                width=\textwidth
+            ]
+            \pgfplotsforeachungrouped \i in {0,1,2,3,4,5} {
+                \addplot table[x expr=\coordindex, y index=\i] 
+                {\infroaddiff};
+            }
+            \legend{\textsc{CugalMix}, \textsc{CugalMix} FW0.1, \textsc{CugalMix} FW0.2, \textsc{CugalLog}, \textsc{CugalLog} FW0.1, \textsc{CugalLog} FW0.2}
+        \end{axis}
+    \end{tikzpicture}
+\end{minipage}
+\fi

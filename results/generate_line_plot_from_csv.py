@@ -23,8 +23,8 @@ bottom = np.zeros(n)
 print(len(data))
 
 print(data[0][::2], data[2][1::2])
-p = ax.plot(range(4), data[2][::2], 0.5)
-p = ax.plot(range(4), data[2][1::2], 0.5)
+p = ax.plot(range(n), data[2][::2], 0.5)
+p = ax.plot(range(n), data[2][1::2], 0.5)
 
 plt.xticks(range(4), sizes)
 plt.xlabel("Graph size")

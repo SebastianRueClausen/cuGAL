@@ -1,0 +1,29 @@
+2024-06-05 06:25:25,963 - e.ex - INFO - Running command 'main'
+2024-06-05 06:25:25,971 - e.ex - INFO - Started run with ID "646"
+init1
+[[<function loadnx at 0x7f5579b05bc0>, [['data/ca-Erdos992.txt']]]]
+<function loadnx at 0x7f5579b05bc0> ['data/ca-Erdos992.txt']
+init2
+C
+##<1>##
+4991 6100
+##<1>##
+4991 6100
+2024-06-05 06:25:26,175 - e.main - INFO - randcheck: (0.8521051667032807, 0.45986772588714775)
+runs/646
+2024-06-05 06:25:26,175 - e.run_exp - INFO - Graph:(1/1)
+2024-06-05 06:25:26,176 - e.run_exp - INFO - Noise_level:(1/1)
+2024-06-05 06:25:26,176 - e.run_exp - INFO - iteration:(1/1)
+2024-06-05 06:25:26,193 - e.run_algs - WARNING - Disc. Source: 4991 < 6100
+2024-06-05 06:25:26,193 - e.run_algs - WARNING - Disc. Target: 4991 < 6100
+args:  {'iter': 15, 'simple': True, 'mu': 2}
+Fugal
+/opt/anaconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3504: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/opt/anaconda3/lib/python3.11/site-packages/numpy/core/_methods.py:129: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:177: UserWarning: An output with one or more elements was resized since it had shape [6100], which does not match the required output shape [1, 6100]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
+  torch.matmul(u, K, out=KTu)
+2024-06-05 06:46:14,468 - e.run_exp - INFO - 
+[[[0.2989]]]
+2024-06-05 06:46:14,469 - e.ex - INFO - Completed after 0:20:49

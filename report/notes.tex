@@ -1,0 +1,174 @@
+\documentclass{article}
+
+\usepackage[round]{natbib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=black,
+}
+
+\usepackage{amsmath}
+\usepackage{dsfont}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+
+\begin{document}
+
+\section{Graph Alignment}
+The problem of graph alignment is to match vertices from graph $G_1$ to the vertices of graph $G_2$. Graph alignment is used in fields such as biology and social networks. We focus on the \emph{unrestricted} case, where only the edges between vertices are used to determine an alignment.
+
+Given two graphs $G_1, G_2$ with $n$ vertices and respective adjacency matrices $A, B \in \{ 0, 1 \}^{n \times n}$, where $A_{ij} = 1$ denotes an edge between vertex $i$ and $j$ in $G_1$. We can formally define the problem as:
+$$ \min_{P \in \mathds{P}^n} \lVert AP-PB \rVert^2_F, $$
+where $\mathds{P}^n$ is the set of permutation matrices. This can be interpreted as a bijection between the vertices such that the number of edge disagreements are minimized. This problem is an instance of QAP (Quadratic assignment problem) \citep{fan2020spectral}.
+
+\section{Background}
+\subsection{Permutation and Doubly Stochastic matrices}
+Doubly stochastic matrices are square matrices where each row and column sums to 1. More formally for matrix $X \in \mathds{R}^{n \times n}$, then $\sum_{i = 1} X_{i,j} = 1$ for $j = 1, 2, .., n$ and $\sum_{j = 1} X_{i,j} = 1$ for $i = 1, 2, .., n$. Doubly stochastic matrices can be shown to be convex using the Birkhoff-von Neumann Theorem \citep{birkhoff1946three}. Permutation matrices are a subset of double-stochastic matrices, where each each row and column only has a single non-zero entry. This means that for $X$, $\text{trace}(X^T(J-X)) = 0$, where $J = 1^{n \times n}$. Unlike doubly stochastic matrices, permutation matrices are not convex.
+
+\subsection{Sinkhorn-Knopp}
+The sinkhorn-knopp algorithm \citep{sinkhorn1967concerning} finds diagonal matrices $D_1, D_2 \in \mathds{R}^{n \times n}$ given $A \in \mathds{R}_{\ge 0}^{n \times n}$ such that $D_1 A D_2$ is doubly stochastic. The algorithm iteratively switches between scaling the rows and columns of $A$ until it converges.
+
+\begin{algorithm}
+\caption{sinkhorn-knopp}\label{alg:cap}
+\begin{algorithmic}[1]
+\Require $A \in \mathds{R}^{n \times n}$
+\Require $a \in \mathds{R}^{n}, b \in R^{n}$
+
+\State $u \gets \frac{1}{n}\text{ones}(n)$
+\State $v \gets \frac{1}{n}\text{ones}(n)$
+\State $K \gets \exp(A)$
+
+\For{$i \gets 1, .., \text{it}$}
+    \State $v \gets \frac{b}{uK}$
+    \State $u \gets \frac{a}{Kv}$
+\EndFor
+
+\State \Return $uKv$
+
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{QAP}
+\citep{koopmans1957assignment} defines the QAP (Quadratic Assignment Problem). QAP is the problem of assigning $n$ facilities to $n$ locations, given weight $W \in \mathds{R}^{n \times n}$ between facilities and distance $D \in \mathds{R}^{n \times n}$ between locations. More formally:
+$$ \min_{f \in N \rightarrow N} \sum_{a=1}^n \sum_{b=1}^n W_{a, b} D_{f(a), f(b)}, $$
+where  $N = \{ 1, 2, .., n \}$ and $f$ is a mapping from facility to location. This is shown to be NP-hard. If we define $P$ as the permutation matrix of $f$, we can express it as:
+$$ \min_{P \in \mathds{P}^n} \text{trace}(WPDP^T) $$
+
+\subsection{LAP}
+Linear assignment problem (LAP). LAP is the problem of assigning $n$ agents to $n$ tasks, where assigning agent $a$ to task $b$ has cost $W_{a,b}$. More formally:
+$$ \min_{P \in \mathds{P}^n} \sum_{a=1}^n \sum_{b=1}^n W_{a, b} P_{a,b}, $$
+where $P$ is a permutation matrix of the mapping from agent to task. LAP can be solved in $O(n^3)$ by the Hungarian algorithm \citep{kuhn1955hungarian}.
+
+\subsection{Optimal Transport}
+The optimal transport problem (OTP), in the discrete case, is the problem of mapping discrete probability distributions or histograms $r \in \mathds{R}^n$ to $c \in \mathds{R}^n$ where $C \in \mathds{R}^{n \times n}$ is the cost of mapping $r$ to $c$. This may be expressed as:
+$$ \min_{P \in U(r, c)} \langle P, C \rangle $$
+$$ U(r, c) = \{ P \in \mathds{R}^{n \times n} | P\vec{1} = r, P^T\vec{1} = c \} $$
+
+This is a linear problem, and can thus be solved by the simplex method. However, this can be slow in practice when $n$ is large. \citep{cuturi2013sinkhorn} proposed the introduction of the regularization term $-\epsilon H(P)$, where $H(P)$ is the entropy between entries in $P$:
+$$ H(P) = -\sum^{n}_{i = 1} \sum^{n}_{j = 1} P_{i, j} \log P_{i, j}. $$
+The problem now becomes:
+$$ \min_{P \in U(r, c)} \langle P, C \rangle - \epsilon H(P) $$
+which \citep{cuturi2013sinkhorn} shows to be equivalent to the optimal transport problem for small values of $\epsilon$. \citep{cuturi2013sinkhorn} shows it to be efficiently solvable using the Sinkhorn-Knopp algorithm \citep{sinkhorn1967concerning}.
+
+\subsection{Frank-Wolfe}
+The Frank-Wolfe algorithm is an iterative algorithm for minimizing a target function $f(x)$ within a convex set $D$. The algorithm transforms the problem into a linear optimization sub-problem by walking in the direction of $\nabla f(x)$ while staying within the $D$ set:
+$$ \min_{s \in D} \langle \nabla (fx), s \rangle. $$
+
+\section{FUGAL}
+The FUGAL algorithm works with \textit{unmediated} graphs, which \citep{fugal2024} defines as working directly on the adjacency matrices as opposed to embedded representations of the graphs. This is the QAP problem and thus NP-hard. Therefore, FUGAL seeks to find an approximation by expanding the search space of the QAP problem to make it convex. To guide the algorithm, it also formalizes a LAP auxiliary problem:
+$$  \min_{P \in \mathds{P}^n} \lVert F_1 - P F_2 \rVert^2_F, $$
+where $F_1, F_2 \in \mathds{R}^{n \times 4}$ are vertex features for graphs $G_1, G_2$ with $n$ vertices. FUGAL uses \textsc{NetSimilie}\citep{berlingerio2013network} features.
+
+The optimization problem becomes:
+$$  \min_{P \in \mathds{P}^n} \lVert AP-PB \rVert^2_F + \mu \lVert F_1 - P F_2 \rVert^2_F, $$
+where $\mu$ controls the significance of the LAP auxiliary term. Solving for $P \in \mathds{P}^n$ is NP-hard, as $\mathds{P}^n$ is non-convex \citep{koopmans1957assignment}. By expanding from $P \in \mathds{P}^n$ to the superset $P \in \mathds{W}^n$, where $\mathds{W}^n$ is the set of \textit{double stochastic} matrices, a solution can be found using Frank-Wolfe \citep{frank1956algorithm}. To guide the solution towards a permutation matrix, \citep{fugal2024} includes the regularization term $\text{trace}(P^T(J-P))$. The full optimization problem now becomes:
+$$  \min_{P \in \mathds{P}^n} \lVert AP-PB \rVert^2_F + \mu \lVert F_1 - P F_2 \rVert^2_F + \lambda \text{trace}(P^T(J-P)), $$
+where $\lambda$ controls the significance of the regularization term. FUGAL now uses the Frank-Wolfe algorithm to iteratively minimize the optimization problem. The linear sub-problem of Frank-Wolfe becomes $\min_{q\in \mathds{W^n}} \langle \text{grad}, q \rangle$. This is an instance of the optimal transport problem where $r$ and $c$ are all ones. Intuitively, this can be thought of as finding the closest doubly stochastic matrix to the gradient matrix. FUGAL solves this using Sinkhorn-Knopp. FUGAL repeatedly solves this while increasing $\lambda$ to find a \textit{quasi-permutation} matrix. The problem of finding the closest permutation matrix to this, is an instance of LAP, which FUGAL solves with the Hungarian algorithm.
+
+\section{FUGAL on the GPU}
+\citep{fugal2024} shows that the FUGAL algorithm scales better for large graphs compared to previous attempts at \textit{unmediated} graph alignment. However, scaling still remains an issue for FUGAL. Emperically, we find that the vast majority of time is spent running Sinkhorn-Knopp, which consists of parallelizable vector operations. GPUs (Graphical processing units) have over the previous decades been successfully utilized to speed up computationally intensive problems such as compute graphics and deep learning by employing massive amounts of parallelization. We therefore propose utilizing GPU technology to speed up graph alignment by porting the FUGAL algorithm to the GPU.
+
+\section{Sinkhorn-Knopp on the GPU}
+Modern GPU architectures are optimized for 32-bit and 16-bit floats. NVIDIA reports 1/64 the FP64 flops compared to FP32 in their ADA architecture \footnote{https://images.nvidia.com/aem-dam/en-zz/Solutions/technologies/NVIDIA-ADA-GPU-PROVIZ-Architecture-Whitepaper\_1.1.pdf} Running Sinkhorn-Knopp with 32-bit floats results in overflows if A contains entries above $3.4 * 10^{38} = e^x \implies x \approx 88.72$ where $3.4 * 10^{38}$ is the approximate largest representable number by 32-bit floats \citep{ieeefloat}. A solution is doing all calculations in log-space.
+\begin{algorithm}
+\caption{sinkhorn-knopp-log}\label{alg:cap}
+\begin{algorithmic}[1]
+\Require $A \in \mathds{R}^{n \times n}$
+\Require $a \in \mathds{R}^{1 \times n}, b \in R^{n \times 1}$
+
+\State $u, v \gets \vec{0}, \vec{0}$
+\State $K \gets -A$
+
+\State $a, b \gets \log(a), \log(b)$
+
+\For{$i \gets 1, .., \text{it}$}
+    \State $v \gets b - \texttt{logsumexp}(K + \begin{bmatrix} u & .. & u \end{bmatrix})$ \Comment{For each row}
+    \State $u \gets a - \texttt{logsumexp}(K^T + \begin{bmatrix} v & .. & v \end{bmatrix})$ \Comment{For each row}
+\EndFor
+
+\State \Return $\exp(K + \begin{bmatrix} u & .. & u \end{bmatrix} + \begin{bmatrix} v & .. & v \end{bmatrix}^T)$
+
+\end{algorithmic}
+\end{algorithm}
+
+\texttt{logsumexp} is defined as:
+\begin{align*}
+    \texttt{logsumexp}(x) &= \log(\sum_{i = 1}^n e^{x_i})\\ &= \log(\sum_{i = 1}^n e^a e^{x_i - a})\\ &= \log(e^a \sum_{i = 1}^ne^{x_i - a})\\ &= a +\log(\sum_{i = 1}^ne^{x_i - a})
+\end{align*}
+
+$a$ can be defined as $a = \max(x)$, which ensures that the largest exponential calculated is $\exp(0) = 1$. However, this is more computationally expensive compared to the original Sinkhorn-Knopp algorithm, as $2n^2$ $\exp$ operations are performed each iteration.
+
+\section{GPU Architecture}
+\section{CUDA}
+
+\section{Metrics}
+There are several ways of measuring the quality of the approximated alignment.
+\subsection{Matched Neighborhood Consistency (MNC)}
+MNC relise on the Jaccard similarity of the Neighborhoods of each vertex. The Jaccard similarity is the fraction of elements which are different between the compared sets:
+$$
+J(A, B) = \frac{|A \cap B|}{|A \cup B|}
+$$
+
+For our case, the sets are the neighborhoods of each node in 
+
+\subsubsection{Neighborhood}
+The Neighborhood $N(i)$ for a vertex $i \in V$ is the set of connected nodes $j$, such that $(i, j) \in E$ for graph $G = (V, E)$. We also have the "mapped" Neighborhood, which is the set where there exist some $k \in N_{G_A}(i)$, which when mapped with $f$ is equal to $j$. 
+
+\subsection{Presentation notes}
+\subsubsection{Failed attempts}
+\begin{itemize}
+    \item Greedy
+    \begin{itemize}
+        \item 1D greedy
+        \item Random selection based on distribution
+        \item Low entropy
+    \end{itemize}
+    \item Regressions over past Sinkhorn scaling vectors as warm start
+
+    \item Sinkhorn
+    \begin{itemize}
+        \item Sparse Sinkhorn
+        \item Newton Iterations
+        \item 16-bit
+        \item Importance sample log-version
+        \item Low rank representation (Nystrom).
+        \item Switching in and out of log domain.
+    \end{itemize}
+
+    \item General
+    \begin{itemize}
+        \item Introduce edge weights based on node features.
+        \item Different scaling of $\lambda$.
+        \item 
+    \end{itemize}
+    
+\end{itemize}
+
+\newpage
+\bibliographystyle{apalike}
+\bibliography{literature}
+
+\end{document}

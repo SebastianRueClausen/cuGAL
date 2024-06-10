@@ -1,0 +1,101 @@
+{
+  "FUGAL.sim.max": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-06-05T06:46:14.080856"
+    ],
+    "values": [
+      1.0
+    ]
+  },
+  "FUGAL.sim.min": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-06-05T06:46:14.086333"
+    ],
+    "values": [
+      0.0
+    ]
+  },
+  "FUGAL.sim.size": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-06-05T06:46:14.035258"
+    ],
+    "values": [
+      37210000
+    ]
+  },
+  "graph.Source.disc": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-06-05T06:25:26.193952"
+    ],
+    "values": [
+      true
+    ]
+  },
+  "graph.Source.e": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-06-05T06:25:26.193974"
+    ],
+    "values": [
+      7515
+    ]
+  },
+  "graph.Source.n": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-06-05T06:25:26.193971"
+    ],
+    "values": [
+      6100
+    ]
+  },
+  "graph.Target.disc": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-06-05T06:25:26.193999"
+    ],
+    "values": [
+      true
+    ]
+  },
+  "graph.Target.e": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-06-05T06:25:26.194005"
+    ],
+    "values": [
+      7515
+    ]
+  },
+  "graph.Target.n": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-06-05T06:25:26.194002"
+    ],
+    "values": [
+      6100
+    ]
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "acc_names": [
+    "acc"
+  ],
+  "accs": [
+    0
+  ],
+  "algs": [
+    [
+      {
+        "py/repr": "algorithms.CUGAL.Cugal/algorithms.CUGAL.Cugal"
+      },
+      {
+        "device": "cpu",
+        "dtype": {
+          "py/object": "torch.dtype"
+        },
+        "iter": 15,
+        "mu": 2,
+        "path": "cugal",
+        "simple": true,
+        "sinkhorn_method": {
+          "py/reduce": [
+            {
+              "py/type": "cugal.config.SinkhornMethod"
+            },
+            {
+              "py/tuple": [
+                0
+              ]
+            }
+          ]
+        },
+        "use_fugal": true
+      },
+      [
+        3
+      ],
+      "CUGAL_CPU"
+    ]
+  ],
+  "graph_names": [
+    "ca-HepPh-remapped"
+  ],
+  "graphs": [
+    [
+      {
+        "py/function": "generation.generate.loadnx"
+      },
+      [
+        [
+          "data/ca-HepPh-remapped.txt"
+        ]
+      ]
+    ]
+  ],
+  "iters": 1,
+  "mall": false,
+  "noises": [
+    0.0
+  ],
+  "run": [
+    25
+  ],
+  "seed": 71632855,
+  "tmp": []
+}

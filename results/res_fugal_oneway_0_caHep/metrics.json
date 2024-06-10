@@ -1,0 +1,101 @@
+{
+  "CUGAL_CPU.sim.max": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-05-31T10:37:25.931149"
+    ],
+    "values": [
+      1.0
+    ]
+  },
+  "CUGAL_CPU.sim.min": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-05-31T10:37:25.944639"
+    ],
+    "values": [
+      0.0
+    ]
+  },
+  "CUGAL_CPU.sim.size": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-05-31T10:37:25.752744"
+    ],
+    "values": [
+      144192064
+    ]
+  },
+  "graph.Source.disc": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-05-31T09:07:57.800349"
+    ],
+    "values": [
+      true
+    ]
+  },
+  "graph.Source.e": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-05-31T09:07:57.800376"
+    ],
+    "values": [
+      118521
+    ]
+  },
+  "graph.Source.n": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-05-31T09:07:57.800370"
+    ],
+    "values": [
+      12008
+    ]
+  },
+  "graph.Target.disc": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-05-31T09:07:57.800402"
+    ],
+    "values": [
+      true
+    ]
+  },
+  "graph.Target.e": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-05-31T09:07:57.800409"
+    ],
+    "values": [
+      118521
+    ]
+  },
+  "graph.Target.n": {
+    "steps": [
+      0
+    ],
+    "timestamps": [
+      "2024-05-31T09:07:57.800406"
+    ],
+    "values": [
+      12008
+    ]
+  }
+}

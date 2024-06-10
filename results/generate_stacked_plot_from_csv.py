@@ -16,9 +16,11 @@ if os.path.isfile(filepath):
     reader = csv.reader(csvfile)
     data = [[float(n) if n != "" else 0 for n in row][1:] for row in reader]
 print(data)
+n = len(data[0])
 
 index = None
 labels = ["Sinkhorn-Knopp", "Feature Extraction", "Gradient", "Hungarian"]
+#labels = [None]*n
 if option != "":
     index = labels.index(option)
     labels = labels[index]
@@ -29,7 +31,6 @@ if option != "":
 #    baseline ='zero'
 #)
 
-n = len(data[0])
 
 fig, ax = plt.subplots()
 bottom = np.zeros(n)
