@@ -209,8 +209,9 @@ def loghorn(
         prev_u = torch.clone(u)
 
         if use_cuda:
-            cuda_kernels.sinkhorn_step(K_transpose, u, v)
-            cuda_kernels.sinkhorn_step(K, v, u)
+            cuda_kernels.sinkhorn_step(K_transpose, u, v, True)
+           # cuda_kernels.sinkhorn_step_cols(K, u, v)
+            cuda_kernels.sinkhorn_step(K, v, u, True)
         else:
             v = -torch.logsumexp(K + u[:, None], 0)
             u = -torch.logsumexp(K + v[None, :], 1)
@@ -222,7 +223,11 @@ def loghorn(
             if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
 
-    output = torch.exp(K + u[:, None] + v[None, :])
+    K += u[:, None]
+    K += v[None, :]
+    torch.exp(K, out=K)
+    output = K
+    
     start.update(K, u)
 
     profile.iteration_count = iteration + 1

@@ -272,6 +272,10 @@ def cugal(
 
     start_time = TimeStamp(config.device)
     features = Features.create(source, target, config)
+    if config.safe_mode:
+        #check source and target feature tensors have no NaN values
+        assert features.source.isfinite().all(), "source feature tensor has NaN values"
+        assert features.target.isfinite().all(), "target feature tensor has NaN values"
 
     if not config.recompute_distance:
         features = features.distance_matrix()
@@ -280,9 +284,20 @@ def cugal(
 
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, features, config, profile)
+    if config.safe_mode:
+        #check quasi_permutation tensor has no NaN values
+        assert quasi_permutation.isfinite().all(), "quasi_permutation tensor has NaN values"
+
     output = convert_to_permutation_matrix(quasi_permutation, config, profile)
+    if config.safe_mode:
+        #check output permutation matrix has no NaN values
+        assert np.isfinite(output[0]).all(), "output permutation matrix has NaN values"
 
     profile.time = TimeStamp('cpu').elapsed_seconds(before)
 
+    if 'cuda' in config.device:
+        profile.max_memory = torch.cuda.max_memory_allocated(config.device)
+        torch.cuda.reset_peak_memory_stats(config.device)
+    
     return output
 

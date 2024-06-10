@@ -7,6 +7,7 @@ import scipy
 from sklearn.metrics.pairwise import euclidean_distances
 from fugal import sinkhorn
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
+from cugal.config import Config
 
 
 def feature_extraction(G):
@@ -71,27 +72,42 @@ def dist(A, B, P):
     return obj*obj/2
 
 
-def FindQuasiPerm(A, B, D, mu, niter, profile):
+def FindQuasiPerm(A, B, D, mu, niter, profile, config: Config):
     n = len(A)
     P = torch.ones((n, n), dtype=torch.float64) / n
     ones = torch.ones(n, dtype=torch.float64)
     mat_ones = torch.ones((n, n), dtype=torch.float64)
     reg = 1.0
     K = mu * D
-    for i in range(niter):
-        for it in range(1, 11):
+    for i in tqdm(range(niter), desc="λ"):
+        for it in tqdm(range(1, 11), desc="frank-wolfe", leave=False):
             start_time = TimeStamp('cpu')
-            G = -torch.mm(torch.mm(A.T, P), B) - \
+            G: torch.Tensor = -torch.mm(torch.mm(A.T, P), B) - \
                 torch.mm(torch.mm(A, P), B.T) + K + i*(mat_ones - 2*P)
+            if config.safe_mode:
+                #Check for NaN values
+                assert torch.isfinite(G).all(), "G tensor has NaN values"
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp('cpu')
+            #clamp_start_time = TimeStamp('cpu')
+            #torch.clamp(G, min=-600, max=600, out=G)
+            np.nan_to_num(G, copy=False)
+            #profile.log_time(clamp_start_time, Phase.CLAMP)
             q = sinkhorn.sinkhorn(ones, ones, G, reg,
                                   maxIter=500, stopThr=1e-3)
+            np.nan_to_num(q, copy=False)
+            if config.safe_mode:
+                #Check for NaN values
+                assert torch.isfinite(q).all(), "q tensor has NaN values"
             profile.log_time(start_time, Phase.SINKHORN)
 
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)
+
+            if config.safe_mode:
+                #Check for NaN values
+                assert torch.isfinite(P).all(), "P tensor has NaN values"
 
     return P
 
@@ -110,7 +126,7 @@ def convertToPermHungarian(M, n1, n2):
     return P, ans
 
 
-def fugal(Gq, Gt, mu, niter, profile: Profile):
+def fugal(Gq, Gt, mu, niter, config: Config, profile: Profile):
     n1 = len(Gq.nodes())
     n2 = len(Gt.nodes())
     n = max(n1, n2)
@@ -119,21 +135,38 @@ def fugal(Gq, Gt, mu, niter, profile: Profile):
     for i in range(n2, n):
         Gt.add_node(i)
 
+    print("Graphs have been padded to size", n)
     A = torch.tensor((nx.to_numpy_array(Gq)), dtype=torch.float64)
     B = torch.tensor((nx.to_numpy_array(Gt)), dtype=torch.float64)
 
     before = TimeStamp('cpu')
 
+    print("Feature extraction")
     F1 = feature_extraction(Gq)
     F2 = feature_extraction(Gt)
+    if config.safe_mode:
+        #Check for NaN values
+        assert np.isfinite(F1).all(), "F1 tensor has NaN values"
+        assert np.isfinite(F2).all(), "F2 tensor has NaN values"
+
+    print("Calculating eucledian distance")
     D = eucledian_dist(F1, F2, n)
     D = torch.tensor(D, dtype=torch.float64)
+    if config.safe_mode:
+        #Check for NaN values
+        assert torch.isfinite(D).all(), "D tensor has NaN values"
 
     profile.log_time(before, Phase.FEATURE_EXTRACTION)
 
-    P = FindQuasiPerm(A, B, D, mu, niter, profile)
+    print("Finding quasi permutation")
+    P = FindQuasiPerm(A, B, D, mu, niter, profile, config=config)
+
+    if config.safe_mode:
+        #Check for NaN values
+        assert torch.isfinite(P).all(), "P tensor has NaN values"
 
     start_time = TimeStamp('cpu')
+    print("Converting to permutation")
     P_perm, ans = convertToPermHungarian(P, n1, n2)
     profile.log_time(start_time, Phase.HUNGARIAN)
     return P_perm, ans

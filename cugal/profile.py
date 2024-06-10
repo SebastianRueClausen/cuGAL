@@ -15,6 +15,7 @@ class Phase(Enum):
     SINKHORN = 1
     HUNGARIAN = 2
     GRADIENT = 3
+    #CLAMP = 4
 
 
 @dataclass
@@ -49,6 +50,7 @@ class Profile:
     sinkhorn_profiles: list[SinkhornProfile] = field(default_factory=list)
     phase_times: dict[Phase, float] = field(default_factory=dict)
     time: float = 0.0
+    max_memory: int | None = None
 
     def log_time(self, start_time: TimeStamp, phase: Phase):
         now = TimeStamp(start_time.device)
@@ -75,7 +77,7 @@ def write_phases_as_csv(profiles: list[Profile], sizes: list[int], path: str):
 
 def append_phases_to_csv(profile: Profile, path: str):
     phases = [Phase.SINKHORN, Phase.FEATURE_EXTRACTION,
-              Phase.GRADIENT, Phase.HUNGARIAN]
+              Phase.GRADIENT, Phase.HUNGARIAN]#, Phase.CLAMP]
     filepath = f"{path}/times.csv"
 
     if os.path.isfile(filepath):
@@ -89,7 +91,7 @@ def append_phases_to_csv(profile: Profile, path: str):
     csvfile = open(filepath, 'w', newline='')
     writer = csv.writer(csvfile, delimiter=',',
                         quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    for row, phase in enumerate(phases):
+    for row, phase in enumerate([f for f in phases if f in profile.phase_times]):
         phase_times = extract_phase_times([profile], phase)
         writer.writerow(data[row] + phase_times)
 

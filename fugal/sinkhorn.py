@@ -159,6 +159,7 @@ def sinkhorn_knopp(a, b, C, reg=1e-1, maxIter=1000, stopThr=1e-9,
     K = torch.empty(C.shape, dtype=C.dtype).to(device)
     torch.div(C, -reg, out=K)
     torch.exp(K, out=K)
+    torch.nan_to_num(K, out=K)
 
     b_hat = torch.empty(b.shape, dtype=C.dtype).to(device)
 
@@ -180,7 +181,9 @@ def sinkhorn_knopp(a, b, C, reg=1e-1, maxIter=1000, stopThr=1e-9,
         if torch.any(torch.isnan(u)) or torch.any(torch.isnan(v)) or \
                 torch.any(torch.isinf(u)) or torch.any(torch.isinf(v)):
             print('Warning: numerical errors at iteration', it)
-            u, v = upre, vpre
+            #u, v = upre, vpre
+            torch.nan_to_num(u, out=u)
+            torch.nan_to_num(v, out=v)
             break
 
         if log and it % eval_freq == 0:

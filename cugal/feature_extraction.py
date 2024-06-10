@@ -29,6 +29,10 @@ def extract_features_cuda(graph: nx.Graph | Adjacency, config: Config) -> torch.
     cuda_kernels.graph_features(
         adjacency.col_indices, adjacency.row_pointers, clustering, degrees)
     torch.cuda.synchronize()
+    if config.safe_mode:
+        assert clustering.isfinite().all(), "clustering tensor has NaN values"
+        assert degrees.isfinite().all(), "degrees tensor has NaN values"
+
     cuda_kernels.average_neighbor_features(
         adjacency.col_indices, adjacency.row_pointers, clustering, neighbor_clustering)
     cuda_kernels.average_neighbor_features(
@@ -75,7 +79,7 @@ class Features:
         """Calculate features of the source and target graph."""
 
         use_cuda = has_cuda and 'cuda' in config.device
-        print(has_cuda, config.device)
+        print("FE CUDA Check:\t", has_cuda, config.device)
 
         if use_cuda:
             source_features = extract_features_cuda(
@@ -88,8 +92,17 @@ class Features:
             target_features = torch.tensor(extract_features_nx(
                 target), device=config.device, dtype=config.dtype)
 
+        if config.safe_mode:
+            assert source_features.isfinite().all(), "source feature tensor has NaN values"
+            assert target_features.isfinite().all(), "target feature tensor has NaN values"
+
+
         source_features *= math.sqrt(config.mu)
         target_features *= math.sqrt(config.mu)
+
+        if config.safe_mode:
+            assert source_features.isfinite().all(), "source feature tensor has NaN values"
+            assert target_features.isfinite().all(), "target feature tensor has NaN values"
 
         return cls(source_features, target_features)
 

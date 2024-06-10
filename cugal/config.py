@@ -63,6 +63,9 @@ class HungarianMethod(Enum):
 class Config:
     """Configuration of the CUGAL algorithm."""
 
+    safe_mode: bool = False
+    """If true, the algorithm will check for NaNs and Infs in the cost matrix."""
+
     device: str = "cpu"
     """The torch device used for computations."""
 
