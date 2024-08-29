@@ -2,6 +2,7 @@ import torch
 from cugal.config import Config, SinkhornMethod
 from cugal.profile import SinkhornProfile, TimeStamp
 from dataclasses import dataclass, field
+from typing import TypeAlias
 
 try:
     import cuda_kernels
@@ -85,8 +86,7 @@ class SelectiveInit:
         self.previous = u
 
 
-SinkhornInit = FixedInit | PrevInit | SelectiveInit
-"""Determines how Sinkhorn picks the initial guess for the scaling vectors."""
+SinkhornInit: TypeAlias = FixedInit | PrevInit | SelectiveInit
 
 
 def init_from_cache_size(cache_size: int) -> SinkhornInit:
@@ -97,8 +97,7 @@ def init_from_cache_size(cache_size: int) -> SinkhornInit:
 
 
 def can_use_cuda(config: Config) -> bool:
-    return has_cuda and "cuda" in config.device and config.dtype in [
-        torch.float32, torch.float16]
+    return has_cuda and "cuda" in config.device and config.dtype == torch.float32
 
 
 def relative_difference(a: torch.Tensor, b: torch.Tensor) -> float:
@@ -106,10 +105,7 @@ def relative_difference(a: torch.Tensor, b: torch.Tensor) -> float:
 
 
 def relative_difference_log(a: torch.Tensor, b: torch.Tensor) -> float:
-    log_a, log_b = a.to(dtype=torch.float64), b.to(dtype=torch.float64)
-    log_a_exp = log_a.exp()
-    log_b_exp = log_b.exp()
-    return relative_difference(log_a_exp, log_b_exp)
+    return relative_difference(a.to(dtype=torch.float64).exp(), b.to(dtype=torch.float64).exp())
 
 
 def sinkhorn(

@@ -15,7 +15,6 @@ class Phase(Enum):
     SINKHORN = 1
     HUNGARIAN = 2
     GRADIENT = 3
-    #CLAMP = 4
 
 
 @dataclass
@@ -77,7 +76,7 @@ def write_phases_as_csv(profiles: list[Profile], sizes: list[int], path: str):
 
 def append_phases_to_csv(profile: Profile, path: str):
     phases = [Phase.SINKHORN, Phase.FEATURE_EXTRACTION,
-              Phase.GRADIENT, Phase.HUNGARIAN]#, Phase.CLAMP]
+              Phase.GRADIENT, Phase.HUNGARIAN]  # , Phase.CLAMP]
     filepath = f"{path}/times.csv"
 
     if os.path.isfile(filepath):

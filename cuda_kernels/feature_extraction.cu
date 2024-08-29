@@ -3,15 +3,17 @@
 #include <torch/torch.h>
 #include <utility>
 
-__device__ std::pair<int, int> edge_range(const Accessor<int, 1> row_pointers,
-                                          uint32_t vertex_index) {
-    return std::make_pair(row_pointers[vertex_index],
-                          row_pointers[vertex_index + 1]);
+__device__ std::pair<int, int>
+edge_range(const Accessor<int, 1> row_pointers, uint32_t vertex_index) {
+    return std::make_pair(
+        row_pointers[vertex_index], row_pointers[vertex_index + 1]
+    );
 }
 
-__device__ int intersection_size(const Accessor<int, 1> col_indices,
-                                 const Accessor<int, 1> row_pointers,
-                                 uint32_t vertex_a, uint32_t vertex_b) {
+__device__ int intersection_size(
+    const Accessor<int, 1> col_indices, const Accessor<int, 1> row_pointers,
+    uint32_t vertex_a, uint32_t vertex_b
+) {
     const auto [a_start, a_end] = edge_range(row_pointers, vertex_a);
     const auto [b_start, b_end] = edge_range(row_pointers, vertex_b);
 
@@ -36,22 +38,22 @@ __device__ int intersection_size(const Accessor<int, 1> col_indices,
     return intersection_size;
 }
 
-__global__ void vertex_features(const Accessor<int, 1> col_indices,
-                                const Accessor<int, 1> row_pointers,
-                                Accessor<float, 1> clustering,
-                                Accessor<float, 1> degrees) {
+__global__ void vertex_features(
+    const Accessor<int, 1> col_indices, const Accessor<int, 1> row_pointers,
+    Accessor<float, 1> clustering, Accessor<float, 1> degrees
+) {
     const auto vertex_index = threadIdx.x + blockIdx.x * blockDim.x;
     const auto vertex_count = row_pointers.size(0) - 1;
 
-    if (vertex_index >= vertex_count) {
+    if (vertex_index >= vertex_count)
         return;
-    }
 
     auto triangle_count = 0;
     const auto [start, end] = edge_range(row_pointers, vertex_index);
     for (auto edge_index = start; edge_index < end; edge_index++) {
         triangle_count += intersection_size(
-            col_indices, row_pointers, vertex_index, col_indices[edge_index]);
+            col_indices, row_pointers, vertex_index, col_indices[edge_index]
+        );
     }
 
     const auto degree = end - start;
@@ -62,8 +64,10 @@ __global__ void vertex_features(const Accessor<int, 1> col_indices,
             : float(triangle_count) / (degree * (degree - 1));
 }
 
-void graph_features(torch::Tensor col_indices, torch::Tensor row_pointers,
-                    torch::Tensor clustering, torch::Tensor degrees) {
+void graph_features(
+    torch::Tensor col_indices, torch::Tensor row_pointers,
+    torch::Tensor clustering, torch::Tensor degrees
+) {
     at::cuda::CUDAGuard device_guard(col_indices.device());
 
     constexpr auto block_size = 64;
@@ -75,12 +79,14 @@ void graph_features(torch::Tensor col_indices, torch::Tensor row_pointers,
         col_indices.packed_accessor32<int, 1>(),
         row_pointers.packed_accessor32<int, 1>(),
         clustering.packed_accessor32<float, 1>(),
-        degrees.packed_accessor32<float, 1>());
+        degrees.packed_accessor32<float, 1>()
+    );
 }
 
 __global__ void vertex_average_neighbor_features(
     const Accessor<int, 1> col_indices, const Accessor<int, 1> row_pointers,
-    const Accessor<float, 1> features, Accessor<float, 1> averages) {
+    const Accessor<float, 1> features, Accessor<float, 1> averages
+) {
     const auto vertex_index = threadIdx.x + blockIdx.x * blockDim.x;
     const auto vertex_count = row_pointers.size(0) - 1;
 
@@ -99,9 +105,10 @@ __global__ void vertex_average_neighbor_features(
     averages[vertex_index] = degree == 0 ? 0.0 : sum / degree;
 }
 
-void average_neighbor_features(torch::Tensor col_indices,
-                               torch::Tensor row_pointers,
-                               torch::Tensor features, torch::Tensor averages) {
+void average_neighbor_features(
+    torch::Tensor col_indices, torch::Tensor row_pointers,
+    torch::Tensor features, torch::Tensor averages
+) {
     at::cuda::CUDAGuard device_guard(col_indices.device());
 
     constexpr auto block_size = 64;
@@ -113,5 +120,6 @@ void average_neighbor_features(torch::Tensor col_indices,
         col_indices.packed_accessor32<int, 1>(),
         row_pointers.packed_accessor32<int, 1>(),
         features.packed_accessor32<float, 1>(),
-        averages.packed_accessor32<float, 1>());
+        averages.packed_accessor32<float, 1>()
+    );
 }

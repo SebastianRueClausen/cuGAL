@@ -14,9 +14,8 @@ __global__ void kernel(
     const auto size = gradient.size(0);
     const auto index = threadIdx.x + blockIdx.x * blockDim.x;
 
-    if (index >= entry_count) {
+    if (index >= entry_count)
         return;
-    }
 
     const auto [x, y] = index_to_coord(index, size);
     gradient[x][y] += iteration - iteration * 2 * P[x][y];

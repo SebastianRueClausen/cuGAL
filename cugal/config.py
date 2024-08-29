@@ -1,26 +1,27 @@
 """Configuration of cuGAL."""
 
 from dataclasses import dataclass
+import dataclasses
 from enum import Enum
-from _collections_abc import Callable
+import json
 
 import torch
 
 
-class SinkhornMethod(Enum):
+class SinkhornMethod(str, Enum):
     """The method used for Sinkhorn-Knopp."""
 
-    STANDARD = 0
+    STANDARD = "STANDARD"
     """The standard Sinkhorn-Knopp method.
     This is faster, but usually requires double-precision floats.
     """
 
-    LOG = 1
+    LOG = "LOG"
     """Perform Sinkhorn-Knopp in logarithmic space.
     Computational intensive but numerically stable and optimized for the GPU.
     """
 
-    MIX = 2
+    MIX = "MIX"
     """Start out in logarithmic space and switch over to standard
     Sinkhorn-Knopp when the cost matrix has stabilized.
     """
@@ -29,22 +30,22 @@ class SinkhornMethod(Enum):
 class HungarianMethod(Enum):
     """The method used for Hungarian algorithm."""
 
-    SCIPY = 0
+    SCIPY = "SCIPY"
     """Use the scipy implementation of the Hungarian algorithm."""
 
-    GREEDY = 1
+    GREEDY = "GREEDY"
     """Use the CUDA implementation of the Hungarian algorithm."""
 
-    RAND = 2
+    RAND = "RAND"
     """Use the CUDA implementation of the Hungarian algorithm with random row order."""
 
-    MORE_RAND = 3
+    MORE_RAND = "MORE_RAND"
     """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
 
-    DOUBLE_GREEDY = 4
+    DOUBLE_GREEDY = "DOUBLE_GREEDY"
     """Use the CUDA implementation of the Hungarian algorithm with sorted row order and max column selection."""
 
-    PARALLEL_GREEDY = 5
+    PARALLEL_GREEDY = "PARALLEL_GREEDY"
     """BEST_GREEDY with parallel computation of the assignements above 0.5"""
 
 
@@ -102,10 +103,22 @@ class Config:
     hungarian_method: HungarianMethod = HungarianMethod.DOUBLE_GREEDY
     """The version of Hungarian algorithm used."""
 
-    lambda_func: Callable[[int], int] = lambda x: x
-    """The function used to compute the regularization parameter."""
-
     def convert_tensor(self, input: torch.Tensor) -> torch.Tensor:
         """Convert tensor to correct type and dtype."""
 
         return input.to(dtype=self.dtype, device=self.device)
+
+    def to_dict(self) -> dict:
+        config_dict = dataclasses.asdict(self)
+        config_dict['dtype'] = str(self.dtype).removeprefix("torch.")
+        config_dict['sinkhorn_method'] = self.sinkhorn_method.value
+        config_dict['hungarian_method'] = self.hungarian_method.value
+        return config_dict
+
+    @classmethod
+    def from_dict(cls, config_dict: dict):
+        config_dict['dtype'] = getattr(torch, config_dict['dtype'])
+        config_dict['sinkhorn_method'] = SinkhornMethod(
+            config_dict['sinkhorn_method'])
+        config_dict['hungarian_method'] = HungarianMethod[config_dict['hungarian_method']]
+        return cls(**config_dict)

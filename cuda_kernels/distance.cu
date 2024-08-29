@@ -15,17 +15,14 @@ __global__ void kernel(
     const auto size = out.size(0);
     const auto index = threadIdx.x + blockIdx.x * blockDim.x;
 
-    if (index >= entry_count) {
+    if (index >= entry_count)
         return;
-    }
 
     const auto [x, y] = index_to_coord(index, size);
-
     const auto a = source[x];
     const auto b = target[y];
 
     auto sum = 0.0;
-
 #pragma unroll
     for (auto i = 0; i < 4; i++) {
         const auto diff = a[i] - b[i];

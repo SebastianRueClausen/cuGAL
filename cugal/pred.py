@@ -101,7 +101,7 @@ def find_quasi_permutation_matrix(
             start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
-            gradient = gradient_function(P, features, config.lambda_func(λ))
+            gradient = gradient_function(P, features, λ)
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
@@ -138,7 +138,7 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
                 quasi_permutation.cpu(), maximize=True)
             return column_indices
         case HungarianMethod.GREEDY | HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.PARALLEL_GREEDY:
-            column_indices = greedy_lap(quasi_permutation, config, profile)
+            column_indices = greedy_lap(quasi_permutation, config)
     profile.log_time(start_time, Phase.HUNGARIAN)
     return column_indices
 
@@ -164,10 +164,6 @@ def convert_to_permutation_matrix(
         mapping.append((i, col_ind[i]))
 
     return permutation, mapping
-
-
-def max_node(graph: nx.Graph) -> int:
-    return max(graph.nodes())
 
 
 def cugal(
