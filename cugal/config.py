@@ -1,4 +1,4 @@
-"""Configuration of the cuGAL."""
+"""Configuration of cuGAL."""
 
 from dataclasses import dataclass
 from enum import Enum
@@ -25,37 +25,26 @@ class SinkhornMethod(Enum):
     Sinkhorn-Knopp when the cost matrix has stabilized.
     """
 
-    OT_CPU = 3
-    """Use the CPU implementation of the POT library."""
 
 class HungarianMethod(Enum):
     """The method used for Hungarian algorithm."""
 
     SCIPY = 0
     """Use the scipy implementation of the Hungarian algorithm."""
-    
-    CULAP = 1
-    """Use the CuLAP implementation of the Hungarian algorithm."""
 
-    GREEDY = 2
+    GREEDY = 1
     """Use the CUDA implementation of the Hungarian algorithm."""
 
-    RAND = 3
+    RAND = 2
     """Use the CUDA implementation of the Hungarian algorithm with random row order."""
 
-    MORE_RAND = 4
+    MORE_RAND = 3
     """Use the CUDA implementation of the Hungarian algorithm with random row order and distributed random column selection."""
 
-    DOUBLE_GREEDY = 5
+    DOUBLE_GREEDY = 4
     """Use the CUDA implementation of the Hungarian algorithm with sorted row order and max column selection."""
 
-    ENTRO_GREEDY = 6
-    """Use the CUDA implementation of the Hungarian algorithm with row order based on entropy and max column selection."""
-
-    JV = 7
-    """Use the Jonker-Volgenant Algorithm."""
-
-    PARALLEL_GREEDY = 8
+    PARALLEL_GREEDY = 5
     """BEST_GREEDY with parallel computation of the assignements above 0.5"""
 
 

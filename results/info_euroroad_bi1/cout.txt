@@ -1,536 +1,0 @@
-2024-04-30 08:42:43,189 - e.ex - INFO - Running command 'main'
-2024-04-30 08:42:43,196 - e.ex - INFO - Started run with ID "101"
-init1
-[[<function loadnx at 0x7f33953c2ca0>, ['data/inf-euroroad.txt']]]
-<function loadnx at 0x7f33953c2ca0> data/inf-euroroad.txt
-init2
-C
-##<1>##
-1039 1174
-##<1>##
-1039 1174
-C
-##<1>##
-1007 1174
-##<1>##
-1009 1174
-C
-##<1>##
-926 1174
-##<1>##
-817 1174
-C
-##<1>##
-853 1174
-##<1>##
-803 1174
-C
-##<1>##
-689 1174
-##<1>##
-746 1174
-C
-##<1>##
-681 1174
-##<1>##
-661 1174
-2024-04-30 08:42:43,291 - e.main - INFO - randcheck: (0.644348913609168, 0.49092102713844854)
-runs/101
-2024-04-30 08:42:43,291 - e.run_exp - INFO - Graph:(1/1)
-2024-04-30 08:42:43,291 - e.run_exp - INFO - Noise_level:(1/6)
-2024-04-30 08:42:43,291 - e.run_exp - INFO - iteration:(1/1)
-2024-04-30 08:42:43,296 - e.run_algs - WARNING - Disc. Source: 1039 < 1174
-2024-04-30 08:42:43,296 - e.run_algs - WARNING - Disc. Target: 1039 < 1174
-args:  {'iter': 15, 'simple': True, 'mu': 2}
-Fugal
-/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:176: UserWarning: An output with one or more elements was resized since it had shape [1174], which does not match the required output shape [1, 1174]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
-  torch.matmul(u, K, out=KTu)
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.LOG: 1>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:00, 37.86it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 41.00it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  93%|█████████▎| 14/15 [00:00<00:00, 19.75it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 21.23it/s]
-Wrote times to  runs/101
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.MIX: 2>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  10%|█         | 1/10 [00:00<00:03,  2.57it/s][A
-                                                           [Aλ:   7%|▋         | 1/15 [00:00<00:05,  2.47it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 17.45it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe: 100%|██████████| 10/10 [00:00<00:00, 94.31it/s][A
-                                                            [Aλ:  73%|███████▎  | 11/15 [00:00<00:00, 15.53it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  90%|█████████ | 9/10 [00:00<00:00, 88.97it/s][A
-                                                           [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 74.78it/s][A
-                                                           [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  70%|███████   | 7/10 [00:00<00:00, 66.67it/s][A
-                                                           [Aλ:  93%|█████████▎| 14/15 [00:01<00:00, 11.35it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 76.54it/s][A
-                                                           [Aλ: 100%|██████████| 15/15 [00:01<00:00, 11.21it/s]
-Wrote times to  runs/101
-2024-04-30 08:43:27,760 - e.run_exp - INFO - 
-[[[0.9429]]
-
- [[0.8424]]
-
- [[0.8578]]]
-2024-04-30 08:43:27,760 - e.run_exp - INFO - Noise_level:(2/6)
-2024-04-30 08:43:27,760 - e.run_exp - INFO - iteration:(1/1)
-2024-04-30 08:43:27,764 - e.run_algs - WARNING - Disc. Source: 1007 < 1174
-2024-04-30 08:43:27,764 - e.run_algs - WARNING - Disc. Target: 1009 < 1174
-args:  {'iter': 15, 'simple': True, 'mu': 2}
-Fugal
-/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:176: UserWarning: An output with one or more elements was resized since it had shape [1174], which does not match the required output shape [1, 1174]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
-  torch.matmul(u, K, out=KTu)
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.LOG: 1>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 67.87it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  93%|█████████▎| 14/15 [00:00<00:00, 31.37it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 30.68it/s]
-Wrote times to  runs/101
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.MIX: 2>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 58.63it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  87%|████████▋ | 13/15 [00:00<00:00, 25.75it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe: 100%|██████████| 10/10 [00:00<00:00, 99.43it/s][A
-                                                            [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  90%|█████████ | 9/10 [00:00<00:00, 88.44it/s][A
-                                                           [Aλ: 100%|██████████| 15/15 [00:00<00:00, 22.21it/s]
-Wrote times to  runs/101
-2024-04-30 08:44:09,995 - e.run_exp - INFO - 
-[[[0.546 ]]
-
- [[0.3748]]
-
- [[0.3697]]]
-2024-04-30 08:44:09,995 - e.run_exp - INFO - Noise_level:(3/6)
-2024-04-30 08:44:09,995 - e.run_exp - INFO - iteration:(1/1)
-2024-04-30 08:44:09,999 - e.run_algs - WARNING - Disc. Source: 926 < 1174
-2024-04-30 08:44:09,999 - e.run_algs - WARNING - Disc. Target: 817 < 1174
-args:  {'iter': 15, 'simple': True, 'mu': 2}
-Fugal
-/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:176: UserWarning: An output with one or more elements was resized since it had shape [1174], which does not match the required output shape [1, 1174]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
-  torch.matmul(u, K, out=KTu)
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.LOG: 1>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 76.86it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 48.97it/s]
-Wrote times to  runs/101
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.MIX: 2>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 69.30it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  93%|█████████▎| 14/15 [00:00<00:00, 42.04it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 38.16it/s]
-Wrote times to  runs/101
-2024-04-30 08:44:52,901 - e.run_exp - INFO - 
-[[[0.1729]]
-
- [[0.1448]]
-
- [[0.1482]]]
-2024-04-30 08:44:52,902 - e.run_exp - INFO - Noise_level:(4/6)
-2024-04-30 08:44:52,902 - e.run_exp - INFO - iteration:(1/1)
-2024-04-30 08:44:52,905 - e.run_algs - WARNING - Disc. Source: 853 < 1174
-2024-04-30 08:44:52,905 - e.run_algs - WARNING - Disc. Target: 803 < 1174
-args:  {'iter': 15, 'simple': True, 'mu': 2}
-Fugal
-/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:176: UserWarning: An output with one or more elements was resized since it had shape [1174], which does not match the required output shape [1, 1174]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
-  torch.matmul(u, K, out=KTu)
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.LOG: 1>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 66.95it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  93%|█████████▎| 14/15 [00:00<00:00, 42.58it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 40.32it/s]
-Wrote times to  runs/101
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.MIX: 2>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 61.41it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  93%|█████████▎| 14/15 [00:00<00:00, 32.93it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 30.76it/s]
-Wrote times to  runs/101
-2024-04-30 08:45:36,073 - e.run_exp - INFO - 
-[[[0.1116]]
-
- [[0.1303]]
-
- [[0.1261]]]
-2024-04-30 08:45:36,073 - e.run_exp - INFO - Noise_level:(5/6)
-2024-04-30 08:45:36,073 - e.run_exp - INFO - iteration:(1/1)
-2024-04-30 08:45:36,077 - e.run_algs - WARNING - Disc. Source: 689 < 1174
-2024-04-30 08:45:36,077 - e.run_algs - WARNING - Disc. Target: 746 < 1174
-args:  {'iter': 15, 'simple': True, 'mu': 2}
-Fugal
-/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:176: UserWarning: An output with one or more elements was resized since it had shape [1174], which does not match the required output shape [1, 1174]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
-  torch.matmul(u, K, out=KTu)
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.LOG: 1>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  47%|████▋     | 7/15 [00:00<00:00, 66.06it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe: 100%|██████████| 10/10 [00:00<00:00, 86.90it/s][A
-                                                            [Aλ:  93%|█████████▎| 14/15 [00:00<00:00, 32.14it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  50%|█████     | 5/10 [00:00<00:00, 39.53it/s][A
-frank-wolfe: 100%|██████████| 10/10 [00:00<00:00, 44.82it/s][A
-                                                            [Aλ: 100%|██████████| 15/15 [00:00<00:00, 23.81it/s]
-Wrote times to  runs/101
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.MIX: 2>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  13%|█▎        | 2/15 [00:00<00:01, 12.38it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  27%|██▋       | 4/15 [00:00<00:00, 12.90it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  40%|████      | 6/15 [00:00<00:00, 14.56it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  90%|█████████ | 9/10 [00:00<00:00, 85.53it/s][A
-                                                           [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  53%|█████▎    | 8/15 [00:00<00:00, 13.60it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  67%|██████▋   | 10/15 [00:00<00:00, 13.21it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 74.19it/s][A
-                                                           [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  80%|████████  | 12/15 [00:00<00:00, 11.61it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe: 100%|██████████| 10/10 [00:00<00:00, 91.48it/s][A
-                                                            [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  80%|████████  | 8/10 [00:00<00:00, 76.94it/s][A
-                                                           [Aλ:  93%|█████████▎| 14/15 [00:01<00:00, 10.13it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-frank-wolfe:  90%|█████████ | 9/10 [00:00<00:00, 88.66it/s][A
-                                                           [Aλ: 100%|██████████| 15/15 [00:01<00:00, 11.21it/s]
-Wrote times to  runs/101
-2024-04-30 08:46:19,762 - e.run_exp - INFO - 
-[[[0.0375]]
-
- [[0.046 ]]
-
- [[0.0468]]]
-2024-04-30 08:46:19,763 - e.run_exp - INFO - Noise_level:(6/6)
-2024-04-30 08:46:19,763 - e.run_exp - INFO - iteration:(1/1)
-2024-04-30 08:46:19,767 - e.run_algs - WARNING - Disc. Source: 681 < 1174
-2024-04-30 08:46:19,767 - e.run_algs - WARNING - Disc. Target: 661 < 1174
-args:  {'iter': 15, 'simple': True, 'mu': 2}
-Fugal
-/home/andreas.hansen/Framework_GraphAlignment_CUGAL/algorithms/FUGAL/sinkhorn.py:176: UserWarning: An output with one or more elements was resized since it had shape [1174], which does not match the required output shape [1, 1174]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /opt/conda/conda-bld/pytorch_1711403378171/work/aten/src/ATen/native/Resize.cpp:28.)
-  torch.matmul(u, K, out=KTu)
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.LOG: 1>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 87.47it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 51.80it/s]
-Wrote times to  runs/101
-args:  {'iter': 15, 'simple': True, 'mu': 2, 'path': 'runs/101', 'sparse': True, 'cache': True, 'sinkhorn_method': <SinkhornMethod.MIX: 2>}
-λ:   0%|          | 0/15 [00:00<?, ?it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ:  60%|██████    | 9/15 [00:00<00:00, 78.35it/s]
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [A
-frank-wolfe:   0%|          | 0/10 [00:00<?, ?it/s][A
-                                                   [Aλ: 100%|██████████| 15/15 [00:00<00:00, 39.70it/s]
-Wrote times to  runs/101
-2024-04-30 08:47:01,051 - e.run_exp - INFO - 
-[[[0.0571]]
-
- [[0.0392]]
-
- [[0.0426]]]
-2024-04-30 08:47:01,052 - e.ex - INFO - Completed after 0:04:18

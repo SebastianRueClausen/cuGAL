@@ -6,27 +6,19 @@ import torch
 from tqdm.auto import tqdm
 from functools import partial
 
-import lapjv
-
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
 from cugal.config import Config, HungarianMethod
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import Features
 
-from time import sleep
-
-from cugal.hungarian_python import hungarian_algorithm
-#from cuda_hungarian import hungarian_torch
-
-#from culap import hungarian as culap_hungarian
+from cugal.greedy_lap import greedy_lap
 
 try:
     import cuda_kernels
     has_cuda = True
 except ImportError:
     has_cuda = False
-
 
 
 def add_feature_distance(gradient: torch.Tensor, features: torch.Tensor | Features) -> torch.Tensor:
@@ -68,8 +60,8 @@ def sparse_gradient(
     if has_cuda and 'cuda' in str(P.device):
         cuda_kernels.regularize(gradient, P, iteration)
     else:
-        gradient += iteration - iteration * 2 * P 
-    
+        gradient += iteration - iteration * 2 * P
+
     return gradient
 
 
@@ -99,10 +91,10 @@ def find_quasi_permutation_matrix(
 
     if type(A) is Adjacency:
         P = torch.full([A.number_of_nodes()] * 2, fill_value=1 /
-                        A.number_of_nodes(), device=config.device, dtype=config.dtype)
+                       A.number_of_nodes(), device=config.device, dtype=config.dtype)
     else:
         P = torch.full([A.shape[0]] * 2, fill_value=1 /
-                        A.shape[0], device=config.device, dtype=config.dtype)
+                       A.shape[0], device=config.device, dtype=config.dtype)
 
     for λ in tqdm(range(config.iter_count), desc="λ"):
         for it in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
@@ -129,98 +121,33 @@ def find_quasi_permutation_matrix(
 
             P += diff
 
-            #print(torch.trace(P.T @ (1 - P)))
-
             if not config.frank_wolfe_threshold is None:
                 if diff.max() < config.frank_wolfe_threshold:
                     del diff
                     break
             del diff
 
-
     return P
 
-def hungarian(
-    quasi_permutation: torch.Tensor,
-    config: Config,
-    profile: Profile,
-) -> np.ndarray:
+
+def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile) -> np.array:
+    start_time = TimeStamp(config.device)
     match config.hungarian_method:
         case HungarianMethod.SCIPY:
-            return hungarian_scipy(quasi_permutation, config, profile)
-        case HungarianMethod.CULAP:
-            raise NotImplementedError("CuLAP is not supported in this version")
-            #return CuLAP_hungarian_init(quasi_permutation, config, profile)
-        case HungarianMethod.GREEDY:
-            return hungarian_torch_python(quasi_permutation, config, profile)
-        case HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.ENTRO_GREEDY | HungarianMethod.PARALLEL_GREEDY:
-            return hungarian_cuda(quasi_permutation, config, profile)
-        case HungarianMethod.JV:
-            return jv_hungarian(quasi_permutation, config, profile)
-        case _:
-            raise NotImplementedError(f"Unsupported Hungarian method: {config.hungarian_method}")
-        
-def hungarian_torch_python(
-    quasi_permutation: torch.Tensor,
-    config: Config,
-    profile: Profile,
-) -> np.ndarray:
-    quasi_permutation = quasi_permutation.cpu()
-    quasi_permutation *= -1
-    start_time = TimeStamp(config.device)
-    col_ind = torch.empty(quasi_permutation.size(0), dtype=torch.int32, device='cpu')
-    hungarian_torch(quasi_permutation, col_ind)
+            _, column_indices = scipy.optimize.linear_sum_assignment(
+                quasi_permutation.cpu(), maximize=True)
+            return column_indices
+        case HungarianMethod.GREEDY | HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.PARALLEL_GREEDY:
+            column_indices = greedy_lap(quasi_permutation, config, profile)
     profile.log_time(start_time, Phase.HUNGARIAN)
-    return col_ind.tolist()
+    return column_indices
 
-def hungarian_scipy(
-    quasi_permutation: torch.Tensor,
-    config: Config,
-    profile: Profile,
-) -> np.ndarray:
-    quasi_permutation = quasi_permutation.cpu()
-    start_time = TimeStamp(config.device)
-    _, col_ind = scipy.optimize.linear_sum_assignment(
-        quasi_permutation.clone(), maximize=True)
-    profile.log_time(start_time, Phase.HUNGARIAN)
-    return col_ind
-
-def hungarian_cuda(
-    quasi_permutation: torch.Tensor,
-    config: Config,
-    profile: Profile,
-) -> np.ndarray:
-    start_time = TimeStamp(config.device)
-    col_ind = hungarian_algorithm(quasi_permutation, config)
-    profile.log_time(start_time, Phase.HUNGARIAN)
-    return col_ind
-
-def jv_hungarian(
-    quasi_permutation: torch.Tensor,
-    config: Config,
-    profile: Profile,
-) -> np.ndarray:
-    start_time = TimeStamp(config.device)
-    col_ind, _, _ = lapjv.lapjv((quasi_permutation * -1).cpu().numpy())
-    profile.log_time(start_time, Phase.HUNGARIAN)
-    return col_ind    
-
-def CuLAP_hungarian_init(
-    quasi_permutation: torch.Tensor,
-    config: Config,
-    profile: Profile,
-) -> np.ndarray:
-    start_time = TimeStamp(config.device)
-    col_ind = torch.empty(quasi_permutation.size(0), dtype=torch.int32, device='cpu')
-    CuLAP_hungarian(quasi_permutation.cpu(), col_ind)
-    profile.log_time(start_time, Phase.HUNGARIAN)
-    return col_ind
 
 def convert_to_permutation_matrix(
     quasi_permutation: torch.Tensor,
     config: Config,
     profile: Profile,
-) -> tuple[np.ndarray, list[tuple[int, int]]]:
+) -> tuple[np.array, list[tuple[int, int]]]:
     """Convert quasi permutation matrix M into true permutation matrix.
     Also returns a mapping from source to target graph.
     """
@@ -248,7 +175,7 @@ def cugal(
     target: nx.Graph,
     config: Config,
     profile=Profile(),
-) -> tuple[np.ndarray, list[tuple[int, int]]]:
+) -> tuple[np.array, list[tuple[int, int]]]:
     """Run cuGAL algorithm.
 
     Returns permutation matrix and mapping from source to target.
@@ -256,13 +183,8 @@ def cugal(
 
     before = TimeStamp('cpu')
 
+    # Make sure both graphs are the same size.
     node_count = max(max(source.nodes()), max(target.nodes()))
-
-    # For float16 to be aligned properly in cuda, we add an extra dummy node
-    # with no edges.
-    if config.dtype == torch.float16 and node_count % 2 != 0:
-        node_count += 1
-
     source.add_nodes_from(set(range(node_count)) - set(source.nodes()))
     target.add_nodes_from(set(range(node_count)) - set(target.nodes()))
 
@@ -270,10 +192,11 @@ def cugal(
         source, target = Adjacency.from_graph(
             source, config.device), Adjacency.from_graph(target, config.device)
 
+    # Feature extraction
     start_time = TimeStamp(config.device)
     features = Features.create(source, target, config)
     if config.safe_mode:
-        #check source and target feature tensors have no NaN values
+        # check source and target feature tensors have no NaN values
         assert features.source.isfinite().all(), "source feature tensor has NaN values"
         assert features.target.isfinite().all(), "target feature tensor has NaN values"
 
@@ -282,22 +205,24 @@ def cugal(
 
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
 
+    # Frank-Wolfe
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, features, config, profile)
     if config.safe_mode:
-        #check quasi_permutation tensor has no NaN values
+        # check quasi_permutation tensor has no NaN values
         assert quasi_permutation.isfinite().all(), "quasi_permutation tensor has NaN values"
 
+    # Round to permutation matrix
     output = convert_to_permutation_matrix(quasi_permutation, config, profile)
     if config.safe_mode:
-        #check output permutation matrix has no NaN values
-        assert np.isfinite(output[0]).all(), "output permutation matrix has NaN values"
+        # check output permutation matrix has no NaN values
+        assert np.isfinite(output[0]).all(
+        ), "output permutation matrix has NaN values"
 
     profile.time = TimeStamp('cpu').elapsed_seconds(before)
 
     if 'cuda' in config.device:
         profile.max_memory = torch.cuda.max_memory_allocated(config.device)
         torch.cuda.reset_peak_memory_stats(config.device)
-    
-    return output
 
+    return output

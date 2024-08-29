@@ -9,8 +9,7 @@ import math
 try:
     import cuda_kernels
     has_cuda = True
-except ImportError as e:
-    print("IMPORT ERROR:\n", e)
+except ImportError:
     has_cuda = False
 
 
@@ -32,7 +31,6 @@ def extract_features_cuda(graph: nx.Graph | Adjacency, config: Config) -> torch.
     if config.safe_mode:
         assert clustering.isfinite().all(), "clustering tensor has NaN values"
         assert degrees.isfinite().all(), "degrees tensor has NaN values"
-
     cuda_kernels.average_neighbor_features(
         adjacency.col_indices, adjacency.row_pointers, clustering, neighbor_clustering)
     cuda_kernels.average_neighbor_features(
@@ -76,11 +74,7 @@ class Features:
 
     @classmethod
     def create(cls, source: nx.Graph | Adjacency, target: nx.Graph | Adjacency, config: Config):
-        """Calculate features of the source and target graph."""
-
         use_cuda = has_cuda and 'cuda' in config.device
-        print("FE CUDA Check:\t", has_cuda, config.device)
-
         if use_cuda:
             source_features = extract_features_cuda(
                 source, config).to(config.dtype)
@@ -91,29 +85,22 @@ class Features:
                 source), device=config.device, dtype=config.dtype)
             target_features = torch.tensor(extract_features_nx(
                 target), device=config.device, dtype=config.dtype)
-
         if config.safe_mode:
             assert source_features.isfinite().all(), "source feature tensor has NaN values"
             assert target_features.isfinite().all(), "target feature tensor has NaN values"
-
-
         source_features *= math.sqrt(config.mu)
         target_features *= math.sqrt(config.mu)
-
         if config.safe_mode:
             assert source_features.isfinite().all(), "source feature tensor has NaN values"
             assert target_features.isfinite().all(), "target feature tensor has NaN values"
-
         return cls(source_features, target_features)
 
     def add_distance(self, out: torch.Tensor) -> torch.Tensor:
         """Calculate `out + self.distance_matrix() * config.mu` efficiently."""
-
         if has_cuda and 'cuda' in str(out.device):
             cuda_kernels.add_distance(self.source, self.target, out)
         else:
             out += self.distance_matrix()
-
         return out
 
     def distance_matrix(self) -> torch.Tensor:

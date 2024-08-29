@@ -6,7 +6,7 @@ from cugal.config import Config, SinkhornMethod
 from cugal.profile import Phase, Profile, TimeStamp, write_phases_as_csv, plot_phases, plot_times, plot_sinkhorn_iterations
 import matplotlib.pyplot as plt
 import networkx as nx
-import metrics as metrics
+import metrics
 import torch
 import torch.cuda
 import torch.backends.mps

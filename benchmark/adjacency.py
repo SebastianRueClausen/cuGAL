@@ -1,3 +1,5 @@
+"""Benchmark memory usage and computation time of using sparse versus dense adjacency matrices."""
+
 from cugal.adjacency import Adjacency
 from cugal.profile import TimeStamp
 import networkx as nx

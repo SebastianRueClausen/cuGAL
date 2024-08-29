@@ -1,3 +1,5 @@
+"""Benchmark the accuracy of different Sinkhorn-Knopp implementations versus a ground truth calculation."""
+
 from cugal import sinkhorn
 from cugal.config import Config, SinkhornMethod
 import matplotlib.pyplot as plt

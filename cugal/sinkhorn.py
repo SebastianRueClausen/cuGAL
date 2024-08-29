@@ -1,9 +1,7 @@
 import torch
-import torch.nn.functional as F
 from cugal.config import Config, SinkhornMethod
 from cugal.profile import SinkhornProfile, TimeStamp
 from dataclasses import dataclass, field
-import math
 
 try:
     import cuda_kernels
@@ -103,28 +101,16 @@ def can_use_cuda(config: Config) -> bool:
         torch.float32, torch.float16]
 
 
-def is_close(a: torch.Tensor, b: torch.Tensor, config: Config) -> bool:
-    return torch.allclose(a, b, rtol=0, atol=config.sinkhorn_threshold) 
-
-
-def is_close_log(log_a: torch.Tensor, log_b: torch.Tensor, config: Config) -> bool:
-    log_a, log_b = log_a.to(dtype=torch.float64), log_b.to(dtype=torch.float64)
-    log_a_exp = log_a.exp()
-    log_b_exp = log_b.exp()
-    #print("Percent less than threshold: \n", torch.max(torch.abs(log_a - log_b)))
-    return is_close(log_a_exp, log_b_exp, config)
-
-
 def relative_difference(a: torch.Tensor, b: torch.Tensor) -> float:
-    res = (abs(a - b).max() / max(abs(a).max(), abs(b).max(), 1)).item()
-    #print(res)
-    return res
+    return (abs(a - b).max() / max(abs(a).max(), abs(b).max(), 1)).item()
+
 
 def relative_difference_log(a: torch.Tensor, b: torch.Tensor) -> float:
     log_a, log_b = a.to(dtype=torch.float64), b.to(dtype=torch.float64)
     log_a_exp = log_a.exp()
     log_b_exp = log_b.exp()
     return relative_difference(log_a_exp, log_b_exp)
+
 
 def sinkhorn(
     C: torch.Tensor,
@@ -139,21 +125,6 @@ def sinkhorn(
             return loghorn(C, config, profile, start)
         case SinkhornMethod.MIX:
             return mixhorn(C, config, profile, start)
-        case SinkhornMethod.OT_CPU:
-            return sinkhorn_OT_cpu(C, config, profile, start)
-            
-def sinkhorn_OT_cpu(
-    C: torch.Tensor,
-    config: Config,
-    profile=SinkhornProfile(),
-    start: SinkhornInit = FixedInit(),
-) -> torch.Tensor:
-    import ot
-    start_time = TimeStamp(config.device)
-    ones = torch.ones(C.shape[0], device=config.device, dtype=config.dtype)
-    output = ot.sinkhorn(ones, ones, C.cpu(), config.sinkhorn_regularization, stopThr=config.sinkhorn_threshold, numItermax=config.sinkhorn_iterations)
-    profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
-    return output
 
 
 def sinkhorn_knopp(
@@ -175,7 +146,7 @@ def sinkhorn_knopp(
         u = 1 / (K @ v + M_EPS)
 
         if iteration % config.sinkhorn_eval_freq == 0:
-            if is_close(u, prev_u, config) and is_close(v, prev_v, config):
+            if relative_difference(u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
 
     output = u.reshape(-1, 1) * K * v.reshape(1, -1)
@@ -191,7 +162,7 @@ def loghorn(
     C: torch.Tensor,
     config: Config,
     profile=SinkhornProfile(),
-    start: SinkhornInit = FixedInit,
+    start: SinkhornInit = FixedInit(),
 ) -> torch.Tensor:
     start_time = TimeStamp(config.device)
 
@@ -209,17 +180,13 @@ def loghorn(
         prev_u = torch.clone(u)
 
         if use_cuda:
-            cuda_kernels.sinkhorn_step(K_transpose, u, v, True)
-           # cuda_kernels.sinkhorn_step_cols(K, u, v)
-            cuda_kernels.sinkhorn_step(K, v, u, True)
+            cuda_kernels.sinkhorn_log_step(K_transpose, u, v)
+            cuda_kernels.sinkhorn_log_step(K, v, u)
         else:
             v = -torch.logsumexp(K + u[:, None], 0)
             u = -torch.logsumexp(K + v[None, :], 1)
 
         if iteration % config.sinkhorn_eval_freq == 0 and iteration != 0:
-            #u_close = is_close_log(u, prev_u, config) 
-            #v_close = is_close_log(v, prev_v, config)
-            #if u_close and v_close:
             if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
 
@@ -227,7 +194,7 @@ def loghorn(
     K += v[None, :]
     torch.exp(K, out=K)
     output = K
-    
+
     start.update(K, u)
 
     profile.iteration_count = iteration + 1
@@ -240,7 +207,7 @@ def mixhorn(
     C: torch.Tensor,
     config: Config,
     profile=SinkhornProfile(),
-    start: SinkhornInit = FixedInit,
+    start: SinkhornInit = FixedInit(),
 ) -> torch.Tensor:
     n, _ = C.shape
 
@@ -261,8 +228,7 @@ def mixhorn(
         v = 1 / (u @ K + M_EPS)
         u = 1 / (K @ v + M_EPS)
 
-        #if iteration % config == 0:
-        if relative_difference (u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
+        if relative_difference(u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
             break
 
     K *= v.reshape(1, -1)

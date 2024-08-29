@@ -13,11 +13,8 @@ setup(
             'distance.cu',
             'regularize.cu',
         ],
-        extra_compile_args={
-            'nvcc': ["--threads", "20",
-                     "-gencode", "arch=compute_87,code=sm_87",
-                     "-gencode", "arch=compute_86,code=sm_86",
-                     "--library-path=/CuLAP/lib/libculap.a", "--library=libculap",],
+            extra_compile_args={
+            'nvcc': ["--threads", "20"],
         }),
     ],
     cmdclass={

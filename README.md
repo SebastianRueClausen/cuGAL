@@ -12,5 +12,3 @@ Run `python -m unittest` inside `test/`.
 
 ## Running bencmarks
 Run `python *.py` in `benchmark/`.
-
-![Versions of Sinkhorn-Knopp](media/sinkhorn_benchmark.png)

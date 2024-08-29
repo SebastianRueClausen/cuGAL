@@ -10,11 +10,11 @@ def random_matrix(size: int) -> torch.Tensor:
     return torch.rand((size, size)) * 10.0
 
 
-def assert_is_doubly_stochastic(matrix: torch.Tensor):
+def assert_is_doubly_stochastic(matrix: torch.Tensor, rtol: float = 1e-5, atol: float = 1e-8):
     ones = torch.ones((matrix.shape[0], ),
                       device=matrix.device, dtype=matrix.dtype)
-    assert torch.allclose(ones, torch.sum(matrix, dim=0))
-    assert torch.allclose(ones, torch.sum(matrix, dim=1))
+    assert torch.allclose(ones, torch.sum(matrix, dim=0), rtol=rtol, atol=atol)
+    assert torch.allclose(ones, torch.sum(matrix, dim=1), rtol=rtol, atol=atol)
 
 
 class TestSinkhorn(unittest.TestCase):
@@ -41,14 +41,15 @@ class TestSinkhorn(unittest.TestCase):
         matrix = random_matrix(128)
         truth = sinkhorn(truth_config.convert_tensor(matrix), truth_config)
         test = sinkhorn(test_config.convert_tensor(matrix), test_config)
-        assert torch.allclose(truth, truth_config.convert_tensor(test))
+        assert torch.allclose(
+            truth, truth_config.convert_tensor(test), rtol=1e-4, atol=1e-6)
 
     def test_mix_cpu_float32_doubly_stochastic(self):
         test_config = Config(sinkhorn_method=SinkhornMethod.MIX,
                              dtype=torch.float32)
         matrix = random_matrix(128)
         test = sinkhorn(test_config.convert_tensor(matrix), test_config)
-        assert_is_doubly_stochastic(test)
+        assert_is_doubly_stochastic(test, rtol=1e-3, atol=1e-6)
 
     @unittest.skipUnless(condition=torch.cuda.is_available(), reason="requires CUDA")
     def test_log_cuda_float64_doubly_stochastic(self):

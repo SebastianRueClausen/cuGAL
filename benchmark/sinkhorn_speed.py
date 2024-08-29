@@ -1,3 +1,5 @@
+"""Benchmark the speed of different Sinkhorn-Knopp implementations."""
+
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,44 +11,31 @@ from cugal.profile import SinkhornProfile
 def benchmark_random_matrices(matrix_sizes: list[int]):
     gpu_config = Config(
         device="cuda", dtype=torch.float32, sinkhorn_iterations=200,
-        sinkhorn_threshold=1e-7, sinkhorn_method=SinkhornMethod.LOG,
+        sinkhorn_threshold=0, sinkhorn_method=SinkhornMethod.LOG,
     )
-    gpu_half_config = Config(
-        device="cuda", dtype=torch.float16, sinkhorn_iterations=200,
-        sinkhorn_threshold=1e-7, sinkhorn_method=SinkhornMethod.LOG,
+    gpu_mix_config = Config(
+        device="cuda", dtype=torch.float32, sinkhorn_iterations=200,
+        sinkhorn_threshold=0, sinkhorn_method=SinkhornMethod.MIX,
     )
-    cpu_config = Config(sinkhorn_iterations=200, sinkhorn_threshold=1e-7)
 
-    log_profiles, log_half_profiles, mix_profiles, cpu_profiles = [], [], [], []
+    log_profiles, mix_profiles = [], []
 
     for matrix_size in matrix_sizes:
         matrix = torch.randn((matrix_size, matrix_size)) * 4.0
 
-        profile = SinkhornProfile()
-        sinkhorn.sinkhorn_knopp(
-            cpu_config.convert_tensor(matrix), cpu_config, profile)
-        log_profiles.append(profile)
-
         gpu_matrix = gpu_config.convert_tensor(matrix)
 
         profile = SinkhornProfile()
-        sinkhorn.mixhorn(gpu_matrix, gpu_config, profile)
+        sinkhorn.mixhorn(gpu_matrix, gpu_mix_config, profile)
         mix_profiles.append(profile)
 
         profile = SinkhornProfile()
         sinkhorn.loghorn(gpu_matrix, gpu_config, profile)
         log_profiles.append(profile)
 
-        profile = SinkhornProfile()
-        sinkhorn.loghorn(gpu_half_config.convert_tensor(
-            matrix), gpu_half_config, profile)
-        log_half_profiles.append(profile)
-
     plots = [
         (mix_profiles, 'mix float32'),
         (log_profiles, 'log float32'),
-        (log_half_profiles, 'log float16'),
-        (cpu_profiles, 'cpu float64'),
     ]
 
     plt.figure()
@@ -60,7 +49,7 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
 
     plt.figure()
     for profiles, label in plots:
-        plt.plot([profile.time for profile, _ in profiles], label=label)
+        plt.plot([profile.time for profile in profiles], label=label)
     plt.title('execution time')
     plt.xlabel('matrix size')
     plt.ylabel('seconds')
@@ -69,25 +58,6 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
 
     plt.show()
 
-def benchmark_500():
-    config = Config(
-        device="cuda", dtype=torch.float32, sinkhorn_iterations=20,
-        sinkhorn_threshold=np.finfo(np.float32).eps, use_sinkhorn_cache=True
-    )
-
-    matrix = config.convert_tensor(torch.rand(500, 500))
-    
-    mix_profile = SinkhornProfile()
-    sinkhorn.mixhorn(matrix, config, mix_profile)
-
-    log_profile = SinkhornProfile()
-    sinkhorn.loghorn(matrix, config, log_profile)
-    
-    return mix_profile, log_profile
-
 
 if __name__ == "__main__":
-    #benchmark_random_matrices([2500, 5000, 10000, 15000])
-    mix_profile, log_profile = benchmark_500()
-    print(mix_profile.time)
-    print(log_profile.time)
+    benchmark_random_matrices([2500, 5000, 10000, 15000])
