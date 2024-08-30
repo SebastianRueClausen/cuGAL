@@ -1,3 +1,4 @@
+import dataclasses
 from enum import Enum
 from time import time
 from typing import Self
@@ -11,10 +12,10 @@ import os
 
 
 class Phase(Enum):
-    FEATURE_EXTRACTION = 0
-    SINKHORN = 1
-    HUNGARIAN = 2
-    GRADIENT = 3
+    FEATURE_EXTRACTION = "FEATURE_EXTRACTION"
+    SINKHORN = "SINKHORN"
+    HUNGARIAN = "HUNGARIAN"
+    GRADIENT = "GRADIENT"
 
 
 @dataclass
@@ -55,6 +56,14 @@ class Profile:
         now = TimeStamp(start_time.device)
         prev_time = 0 if not phase in self.phase_times else self.phase_times[phase]
         self.phase_times[phase] = prev_time + now.elapsed_seconds(start_time)
+
+    def to_dict(self) -> dict:
+        dict = dataclasses.asdict(self)
+        dict['sinkhorn_profiles'] = [dataclasses.asdict(
+            profile) for profile in self.sinkhorn_profiles]
+        dict['phase_times'] = {
+            phase.value: time for phase, time in self.phase_times}
+        return dict
 
 
 def extract_phase_times(profiles: list[Profile], phase: Phase) -> list[float]:
