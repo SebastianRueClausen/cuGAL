@@ -227,6 +227,8 @@ def convert_to_permutation_matrix(
 
     n = len(quasi_permutation)
 
+    # Save quasi permutation matrix to profile
+    np.savetxt("quasi_permutation.csv", quasi_permutation.cpu().numpy(), delimiter=",")
     col_ind = hungarian(quasi_permutation, config, profile)
 
     permutation = np.zeros((n, n))

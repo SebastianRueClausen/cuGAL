@@ -232,6 +232,9 @@ def loghorn(
 
     profile.iteration_count = iteration + 1
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
+    
+    #This should be removed:
+    profile.res_matrix = output.clone().cpu()
 
     return output
 
@@ -274,4 +277,7 @@ def mixhorn(
     profile.iteration_count = iteration + 1
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
 
+    #This should be removed:
+    profile.res_matrix = output.clone().cpu()
+    
     return output

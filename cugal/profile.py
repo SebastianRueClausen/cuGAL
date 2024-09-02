@@ -23,6 +23,7 @@ class SinkhornProfile:
     errors: list[float] = field(default_factory=list)
     iteration_count: int = 0
     time: float = 0.0
+    res_matrix = None
 
 
 class TimeStamp:
