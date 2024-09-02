@@ -6,6 +6,7 @@ lib64
 share
 pyvenv.cf
 build
+benchmark/results
 ENV_DIR
 *.egg*
 .vscode

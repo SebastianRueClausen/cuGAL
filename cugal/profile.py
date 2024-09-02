@@ -62,8 +62,14 @@ class Profile:
         dict['sinkhorn_profiles'] = [dataclasses.asdict(
             profile) for profile in self.sinkhorn_profiles]
         dict['phase_times'] = {
-            phase.value: time for phase, time in self.phase_times}
+            phase.value: time for phase, time in self.phase_times.items() }
         return dict
+    
+    @classmethod
+    def from_dict(cls, dict: dict):
+        dict['sinkhorn_profiles'] = [SinkhornProfile(**profile) for profile in dict['sinkhorn_profiles']]
+        dict['phase_times'] = { Phase[phase]: time for phase, time in dict['phase_times'].items() }
+        return cls(**dict)
 
 
 def extract_phase_times(profiles: list[Profile], phase: Phase) -> list[float]:
