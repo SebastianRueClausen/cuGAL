@@ -3,6 +3,7 @@ import dataclasses
 from enum import Enum
 import io
 import subprocess
+from typing import Iterable
 import numpy as np
 import cugal
 from cugal.pred import cugal
@@ -15,8 +16,21 @@ import datetime
 from fugal.pred import fugal
 import json
 
+
+@dataclass
+class NoiseLevel:
+    source_noise: float
+    target_noise: float
+    refill_edges: bool
+
+    def __str__(self):
+        return str(dataclasses.asdict(self))
+
+
 def refill_edges(edges: np.array, dimension: int, edge_amount: int, generator: np.random.Generator) -> np.array:
-    if edge_amount == 0: return edges
+    """Randomly insert `edge_amount` of edges."""
+    if edge_amount == 0:
+        return edges
     edge_set = {tuple(row) for row in np.sort(edges).tolist()}
     new_edges = []
     while len(new_edges) < edge_amount:
@@ -29,6 +43,7 @@ def refill_edges(edges: np.array, dimension: int, edge_amount: int, generator: n
 
 
 def remove_edges(edges: np.array, noise: float, generator: np.random.Generator):
+    """Randomly remove edges with `noise` chance."""
     bin_count = np.bincount(edges.flatten())
     rows_to_delete = []
     for i, (e, f) in enumerate(edges):
@@ -49,7 +64,7 @@ class GeneratedGraph:
 
 
 def generate_graphs(
-    graph: nx.Graph, generator: np.random.Generator, source_noise=0.0, target_noise=0.0, refill=False,
+    graph: nx.Graph, generator: np.random.Generator, noise_level: NoiseLevel,
 ) -> GeneratedGraph:
     source_edges = np.array(graph.edges)
     if (np.amin(source_edges) != 0):
@@ -63,12 +78,18 @@ def generate_graphs(
     source_mapping = source_permutation[target_permutation.argsort()]
     target_mapping = target_permutation[source_permutation.argsort()]
 
+    # This describes the relation between mapping and permutation.
+    assert np.all(target_permutation[source_mapping] == source_permutation)
+    assert np.all(source_permutation[target_mapping] == target_permutation)
+
     target_edges = source_mapping[source_edges]
 
-    source_edges = remove_edges(source_edges, source_noise, generator)
-    target_edges = remove_edges(target_edges, target_noise, generator)
+    source_edges = remove_edges(
+        source_edges, noise_level.source_noise, generator)
+    target_edges = remove_edges(
+        target_edges, noise_level.target_noise, generator)
 
-    if refill:
+    if noise_level.refill_edges:
         source_edges = refill_edges(
             source_edges, dimension, edge_count - source_edges.shape[0], generator)
         target_edges = refill_edges(
@@ -112,6 +133,10 @@ class Algorithm:
     def to_dict(self) -> dict:
         return {'use_fugal': self.use_fugal, 'config': self.config.to_dict()}
 
+    def __str__(self):
+        name = 'Fugal' if self.use_fugal else 'Cugal'
+        return name + ' ' + str(self.config.to_dict())
+
     @classmethod
     def from_dict(cls, dict: dict):
         return cls(config=Config.from_dict(dict['config']), use_fugal=dict['use_fugal'])
@@ -146,20 +171,17 @@ class Graph:
                 return nx.newman_watts_strogatz_graph(**self.parameters, seed=generator), None
             case GraphKind.LOBSTER:
                 return nx.random_lobster(**self.parameters, seed=generator), None
-            
+
     def to_dict(self) -> dict:
-        return { 'kind': self.kind.value, 'parameters': self.parameters }
-    
+        return {'kind': self.kind.value, 'parameters': self.parameters}
+
+    def __str__(self):
+        return self.kind.value + ' ' + str(self.parameters)
+
     @classmethod
     def from_dict(cls, dict: dict):
         dict['kind'] = GraphKind[dict['kind']]
         return cls(**dict)
-
-@dataclass
-class NoiseLevel:
-    source_noise: float
-    target_noise: float
-    refill_edges: bool
 
 
 def generate_graph(
@@ -167,18 +189,12 @@ def generate_graph(
     target: nx.Graph | None,
     generator: np.random.Generator,
     noise_level: NoiseLevel,
-) -> tuple[nx.Graph, nx.Graph | None, np.array]:
+) -> tuple[nx.Graph, nx.Graph | None, np.array, np.array]:
     if target is None:
-        generated_graph = generate_graphs(
-            source,
-            generator,
-            source_noise=noise_level.target_noise,
-            target_noise=noise_level.target_noise,
-            refill=noise_level.refill_edges,
-        )
+        generated_graph = generate_graphs(source, generator, noise_level)
         source = nx.from_edgelist(generated_graph.source_edges)
         target = nx.from_edgelist(generated_graph.target_edges)
-        mapping = generated_graph.source_mapping
+        return source, target, generated_graph.source_mapping,  generated_graph.target_mapping
     else:
         # FIXME
         mapping = np.arange(source.number_of_nodes())
@@ -196,9 +212,12 @@ class Result:
     @classmethod
     def calculate(cls, profile: Profile, source_adjacency: np.array, target_adjacency: np.array, answer: np.array, mapping: np.array):
         return cls(
-            induced_conserved_structure(source_adjacency, target_adjacency, answer, mapping),
-            edge_correctness(source_adjacency, target_adjacency, answer, mapping),
-            symmetric_substructure(source_adjacency, target_adjacency, answer, mapping),
+            induced_conserved_structure(
+                source_adjacency, target_adjacency, answer, mapping),
+            edge_correctness(source_adjacency,
+                             target_adjacency, answer, mapping),
+            symmetric_substructure(
+                source_adjacency, target_adjacency, answer, mapping),
             alignment_accuracy(answer, mapping),
             profile,
         )
@@ -220,7 +239,7 @@ class Result:
         dict = dataclasses.asdict(self)
         dict['profile'] = self.profile.to_dict()
         return dict
-    
+
     @classmethod
     def from_dict(cls, dict: dict):
         dict['profile'] = Profile.from_dict(dict['profile'])
@@ -241,7 +260,7 @@ class Experiment:
     algorithms: list[Algorithm]
     graphs: list[Graph]
     noise_levels: list[NoiseLevel]
-    seed: int = np.random.randint(0xffffffff)
+    seed: int | None = None
 
     def to_dict(self) -> dict:
         dict = dataclasses.asdict(self)
@@ -260,8 +279,13 @@ class Experiment:
         dict['noise_levels'] = [NoiseLevel(**level)
                                 for level in dict['noise_levels']]
         return cls(**dict)
-    
+
     def run(self):
+        if self.seed is None:
+            self.seed = np.random.randint(0xffffffff)
+        assert len(self.algorithms) > 0, "no algorithms provided"
+        assert len(self.noise_levels) > 0, "no noise levels provided"
+        assert len(self.graphs) > 0, "no graphs provided"
         generator = np.random.default_rng(seed=self.seed)
         results = []
         for graph in self.graphs:
@@ -269,21 +293,25 @@ class Experiment:
             graph_results = []
             for noise_level in self.noise_levels:
                 noise_results = []
-                source, target, mapping = generate_graph(source_graph, target_graph, generator, noise_level)
+                source, target, source_mapping, _ = generate_graph(
+                    source_graph, target_graph, generator, noise_level)
                 for algorithm in self.algorithms:
                     profile = Profile()
                     if algorithm.use_fugal:
                         start_time = TimeStamp('cpu')
-                        _, answer = fugal(source, target, algorithm.config.mu, algorithm.config.iter_count, algorithm.config, profile)
-                        profile.time = TimeStamp('cpu').elapsed_seconds(start_time)
+                        _, answer = fugal(
+                            source, target, algorithm.config, profile)
+                        profile.time = TimeStamp(
+                            'cpu').elapsed_seconds(start_time)
                     else:
-                        _, answer = cugal(source, target, algorithm.config, profile)
+                        _, answer = cugal(
+                            source, target, algorithm.config, profile)
                     noise_results.append(Result.calculate(
                         profile,
                         nx.to_numpy_array(source),
                         nx.to_numpy_array(target),
                         np.array([x for _, x in answer]),
-                        mapping,
+                        source_mapping,
                     ))
                 graph_results.append(noise_results)
             results.append(graph_results)
@@ -299,7 +327,14 @@ class ExperimentResults:
     results: list[list[list[Result]]]
 
     def dump(self, folder: str):
-        with open(folder + "/" + self.name() + ".json", "w") as f: json.dump(self.to_dict(), f, indent=4)
+        with open(folder + "/" + self.name() + ".json", "w") as f:
+            json.dump(self.to_dict(), f, indent=4)
+
+    def all_results(self) -> Iterable[tuple[Graph, NoiseLevel, Algorithm, Result]]:
+        for graph, graph_results in zip(self.experiment.graphs, self.results):
+            for noise_level, noise_level_results in zip(self.experiment.noise_levels, graph_results):
+                for algorithm, result in zip(self.experiment.algorithms, noise_level_results):
+                    yield (graph, noise_level, algorithm, result)
 
     @classmethod
     def from_results(cls, experiment: Experiment, results: list[list[list[Result]]]):
@@ -309,13 +344,14 @@ class ExperimentResults:
             time=str(datetime.datetime.now()),
             commit=get_last_commit(),
         )
-    
+
     @classmethod
     def from_dict(cls, dict: dict):
         dict['experiment'] = Experiment.from_dict(dict['experiment'])
-        dict['results'] = [[[Result.from_dict(result) for result in b] for b in a] for a in dict['results']]
+        dict['results'] = [
+            [[Result.from_dict(result) for result in b] for b in a] for a in dict['results']]
         return cls(**dict)
-    
+
     def name(self) -> str:
         return '-'.join(map(lambda graph: graph.kind.value, self.experiment.graphs)) + '-' + self.time.replace(' ', '-')
 
