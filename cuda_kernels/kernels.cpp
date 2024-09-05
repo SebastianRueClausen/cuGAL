@@ -22,6 +22,9 @@ void add_distance(torch::Tensor, torch::Tensor, torch::Tensor);
 // regularize.cu
 void regularize(torch::Tensor, torch::Tensor, int);
 
+// data_stream_test.cu
+void data_stream_test(torch::Tensor);
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     // adjacency.cu
     m.def(
@@ -50,4 +53,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
 
     // regularize.cu
     m.def("regularize", &regularize, "regularize matrix");
+
+    // data_stream_test.cu
+    m.def("data_stream_test", &data_stream_test, "data stream test");
 }

@@ -12,9 +12,10 @@ setup(
             'sinkhorn_log.cu',
             'distance.cu',
             'regularize.cu',
+            "data_stream_test.cu"
         ],
             extra_compile_args={
-            'nvcc': ["--threads", "20"],
+            'nvcc': ["--threads", "20", "-O3"],
         }),
     ],
     cmdclass={
