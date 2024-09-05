@@ -23,6 +23,7 @@ except ImportError:
 
 def add_feature_distance(gradient: torch.Tensor, features: torch.Tensor | Features) -> torch.Tensor:
     if type(features) is Features:
+        # TODO: Stream.
         gradient = features.add_distance(gradient)
     else:
         gradient += features
@@ -37,6 +38,7 @@ def dense_gradient(
     iteration: int,
 ) -> torch.Tensor:
     gradient = -A.T @ P @ B - A @ P @ B.T
+    print(gradient)
     return add_feature_distance(gradient, features) + iteration*(1 - 2*P)
 
 
@@ -49,19 +51,19 @@ def sparse_gradient(
     iteration: int,
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
+        # TODO: Stream.
         gradient = B.mul(A.mul(P).T).T
+        # TODO: Stream.
         gradient *= -2
     else:
         gradient = B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
             - B.mul(A.mul(P).T).T
-
+    # TODO: Combine regularize and add_feature_distance into single kernel.
     gradient = add_feature_distance(gradient, features)
-
     if has_cuda and 'cuda' in str(P.device):
         cuda_kernels.regularize(gradient, P, iteration)
     else:
         gradient += iteration - iteration * 2 * P
-
     return gradient
 
 
@@ -76,7 +78,6 @@ def find_quasi_permutation_matrix(
             assert not nx.is_directed(
                 A), "graph must be undirected to use sparse adjacency (for now)"
             A = Adjacency.from_graph(A, config.device)
-
         if not type(B) is Adjacency:
             assert not nx.is_directed(
                 B), "graph must be undirected to use sparse adjacency (for now)"
@@ -113,12 +114,12 @@ def find_quasi_permutation_matrix(
             profile.sinkhorn_profiles.append(sinkhorn_profile)
             profile.log_time(start_time, Phase.SINKHORN)
 
+            # TODO: Do this in a single kernel together with finding the scaled gradient.
             alpha = 2.0 / float(2.0 + it)
             q -= P
             q *= alpha
             diff = q
             del q
-
             P += diff
 
             if not config.frank_wolfe_threshold is None:

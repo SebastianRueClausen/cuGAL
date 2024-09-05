@@ -25,6 +25,9 @@ void regularize(torch::Tensor, torch::Tensor, int);
 // data_stream_test.cu
 void data_stream_test(torch::Tensor);
 
+// update_quasi_permutation.cu
+void update_quasi_permutation(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, float, bool);
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     // adjacency.cu
     m.def(
@@ -56,4 +59,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
 
     // data_stream_test.cu
     m.def("data_stream_test", &data_stream_test, "data stream test");
+
+    // update_quasi_permutation.cu
+    m.def("update_quasi_permutation", &update_quasi_permutation, "update quasi permutation matrix");
 }

@@ -162,6 +162,7 @@ def loghorn(
 ) -> torch.Tensor:
     start_time = TimeStamp(config.device)
 
+    # TODO: Do this in kernel each iteration instead, or stream.
     K = - C / config.sinkhorn_regularization
 
     use_cuda = can_use_cuda(config)
@@ -176,6 +177,7 @@ def loghorn(
         prev_u = torch.clone(u)
 
         if use_cuda:
+            # TODO: Stream.
             cuda_kernels.sinkhorn_log_step(K_transpose, u, v)
             cuda_kernels.sinkhorn_log_step(K, v, u)
         else:
@@ -186,6 +188,7 @@ def loghorn(
             if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
 
+    # TODO: Do this in a singel kernel together with updating P.
     K += u[:, None]
     K += v[None, :]
     torch.exp(K, out=K)
