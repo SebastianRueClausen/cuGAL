@@ -26,11 +26,13 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
         gpu_matrix = gpu_config.convert_tensor(matrix)
 
         profile = SinkhornProfile()
-        sinkhorn.mixhorn(gpu_matrix, gpu_mix_config, profile)
+        sinkhorn.scale_kernel_matrix(
+            *sinkhorn.mixhorn(gpu_matrix, gpu_mix_config, profile))
         mix_profiles.append(profile)
 
         profile = SinkhornProfile()
-        sinkhorn.loghorn(gpu_matrix, gpu_config, profile)
+        sinkhorn.scale_kernel_matrix_log(
+            *sinkhorn.loghorn(gpu_matrix, gpu_config, profile))
         log_profiles.append(profile)
 
     plots = [

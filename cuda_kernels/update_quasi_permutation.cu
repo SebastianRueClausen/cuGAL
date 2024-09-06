@@ -1,10 +1,10 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include <torch.h>
+#include <torch/torch.h>
 #include <c10/cuda/CUDAGuard.h>
-#include "common.h"
+#include "common.cuh"
 
-__device__ void log_kernel(
+__global__ void log_kernel(
     Accessor<float, 2> P,
     Accessor<float, 2> K,
     Accessor<float, 1> log_u,
@@ -16,24 +16,24 @@ __device__ void log_kernel(
     const auto bid = blockIdx.x;
 #pragma unroll
     for (auto col = tid; col < size; col += blockDim.x) {
-        float scaled = expf(K[bid][col] + log_v[bid] + log_u[col]);
+        float scaled = expf(K[bid][col] + log_v[col] + log_u[bid]);
         P[bid][col] += (scaled - P[bid][col]) * alpha;
     }
 }
 
-__device__ void kernel
+__global__ void kernel(
     Accessor<float, 2> P,
     Accessor<float, 2> K,
     Accessor<float, 1> u,
     Accessor<float, 1> v,
     float alpha,
     size_t size
- {
+) {
     const auto tid = threadIdx.x;
     const auto bid = blockIdx.x;
 #pragma unroll
     for (auto col = tid; col < size; col += blockDim.x) {
-        float scaled = K[bid][col] * v[bid] * u[col];
+        float scaled = K[bid][col] * v[col] * u[bid];
         P[bid][col] += (scaled - P[bid][col]) * alpha;
     }
 

@@ -1,9 +1,14 @@
 """Test implementations of Sinkhorn-Knopp."""
 
 import unittest
-from cugal.sinkhorn import sinkhorn
+import cugal.sinkhorn
 from cugal import SinkhornMethod, Config
 import torch
+
+
+def sinkhorn(C: torch.Tensor, config: Config) -> torch.Tensor:
+    scale = cugal.sinkhorn.scale_kernel_matrix_log if config.sinkhorn_method == SinkhornMethod.LOG else cugal.sinkhorn.scale_kernel_matrix
+    return scale(*cugal.sinkhorn.sinkhorn(C, config))
 
 
 def random_matrix(size: int) -> torch.Tensor:

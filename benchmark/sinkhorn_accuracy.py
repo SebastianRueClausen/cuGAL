@@ -32,7 +32,8 @@ def mean_difference(a, b: np.ndarray) -> float:
 
 
 def test(matrix: np.ndarray, config: Config) -> np.ndarray:
-    return sinkhorn.sinkhorn(config.convert_tensor(torch.from_numpy(matrix)), config).numpy()
+    scale = sinkhorn.scale_kernel_matrix_log if config.sinkhorn_method == SinkhornMethod.LOG else sinkhorn.scale_kernel_matrix
+    return scale(*sinkhorn.sinkhorn(config.convert_tensor(torch.from_numpy(matrix)), config)).numpy()
 
 
 def test_accuracy():

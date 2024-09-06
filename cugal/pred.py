@@ -8,7 +8,7 @@ from functools import partial
 
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
-from cugal.config import Config, HungarianMethod
+from cugal.config import Config, HungarianMethod, SinkhornMethod
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import Features
 
@@ -67,6 +67,20 @@ def sparse_gradient(
     return gradient
 
 
+def update_quasi_permutation(
+        P: torch.Tensor, K: torch.Tensor, u: torch.Tensor, v: torch.Tensor, alpha: float, sinkhorn_method: SinkhornMethod,
+) -> torch.Tensor:
+    scale = sinkhorn.scale_kernel_matrix_log if \
+        sinkhorn_method == SinkhornMethod.LOG else sinkhorn.scale_kernel_matrix
+    q = scale(K, u, v)
+    q -= P
+    q *= alpha
+    diff = q
+    del q
+    P += diff
+    return diff
+
+
 def find_quasi_permutation_matrix(
     A, B: nx.Graph | Adjacency,
     features: torch.Tensor | Features,
@@ -107,26 +121,27 @@ def find_quasi_permutation_matrix(
 
             start_time = TimeStamp(config.device)
             sinkhorn_profile = SinkhornProfile()
-
-            q = sinkhorn.sinkhorn(
+            K, u, v = sinkhorn.sinkhorn(
                 gradient, config, sinkhorn_profile, sinkhorn_cache)
-
             profile.sinkhorn_profiles.append(sinkhorn_profile)
             profile.log_time(start_time, Phase.SINKHORN)
 
-            # TODO: Do this in a single kernel together with finding the scaled gradient.
             alpha = 2.0 / float(2.0 + it)
-            q -= P
-            q *= alpha
-            diff = q
-            del q
-            P += diff
+            if has_cuda and 'cuda' in config.device:
+                is_log = config.sinkhorn_method == SinkhornMethod.LOG
+                cuda_kernels.update_quasi_permutation(
+                    P, K, u, v, alpha, is_log)
+            else:
+                diff = update_quasi_permutation(
+                    P, K, u, v, alpha, config.sinkhorn_method)
 
-            if not config.frank_wolfe_threshold is None:
+            if not config.frank_wolfe_threshold is None and 'diff' in locals():
                 if diff.max() < config.frank_wolfe_threshold:
                     del diff
                     break
-            del diff
+
+            if 'diff' in locals():
+                del diff
 
     return P
 
