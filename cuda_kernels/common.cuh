@@ -6,7 +6,13 @@
 template <typename scalar_t, size_t dims>
 using Accessor = torch::PackedTensorAccessor32<scalar_t, dims>;
 
-constexpr int div_ceil(int x, int y) {
+inline Accessor<float, 1> flatten_accessor(Accessor<float, 2> accessor) {
+    const long size = accessor.size(0) * accessor.size(1);
+    const long stride = 1;
+    return Accessor<float, 1>(accessor.data(), &size, &stride);
+}
+
+inline constexpr int div_ceil(int x, int y) {
     return (x + y - 1) / y;
 }
 

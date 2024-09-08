@@ -174,7 +174,6 @@ def loghorn(
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     start_time = TimeStamp(config.device)
 
-    # TODO: Do this in kernel each iteration instead, or stream.
     K = - C / config.sinkhorn_regularization
 
     use_cuda = can_use_cuda(config)
@@ -199,14 +198,6 @@ def loghorn(
         if iteration % config.sinkhorn_eval_freq == 0 and iteration != 0:
             if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
-
-    # TODO: Do this in a singel kernel together with updating P.
-    """
-    K += u[:, None]
-    K += v[None, :]
-    torch.exp(K, out=K)
-    output = K
-    """
 
     start.update(K, u)
 
@@ -243,10 +234,6 @@ def mixhorn(
 
         if relative_difference(u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
             break
-
-    # K *= v.reshape(1, -1)
-    # K *= u.reshape(-1, 1)
-    # output = K
 
     start.update(K, u)
 

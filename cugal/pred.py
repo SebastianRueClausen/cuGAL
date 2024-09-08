@@ -38,7 +38,6 @@ def dense_gradient(
     iteration: int,
 ) -> torch.Tensor:
     gradient = -A.T @ P @ B - A @ P @ B.T
-    print(gradient)
     return add_feature_distance(gradient, features) + iteration*(1 - 2*P)
 
 
