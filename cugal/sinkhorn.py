@@ -207,6 +207,41 @@ def loghorn(
     return K, u, v
 
 
+def loghorn_stream(
+    C: torch.Tensor,
+    config: Config,
+    profile=SinkhornProfile(),
+    start: SinkhornInit = FixedInit(),
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    start_time = TimeStamp(config.device)
+    assert 'cpu' in str(C.device)
+
+    K = - C / config.sinkhorn_regularization
+
+    K_transpose = K.t().contiguous()
+
+    u = start.get_u(K, config)
+    v = torch.zeros(K.shape[1], device=config.device, dtype=config.dtype)
+
+    for iteration in range(config.sinkhorn_iterations):
+        prev_v = torch.clone(v)
+        prev_u = torch.clone(u)
+
+        cuda_kernels.sinkhorn_log_step_stream(K_transpose, u, v, 256)
+        cuda_kernels.sinkhorn_log_step_stream(K, v, u, 256)
+
+        if iteration % config.sinkhorn_eval_freq == 0 and iteration != 0:
+            if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
+                break
+
+    start.update(K, u)
+
+    profile.iteration_count = iteration + 1
+    profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
+
+    return K, u, v
+
+
 def mixhorn(
     C: torch.Tensor,
     config: Config,

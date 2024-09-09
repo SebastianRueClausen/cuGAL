@@ -45,11 +45,10 @@ void sinkhorn_log_step(torch::Tensor K, torch::Tensor add, torch::Tensor out) {
 }
 
 void sinkhorn_log_step_stream(
-    torch::Tensor K, torch::Tensor add, torch::Tensor out
+    torch::Tensor K, torch::Tensor add, torch::Tensor out, long rows_per_block
 ) {
-    const long rows_per_block = 32;
     const long input_sizes[2] = {rows_per_block, K.size(1)};
-    const long output_sizes[2] = {rows_per_block, 1};
+    const long output_sizes[2] = {1, 1};
     auto blocks = create_max_possible_blocks(
         input_sizes, output_sizes, div_ceil(K.size(0), rows_per_block)
     );
@@ -61,11 +60,11 @@ void sinkhorn_log_step_stream(
         block->upload(
             K.data_ptr<float>() + rows_uploaded * K.size(1), row_amount
         );
+        const auto out_accessor = out.slice(0, rows_uploaded);
         kernel<<<row_amount, 32 * 12, 0, block->stream>>>(
             block->input, add.packed_accessor32<float, 1>(),
-            flatten_accessor(block->output), K.size(1)
+            out_accessor.packed_accessor32<float, 1>(), K.size(1)
         );
-        block->download(out.data_ptr<float>() + rows_uploaded, row_amount);
     }
     cudaDeviceSynchronize();
     for (auto block : blocks)

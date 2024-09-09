@@ -100,13 +100,9 @@ class TestSinkhorn(unittest.TestCase):
     def test_ĺog_stream(self):
         n = 128
         K = torch.randn((n, n), device='cuda')
-
         add = torch.randn(n, device='cuda')
-
-        out_gpu = torch.zeros(n, device='cuda')
-        out_cpu = torch.zeros(n, device='cpu')
-
-        cuda_kernels.sinkhorn_log_step(K, add, out_gpu)
-        cuda_kernels.sinkhorn_log_step_stream(K.cpu(), add, out_cpu)
-
-        assert torch.allclose(out_gpu.cpu(), out_cpu)
+        out = torch.zeros(n, device='cuda')
+        out_stream = torch.zeros(n, device='cuda')
+        cuda_kernels.sinkhorn_log_step(K, add, out)
+        cuda_kernels.sinkhorn_log_step_stream(K.cpu(), add, out_stream, n // 4)
+        assert torch.allclose(out, out_stream)
