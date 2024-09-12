@@ -8,7 +8,7 @@ from functools import partial
 
 from cugal.adjacency import Adjacency
 from cugal import sinkhorn
-from cugal.config import Config, HungarianMethod
+from cugal.config import Config, HungarianMethod, SinkhornMethod
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import Features
 
@@ -23,6 +23,7 @@ except ImportError:
 
 def add_feature_distance(gradient: torch.Tensor, features: torch.Tensor | Features) -> torch.Tensor:
     if type(features) is Features:
+        # TODO: Stream.
         gradient = features.add_distance(gradient)
     else:
         gradient += features
@@ -49,20 +50,34 @@ def sparse_gradient(
     iteration: int,
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
+        # TODO: Stream.
         gradient = B.mul(A.mul(P).T).T
+        # TODO: Stream.
         gradient *= -2
     else:
         gradient = B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
             - B.mul(A.mul(P).T).T
-
+    # TODO: Combine regularize and add_feature_distance into single kernel.
     gradient = add_feature_distance(gradient, features)
-
     if has_cuda and 'cuda' in str(P.device):
         cuda_kernels.regularize(gradient, P, iteration)
     else:
         gradient += iteration - iteration * 2 * P
-
     return gradient
+
+
+def update_quasi_permutation(
+        P: torch.Tensor, K: torch.Tensor, u: torch.Tensor, v: torch.Tensor, alpha: float, sinkhorn_method: SinkhornMethod,
+) -> torch.Tensor:
+    scale = sinkhorn.scale_kernel_matrix_log if \
+        sinkhorn_method == SinkhornMethod.LOG else sinkhorn.scale_kernel_matrix
+    q = scale(K, u, v)
+    q -= P
+    q *= alpha
+    diff = q
+    del q
+    P += diff
+    return diff
 
 
 def find_quasi_permutation_matrix(
@@ -76,7 +91,6 @@ def find_quasi_permutation_matrix(
             assert not nx.is_directed(
                 A), "graph must be undirected to use sparse adjacency (for now)"
             A = Adjacency.from_graph(A, config.device)
-
         if not type(B) is Adjacency:
             assert not nx.is_directed(
                 B), "graph must be undirected to use sparse adjacency (for now)"
@@ -106,26 +120,27 @@ def find_quasi_permutation_matrix(
 
             start_time = TimeStamp(config.device)
             sinkhorn_profile = SinkhornProfile()
-
-            q = sinkhorn.sinkhorn(
+            K, u, v = sinkhorn.sinkhorn(
                 gradient, config, sinkhorn_profile, sinkhorn_cache)
-
             profile.sinkhorn_profiles.append(sinkhorn_profile)
             profile.log_time(start_time, Phase.SINKHORN)
 
             alpha = 2.0 / float(2.0 + it)
-            q -= P
-            q *= alpha
-            diff = q
-            del q
+            if has_cuda and 'cuda' in config.device:
+                is_log = config.sinkhorn_method == SinkhornMethod.LOG
+                cuda_kernels.update_quasi_permutation(
+                    P, K, u, v, alpha, is_log)
+            else:
+                diff = update_quasi_permutation(
+                    P, K, u, v, alpha, config.sinkhorn_method)
 
-            P += diff
-
-            if not config.frank_wolfe_threshold is None:
+            if not config.frank_wolfe_threshold is None and 'diff' in locals():
                 if diff.max() < config.frank_wolfe_threshold:
                     del diff
                     break
-            del diff
+
+            if 'diff' in locals():
+                del diff
 
     return P
 

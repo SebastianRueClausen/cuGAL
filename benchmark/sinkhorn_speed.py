@@ -9,21 +9,26 @@ from cugal.profile import SinkhornProfile
 
 
 def benchmark_random_matrices(matrix_sizes: list[int]):
+    cpu_config = Config(
+        device='cpu', dtype=torch.float64, sinkhorn_iterations=200,
+        sinkhorn_threshold=0, sinkhorn_method=SinkhornMethod.STANDARD,
+    )
     gpu_config = Config(
-        device="cuda", dtype=torch.float32, sinkhorn_iterations=200,
+        device='cuda', dtype=torch.float32, sinkhorn_iterations=200,
         sinkhorn_threshold=0, sinkhorn_method=SinkhornMethod.LOG,
     )
     gpu_mix_config = Config(
-        device="cuda", dtype=torch.float32, sinkhorn_iterations=200,
+        device='cuda', dtype=torch.float32, sinkhorn_iterations=200,
         sinkhorn_threshold=0, sinkhorn_method=SinkhornMethod.MIX,
     )
 
-    log_profiles, mix_profiles = [], []
+    log_profiles, mix_profiles, stream_profiles, cpu_profiles = [], [], [], []
 
     for matrix_size in matrix_sizes:
-        matrix = torch.randn((matrix_size, matrix_size)) * 4.0
-
-        gpu_matrix = gpu_config.convert_tensor(matrix)
+        cpu_matrix = torch.randn(
+            (matrix_size, matrix_size), dtype=torch.float64) * 4.0
+        cpu_32bit_matrix = cpu_matrix.to(dtype=torch.float32)
+        gpu_matrix = gpu_config.convert_tensor(cpu_matrix)
 
         profile = SinkhornProfile()
         sinkhorn.mixhorn(gpu_matrix, gpu_mix_config, profile)
@@ -33,9 +38,19 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
         sinkhorn.loghorn(gpu_matrix, gpu_config, profile)
         log_profiles.append(profile)
 
+        profile = SinkhornProfile()
+        sinkhorn.loghorn_stream(cpu_32bit_matrix, gpu_config, profile)
+        stream_profiles.append(profile)
+
+        profile = SinkhornProfile()
+        sinkhorn.sinkhorn_knopp(cpu_matrix, cpu_config, profile)
+        cpu_profiles.append(profile)
+
     plots = [
         (mix_profiles, 'mix float32'),
         (log_profiles, 'log float32'),
+        (stream_profiles, 'log stream float32'),
+        (cpu_profiles, 'cpu float64'),
     ]
 
     plt.figure()
@@ -60,4 +75,4 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
 
 
 if __name__ == "__main__":
-    benchmark_random_matrices([2500, 5000, 10000, 15000])
+    benchmark_random_matrices([2500, 5000, 10000])

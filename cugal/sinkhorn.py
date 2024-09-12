@@ -113,7 +113,7 @@ def sinkhorn(
     config: Config,
     profile=SinkhornProfile(),
     start: SinkhornInit = FixedInit(),
-) -> torch.Tensor:
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     match config.sinkhorn_method:
         case SinkhornMethod.STANDARD:
             return sinkhorn_knopp(C, config, profile, start)
@@ -123,12 +123,25 @@ def sinkhorn(
             return mixhorn(C, config, profile, start)
 
 
+def scale_kernel_matrix(K: torch.Tensor, u: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
+    K *= v.reshape(1, -1)
+    K *= u.reshape(-1, 1)
+    return K
+
+
+def scale_kernel_matrix_log(K: torch.Tensor, log_u: torch.Tensor, log_v: torch.Tensor) -> torch.Tensor:
+    K += log_u[:, None]
+    K += log_v[None, :]
+    torch.exp(K, out=K)
+    return K
+
+
 def sinkhorn_knopp(
     C: torch.Tensor,
     config: Config,
     profile=SinkhornProfile(),
     start: SinkhornInit = FixedInit(),
-) -> torch.Tensor:
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     start_time = TimeStamp(config.device)
 
     K = torch.exp(C / -config.sinkhorn_regularization)
@@ -145,13 +158,12 @@ def sinkhorn_knopp(
             if relative_difference(u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
 
-    output = u.reshape(-1, 1) * K * v.reshape(1, -1)
     start.update(K, u)
 
     profile.iteration_count = iteration + 1
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
 
-    return output
+    return K, u, v
 
 
 def loghorn(
@@ -159,7 +171,7 @@ def loghorn(
     config: Config,
     profile=SinkhornProfile(),
     start: SinkhornInit = FixedInit(),
-) -> torch.Tensor:
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     start_time = TimeStamp(config.device)
 
     K = - C / config.sinkhorn_regularization
@@ -176,6 +188,7 @@ def loghorn(
         prev_u = torch.clone(u)
 
         if use_cuda:
+            # TODO: Stream.
             cuda_kernels.sinkhorn_log_step(K_transpose, u, v)
             cuda_kernels.sinkhorn_log_step(K, v, u)
         else:
@@ -186,17 +199,47 @@ def loghorn(
             if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
 
-    K += u[:, None]
-    K += v[None, :]
-    torch.exp(K, out=K)
-    output = K
+    start.update(K, u)
+
+    profile.iteration_count = iteration + 1
+    profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
+
+    return K, u, v
+
+
+def loghorn_stream(
+    C: torch.Tensor,
+    config: Config,
+    profile=SinkhornProfile(),
+    start: SinkhornInit = FixedInit(),
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    start_time = TimeStamp(config.device)
+    assert 'cpu' in str(C.device)
+
+    K = - C / config.sinkhorn_regularization
+
+    K_transpose = K.t().contiguous()
+
+    u = start.get_u(K, config)
+    v = torch.zeros(K.shape[1], device=config.device, dtype=config.dtype)
+
+    for iteration in range(config.sinkhorn_iterations):
+        prev_v = torch.clone(v)
+        prev_u = torch.clone(u)
+
+        cuda_kernels.sinkhorn_log_step_stream(K_transpose, u, v, 256)
+        cuda_kernels.sinkhorn_log_step_stream(K, v, u, 256)
+
+        if iteration % config.sinkhorn_eval_freq == 0 and iteration != 0:
+            if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
+                break
 
     start.update(K, u)
 
     profile.iteration_count = iteration + 1
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
 
-    return output
+    return K, u, v
 
 
 def mixhorn(
@@ -204,7 +247,7 @@ def mixhorn(
     config: Config,
     profile=SinkhornProfile(),
     start: SinkhornInit = FixedInit(),
-) -> torch.Tensor:
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     n, _ = C.shape
 
     start_time = TimeStamp(config.device)
@@ -227,13 +270,9 @@ def mixhorn(
         if relative_difference(u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
             break
 
-    K *= v.reshape(1, -1)
-    K *= u.reshape(-1, 1)
-    output = K
-
     start.update(K, u)
 
     profile.iteration_count = iteration + 1
     profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
 
-    return output
+    return K, u, v
