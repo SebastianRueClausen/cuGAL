@@ -15,6 +15,7 @@ import gzip
 import datetime
 from fugal.pred import fugal
 import json
+import matplotlib.pyplot as plt
 
 
 @dataclass
@@ -152,6 +153,7 @@ class GraphKind(Enum):
     CA_HEP = "CA_HEP"
     NEWMAN_WATTS = "NEWMAN_WATTS"
     LOBSTER = "LOBSTER"
+    YEAST = "YEAST"
 
 
 @dataclass
@@ -171,6 +173,7 @@ class Graph:
                 return nx.newman_watts_strogatz_graph(**self.parameters, seed=generator), None
             case GraphKind.LOBSTER:
                 return nx.random_lobster(**self.parameters, seed=generator), None
+            case Graph
 
     def to_dict(self) -> dict:
         return {'kind': self.kind.value, 'parameters': self.parameters}
@@ -295,6 +298,9 @@ class Experiment:
                 noise_results = []
                 source, target, source_mapping, _ = generate_graph(
                     source_graph, target_graph, generator, noise_level)
+                    #save svg of graph
+                nx.draw(source, with_labels=False, node_size=2)
+                plt.savefig("source_graph.svg")
                 for algorithm in self.algorithms:
                     profile = Profile()
                     if algorithm.use_fugal:
