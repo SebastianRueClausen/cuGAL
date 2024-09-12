@@ -144,6 +144,11 @@ class Algorithm:
 
 
 def create_graph_from_str(file: str) -> nx.Graph:
+    """
+    Creates a graph from a string. 
+    The string should be in the format of the SNAP dataset. 
+    I.e. each line should contain two integers separated by a space.
+    """
     edges = [tuple(map(int, line.split()))
              for line in file.split("\n") if not line.startswith('#')]
     return nx.from_edgelist([edge for edge in edges if len(edge) == 2])
@@ -174,10 +179,12 @@ class Graph:
             case GraphKind.LOBSTER:
                 return nx.random_lobster(**self.parameters, seed=generator), None
             case GraphKind.PREDEFINED_GRAPHS:
+                # Load graphs from provided files
                 graph_file_1 = open(self.parameters['source_file'], 'r')
                 graph_file_2 = open(self.parameters['target_file'], 'r')
                 file_content_1 = graph_file_1.read()
                 file_content_2 = graph_file_2.read()
+
                 return create_graph_from_str(file_content_1), \
                     create_graph_from_str(file_content_2)
 
