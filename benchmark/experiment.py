@@ -64,7 +64,7 @@ class GeneratedGraph:
     target_mapping: np.array
 
 
-def generate_graphs(
+def add_synthetic_noise(
     graph: nx.Graph, generator: np.random.Generator, noise_level: NoiseLevel,
 ) -> GeneratedGraph:
     source_edges = np.array(graph.edges)
@@ -83,7 +83,14 @@ def generate_graphs(
     assert np.all(target_permutation[source_mapping] == source_permutation)
     assert np.all(source_permutation[target_mapping] == target_permutation)
 
+    print("source_permutation", source_permutation)
+    print("target_permutation", target_permutation)
+    print("source_mapping", source_mapping)
+    print("target_mapping", target_mapping)
+
+    print("source_edges\n", source_edges)
     target_edges = source_mapping[source_edges]
+    print("target_edges", target_edges)
     
     source_edges = remove_edges(
         source_edges, noise_level.source_noise, generator)
@@ -207,7 +214,7 @@ def generate_graph(
     noise_level: NoiseLevel,
 ) -> tuple[nx.Graph, nx.Graph | None, np.array, np.array]:
     if target is None:
-        generated_graph = generate_graphs(source, generator, noise_level)
+        generated_graph = add_synthetic_noise(source, generator, noise_level)
         source = nx.from_edgelist(generated_graph.source_edges)
         target = nx.from_edgelist(generated_graph.target_edges)
         return source, target, generated_graph.source_mapping,  generated_graph.target_mapping
@@ -221,11 +228,24 @@ def generate_graph(
         dimension = max(np.amax(source_edges), np.amax(target_edges)) + 1
         edge_count = max(source_edges.shape[0], target_edges.shape[0])
 
+        #Source permutation is the identity permutation
         source_permutation = np.arange(dimension)
+        #Target permutation is a random permutation
         target_permutation = np.arange(dimension)
 
+        #
         source_mapping = source_permutation[target_permutation.argsort()]
         target_mapping = target_permutation[source_permutation.argsort()]
+
+        #print("source_permutation", source_permutation)
+        #print("target_permutation", target_permutation)
+        #print("source_mapping", source_mapping)
+        #print("target_mapping", target_mapping)
+
+        #print("source_edges\n", source_edges)
+        #print("target_edges\n", target_edges)
+        ##target_edges = source_mapping[target_edges]
+        #print("target_edges\n", target_edges)
 
         # This describes the relation between mapping and permutation.
         assert np.all(target_permutation[source_mapping] == source_permutation)
@@ -297,11 +317,12 @@ def get_last_commit() -> str:
 
 @dataclass
 class Experiment:
-    debug: bool = False
     algorithms: list[Algorithm]
     graphs: list[Graph]
     noise_levels: list[NoiseLevel]
+    debug: bool = False
     seed: int | None = None
+    save_alignment: bool = False
 
     def to_dict(self) -> dict:
         dict = dataclasses.asdict(self)
@@ -363,6 +384,11 @@ class Experiment:
                         np.array([x for _, x in answer]),
                         source_mapping,
                     ))
+
+                    if self.save_alignment:
+                        with open(str(datetime.datetime.now()) + ".txt", "w") as f:
+                            f.write("\n".join(
+                                f"{x} {y}" for x, y in answer))
                 graph_results.append(noise_results)
             results.append(graph_results)
         return ExperimentResults.from_results(self, results)

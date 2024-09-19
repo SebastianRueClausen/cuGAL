@@ -116,6 +116,8 @@ def find_quasi_permutation_matrix(
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
             gradient = gradient_function(P, features, λ)
+            #Save gradient to file for debugging. Add the iteration number to the filename.
+            np.savetxt("gradient" + str(λ) + ".csv", gradient.cpu().numpy(), delimiter=",")
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
@@ -133,6 +135,10 @@ def find_quasi_permutation_matrix(
             else:
                 diff = update_quasi_permutation(
                     P, K, u, v, alpha, config.sinkhorn_method)
+            
+            mask = abs(P) < 1e-4
+            print("Sparsity: " + str(mask.sum().div(mask.numel()).item()) + "\n")
+            P[mask] = 0
 
             if not config.frank_wolfe_threshold is None and 'diff' in locals():
                 if diff.max() < config.frank_wolfe_threshold:
@@ -141,6 +147,8 @@ def find_quasi_permutation_matrix(
 
             if 'diff' in locals():
                 del diff
+        #Save P to file for debugging. Add the iteration number to the filename.
+        np.savetxt("cuP" + str(λ) + ".csv", P.cpu().numpy(), delimiter=",")
 
     return P
 
