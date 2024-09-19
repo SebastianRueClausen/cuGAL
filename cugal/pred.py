@@ -2,6 +2,8 @@ import networkx as nx
 import numpy as np
 import scipy
 import scipy.optimize
+import scipy.sparse
+import scipy.sparse.csgraph
 import torch
 from tqdm.auto import tqdm
 from functools import partial
@@ -154,6 +156,15 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
             return column_indices
         case HungarianMethod.GREEDY | HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.PARALLEL_GREEDY:
             column_indices = greedy_lap(quasi_permutation, config)
+        case HungarianMethod.SPARSE:
+            sparse = quasi_permutation.to_sparse_csr().cpu()
+            sparse = scipy.sparse.csr_matrix((
+                sparse.values().numpy(),
+                sparse.col_indices().numpy(),
+                sparse.crow_indices().numpy(),
+            ))
+            _, column_indices = scipy.sparse.csgraph.min_weight_full_bipartite_matching(
+                sparse, maximize=True)
     profile.log_time(start_time, Phase.HUNGARIAN)
     return column_indices
 

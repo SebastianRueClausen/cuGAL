@@ -297,10 +297,10 @@ def get_last_commit() -> str:
 
 @dataclass
 class Experiment:
-    debug: bool = False
     algorithms: list[Algorithm]
     graphs: list[Graph]
     noise_levels: list[NoiseLevel]
+    debug: bool = False
     seed: int | None = None
 
     def to_dict(self) -> dict:
