@@ -15,6 +15,7 @@ import gzip
 import datetime
 from fugal.pred import fugal
 import json
+import matplotlib.pyplot as plt
 
 
 @dataclass
@@ -63,7 +64,7 @@ class GeneratedGraph:
     target_mapping: np.array
 
 
-def generate_graphs(
+def add_synthetic_noise(
     graph: nx.Graph, generator: np.random.Generator, noise_level: NoiseLevel,
 ) -> GeneratedGraph:
     source_edges = np.array(graph.edges)
@@ -143,6 +144,11 @@ class Algorithm:
 
 
 def create_graph_from_str(file: str) -> nx.Graph:
+    """
+    Creates a graph from a string.
+    The string should be in the format of the SNAP dataset.
+    I.e. each line should contain two integers separated by a space.
+    """
     edges = [tuple(map(int, line.split()))
              for line in file.split("\n") if not line.startswith('#')]
     return nx.from_edgelist([edge for edge in edges if len(edge) == 2])
@@ -152,6 +158,7 @@ class GraphKind(Enum):
     CA_HEP = "CA_HEP"
     NEWMAN_WATTS = "NEWMAN_WATTS"
     LOBSTER = "LOBSTER"
+    PREDEFINED_GRAPHS = "PREDEFINED_GRAPHS"
 
 
 @dataclass
@@ -171,6 +178,15 @@ class Graph:
                 return nx.newman_watts_strogatz_graph(**self.parameters, seed=generator), None
             case GraphKind.LOBSTER:
                 return nx.random_lobster(**self.parameters, seed=generator), None
+            case GraphKind.PREDEFINED_GRAPHS:
+                # Load graphs from provided files
+                graph_file_1 = open(self.parameters['source_file'], 'r')
+                graph_file_2 = open(self.parameters['target_file'], 'r')
+                file_content_1 = graph_file_1.read()
+                file_content_2 = graph_file_2.read()
+
+                return create_graph_from_str(file_content_1), \
+                    create_graph_from_str(file_content_2)
 
     def to_dict(self) -> dict:
         return {'kind': self.kind.value, 'parameters': self.parameters}
@@ -191,14 +207,36 @@ def generate_graph(
     noise_level: NoiseLevel,
 ) -> tuple[nx.Graph, nx.Graph | None, np.array, np.array]:
     if target is None:
-        generated_graph = generate_graphs(source, generator, noise_level)
+        generated_graph = add_synthetic_noise(source, generator, noise_level)
         source = nx.from_edgelist(generated_graph.source_edges)
         target = nx.from_edgelist(generated_graph.target_edges)
         return source, target, generated_graph.source_mapping,  generated_graph.target_mapping
     else:
-        # FIXME
-        mapping = np.arange(source.number_of_nodes())
-    return source, target, mapping
+        source_edges = np.array(source.edges)
+        if (np.amin(source_edges) != 0):
+            source_edges = source_edges - np.amin(source_edges)
+        target_edges = np.array(target.edges)
+        if (np.amin(target_edges) != 0):
+            target_edges = target_edges - np.amin(target_edges)
+        dimension = max(np.amax(source_edges), np.amax(target_edges)) + 1
+
+        source_permutation = np.arange(dimension)
+        target_permutation = np.arange(dimension)
+
+        source_mapping = source_permutation[target_permutation.argsort()]
+        target_mapping = target_permutation[source_permutation.argsort()]
+
+        # This describes the relation between mapping and permutation.
+        assert np.all(target_permutation[source_mapping] == source_permutation)
+        assert np.all(source_permutation[target_mapping] == target_permutation)
+
+        generate_graph = GeneratedGraph(
+            source_edges=source_edges,
+            target_edges=target_edges,
+            source_mapping=source_mapping,
+            target_mapping=target_mapping,
+        )
+        return source, target, generate_graph.source_mapping, generate_graph.target_mapping
 
 
 @dataclass
@@ -260,7 +298,9 @@ class Experiment:
     algorithms: list[Algorithm]
     graphs: list[Graph]
     noise_levels: list[NoiseLevel]
+    debug: bool = False
     seed: int | None = None
+    save_alignment: bool = False
 
     def to_dict(self) -> dict:
         dict = dataclasses.asdict(self)
@@ -286,15 +326,24 @@ class Experiment:
         assert len(self.algorithms) > 0, "no algorithms provided"
         assert len(self.noise_levels) > 0, "no noise levels provided"
         assert len(self.graphs) > 0, "no graphs provided"
+
+        # Make numpy random generator with seed
         generator = np.random.default_rng(seed=self.seed)
+
         results = []
+
+        # Run on each graph (Type Graph) provided for the experiment
         for graph in self.graphs:
+
             source_graph, target_graph = graph.get(generator)
             graph_results = []
             for noise_level in self.noise_levels:
                 noise_results = []
                 source, target, source_mapping, _ = generate_graph(
                     source_graph, target_graph, generator, noise_level)
+                # save svg of graph
+                nx.draw(source, with_labels=False, node_size=2)
+                plt.savefig("source_graph.svg")
                 for algorithm in self.algorithms:
                     profile = Profile()
                     if algorithm.use_fugal:
@@ -313,6 +362,11 @@ class Experiment:
                         np.array([x for _, x in answer]),
                         source_mapping,
                     ))
+
+                    if self.save_alignment:
+                        with open(str(datetime.datetime.now()) + ".txt", "w") as f:
+                            f.write("\n".join(
+                                f"{x} {y}" for x, y in answer))
                 graph_results.append(noise_results)
             results.append(graph_results)
         return ExperimentResults.from_results(self, results)

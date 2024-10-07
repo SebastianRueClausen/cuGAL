@@ -2,6 +2,8 @@ import networkx as nx
 import numpy as np
 import scipy
 import scipy.optimize
+import scipy.sparse
+import scipy.sparse.csgraph
 import torch
 from tqdm.auto import tqdm
 from functools import partial
@@ -23,7 +25,6 @@ except ImportError:
 
 def add_feature_distance(gradient: torch.Tensor, features: torch.Tensor | Features) -> torch.Tensor:
     if type(features) is Features:
-        # TODO: Stream.
         gradient = features.add_distance(gradient)
     else:
         gradient += features
@@ -50,9 +51,7 @@ def sparse_gradient(
     iteration: int,
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
-        # TODO: Stream.
         gradient = B.mul(A.mul(P).T).T
-        # TODO: Stream.
         gradient *= -2
     else:
         gradient = B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
@@ -116,6 +115,9 @@ def find_quasi_permutation_matrix(
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
             gradient = gradient_function(P, features, λ)
+
+            # Save gradient to file for debugging. Add the iteration number to the filename.
+            # np.savetxt("gradient" + str(λ) + ".csv", gradient.cpu().numpy(), delimiter=",")
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
@@ -134,6 +136,10 @@ def find_quasi_permutation_matrix(
                 diff = update_quasi_permutation(
                     P, K, u, v, alpha, config.sinkhorn_method)
 
+            # mask = abs(P) < 1e-4
+            # print("Sparsity: " + str(mask.sum().div(mask.numel()).item()) + "\n")
+            # P[mask] = 0
+
             if not config.frank_wolfe_threshold is None and 'diff' in locals():
                 if diff.max() < config.frank_wolfe_threshold:
                     del diff
@@ -141,6 +147,9 @@ def find_quasi_permutation_matrix(
 
             if 'diff' in locals():
                 del diff
+
+        # Save P to file for debugging. Add the iteration number to the filename.
+        # np.savetxt("cuP" + str(λ) + ".csv", P.cpu().numpy(), delimiter=",")
 
     return P
 
@@ -161,6 +170,15 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
             cuda_kernels.dense_hungarian(
                 quasi_permutation * -1.0, column_indices)
             column_indices = column_indices.cpu().numpy()
+        case HungarianMethod.SPARSE:
+            sparse = quasi_permutation.to_sparse_csr().cpu()
+            sparse = scipy.sparse.csr_matrix((
+                sparse.values().numpy(),
+                sparse.col_indices().numpy(),
+                sparse.crow_indices().numpy(),
+            ))
+            _, column_indices = scipy.sparse.csgraph.min_weight_full_bipartite_matching(
+                sparse, maximize=True)
     profile.log_time(start_time, Phase.HUNGARIAN)
     return column_indices
 

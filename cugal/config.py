@@ -48,6 +48,7 @@ class HungarianMethod(Enum):
     """BEST_GREEDY with parallel computation of the assignements above 0.5"""
 
     DENSE = "DENSE"
+    SPARSE = "SPARSE"
 
 
 @dataclass
