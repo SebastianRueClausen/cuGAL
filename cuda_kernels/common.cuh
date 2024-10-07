@@ -34,6 +34,15 @@ __device__ inline float warp_max_reduce(float max) {
     return max;
 }
 
+// Performs a max reduction within a single warp.
+__device__ inline float warp_min_reduce(float min) {
+#pragma unroll
+    for (auto offset = warpSize / 2; offset > 0; offset >>= 1) {
+        min = fminf(min, __shfl_xor_sync(__activemask(), min, offset));
+    }
+    return min;
+}
+
 // | w/l | 0 | 1 | 2 |
 // |-----|---|---|---|
 // | 0   | a | a | a |
@@ -76,4 +85,9 @@ __device__ inline float block_sum_reduce(float value) {
 // Performs a max reduction across multiple warps in a block.
 __device__ inline float block_max_reduce(float value) {
     return warp_max_reduce(warp_lane_swap<float>(warp_max_reduce(value), -INFINITY));
+}
+
+// Performs a min reduction across multiple warps in a block.
+__device__ inline float block_min_reduce(float value) {
+    return warp_min_reduce(warp_lane_swap<float>(warp_min_reduce(value), INFINITY));
 }

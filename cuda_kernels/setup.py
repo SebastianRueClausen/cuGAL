@@ -14,8 +14,9 @@ setup(
             'regularize.cu',
             "data_stream_test.cu",
             "update_quasi_permutation.cu",
+            "hungarian/hungarian.cu",
         ],
-        extra_compile_args={
+            extra_compile_args={
             'nvcc': ["--threads", "20", "-O3"],
         }),
     ],

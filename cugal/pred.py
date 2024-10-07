@@ -154,6 +154,13 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
             return column_indices
         case HungarianMethod.GREEDY | HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.PARALLEL_GREEDY:
             column_indices = greedy_lap(quasi_permutation, config)
+        case HungarianMethod.DENSE:
+            assert has_cuda, "doesn't have cuda"
+            column_indices = torch.empty(quasi_permutation.size(
+                0), device=config.device, dtype=torch.int32)
+            cuda_kernels.dense_hungarian(
+                quasi_permutation * -1.0, column_indices)
+            column_indices = column_indices.cpu().numpy()
     profile.log_time(start_time, Phase.HUNGARIAN)
     return column_indices
 
