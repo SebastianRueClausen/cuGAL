@@ -25,7 +25,6 @@ except ImportError:
 
 def add_feature_distance(gradient: torch.Tensor, features: torch.Tensor | Features) -> torch.Tensor:
     if type(features) is Features:
-        # TODO: Stream.
         gradient = features.add_distance(gradient)
     else:
         gradient += features
@@ -52,9 +51,7 @@ def sparse_gradient(
     iteration: int,
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
-        # TODO: Stream.
         gradient = B.mul(A.mul(P).T).T
-        # TODO: Stream.
         gradient *= -2
     else:
         gradient = B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
@@ -137,9 +134,10 @@ def find_quasi_permutation_matrix(
             else:
                 diff = update_quasi_permutation(
                     P, K, u, v, alpha, config.sinkhorn_method)
-            
-            mask = abs(P) < 1e-4
-            P[mask] = 0
+
+            # mask = abs(P) < 1e-4
+            # print("Sparsity: " + str(mask.sum().div(mask.numel()).item()) + "\n")
+            # P[mask] = 0
 
             if not config.frank_wolfe_threshold is None and 'diff' in locals():
                 if diff.max() < config.frank_wolfe_threshold:
@@ -163,6 +161,13 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
                 quasi_permutation.cpu(), maximize=True)
         case HungarianMethod.GREEDY | HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.PARALLEL_GREEDY:
             column_indices = greedy_lap(quasi_permutation, config)
+        case HungarianMethod.DENSE:
+            assert has_cuda, "doesn't have cuda"
+            column_indices = torch.empty(quasi_permutation.size(
+                0), device=config.device, dtype=torch.int32)
+            cuda_kernels.dense_hungarian(
+                quasi_permutation * -1.0, column_indices)
+            column_indices = column_indices.cpu().numpy()
         case HungarianMethod.SPARSE:
             sparse = quasi_permutation.to_sparse_csr().cpu()
             sparse = scipy.sparse.csr_matrix((

@@ -151,8 +151,8 @@ class Algorithm:
 
 def create_graph_from_str(file: str) -> nx.Graph:
     """
-    Creates a graph from a string. 
-    The string should be in the format of the SNAP dataset. 
+    Creates a graph from a string.
+    The string should be in the format of the SNAP dataset.
     I.e. each line should contain two integers separated by a space.
     """
     edges = [tuple(map(int, line.split()))
@@ -321,8 +321,8 @@ class Experiment:
         assert len(self.algorithms) > 0, "no algorithms provided"
         assert len(self.noise_levels) > 0, "no noise levels provided"
         assert len(self.graphs) > 0, "no graphs provided"
-        
-        #Make numpy random generator with seed
+
+        # Make numpy random generator with seed
         generator = np.random.default_rng(seed=self.seed)
 
         results = []

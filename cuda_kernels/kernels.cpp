@@ -29,6 +29,9 @@ void data_stream_test(torch::Tensor);
 // update_quasi_permutation.cu
 void update_quasi_permutation(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, float, bool);
 
+// hungarian.cu
+void dense_hungarian(torch::Tensor, torch::Tensor);
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     // adjacency.cu
     m.def(
@@ -67,4 +70,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
 
     // update_quasi_permutation.cu
     m.def("update_quasi_permutation", &update_quasi_permutation, "update quasi permutation matrix");
+
+    // hungarian.cu
+    m.def("dense_hungarian", &dense_hungarian, "run dense hungarian");
 }
