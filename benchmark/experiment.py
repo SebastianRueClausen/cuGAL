@@ -225,10 +225,10 @@ def generate_graph(
         if (np.amin(target_edges) != 0):
             target_edges = target_edges - np.amin(target_edges)
         target_edges, source_mapping, target_mapping = permute_edges(target_edges, np.amax(target_edges) + 1)
-        np.savetxt("source_edges.txt", source_edges, fmt='%d')
-        np.savetxt("target_edges.txt", target_edges, fmt='%d')
-        np.savetxt("source_mapping.txt", source_mapping, fmt='%d')
-        np.savetxt("target_mapping.txt", target_mapping, fmt='%d')
+        #np.savetxt("source_edges.txt", source_edges, fmt='%d')
+        #np.savetxt("target_edges.txt", target_edges, fmt='%d')
+        #np.savetxt("source_mapping.txt", source_mapping, fmt='%d')
+        #np.savetxt("target_mapping.txt", target_mapping, fmt='%d')
         source = nx.from_edgelist(source_edges)
         target = nx.from_edgelist(target_edges)
         return source, target, source_mapping, target_mapping
@@ -339,8 +339,8 @@ class Experiment:
                 #save svg of graph
                 #nx.draw(source, with_labels=False, node_size=2)
                 #plt.savefig("source_graph.svg")
-                np.savetxt("source_graph.txt", source)
-                np.savetxt("target_graph.txt", target)
+                #np.savetxt("source_graph.txt", source)
+                #np.savetxt("target_graph.txt", target)
                 for algorithm in self.algorithms:
                     profile = Profile()
                     if algorithm.use_fugal:

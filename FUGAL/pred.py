@@ -167,8 +167,8 @@ def convertToPermHungarian(M, n1, n2):
         if (row_ind[i] >= n1) or (col_ind[i] >= n2):
             continue
         ans.append((row_ind[i], col_ind[i]))
-    np.savetxt("P.txt", P, fmt='%d')
-    np.savetxt("ans.txt", ans, fmt='%d')
+    #np.savetxt("P.txt", P, fmt='%d')
+    #np.savetxt("ans.txt", ans, fmt='%d')
     return P, ans
 
 def convertToPermGreedy(M, n1, n2):

@@ -149,7 +149,7 @@ def find_quasi_permutation_matrix(
         #Save P to file for debugging. Add the iteration number to the filename.
         #np.savetxt("cuP" + str(λ) + ".csv", P.cpu().numpy(), delimiter=",")
 
-    print("Sparsity: " + str(mask.sum().div(mask.numel()).item()) + "\n")
+    #print("Sparsity: " + str(mask.sum().div(mask.numel()).item()) + "\n")
     return P
 
 
@@ -201,8 +201,8 @@ def convert_to_permutation_matrix(
         permutation[i][col_ind[i]] = 1
         mapping.append((i, col_ind[i]))
 
-    np.savetxt("cuP.txt", permutation)
-    np.savetxt("mapping.txt", mapping)
+    #np.savetxt("cuP.txt", permutation)
+    #np.savetxt("mapping.txt", mapping)
     return permutation, mapping
 
 
