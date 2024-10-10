@@ -4,7 +4,7 @@ setup(
     name="cugal",
     version="0.0.0",
     description="cuGAL graph alignment",
-    packages=["cugal", "fugal"],
+    packages=["cugal", "fugal", "FUGAL"],
     author="Sebastian Rue Clausen, Andreas H. H. Hansen",
     python_requires=">=3.10",
 )

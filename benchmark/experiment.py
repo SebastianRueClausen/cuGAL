@@ -16,6 +16,10 @@ import datetime
 from fugal.pred import fugal
 import json
 import matplotlib.pyplot as plt
+import scipy.sparse as sps
+import sys
+sys.path.append("~/bachelor")
+import FUGAL.Fugal as Fugal
 
 
 @dataclass
@@ -63,6 +67,14 @@ class GeneratedGraph:
     source_mapping: np.array
     target_mapping: np.array
 
+def permute_edges(edges: np.array, dimension: int) -> tuple[np.array, np.array, np.array]:
+    source_permutation = np.arange(dimension)
+    target_permutation = np.random.RandomState(seed=0).permutation(dimension)
+    source_mapping = source_permutation[target_permutation.argsort()]
+    target_mapping = target_permutation[source_permutation.argsort()]
+    assert np.all(target_permutation[source_mapping] == source_permutation)
+    assert np.all(source_permutation[target_mapping] == target_permutation)
+    return source_mapping[edges], source_mapping, target_mapping
 
 def add_synthetic_noise(
     graph: nx.Graph, generator: np.random.Generator, noise_level: NoiseLevel,
@@ -71,37 +83,24 @@ def add_synthetic_noise(
     if (np.amin(source_edges) != 0):
         source_edges = source_edges - np.amin(source_edges)
     dimension = np.amax(source_edges) + 1
+
+    # Permute the edges of the source graph to create a target graph
+    target_edges, source_mapping, target_mapping = permute_edges(source_edges, dimension)
+
+    # Remove edges according to the noise level.
     edge_count = source_edges.shape[0]
-
-    source_permutation = np.arange(dimension)
-    target_permutation = generator.permutation(dimension)
-
-    source_mapping = source_permutation[target_permutation.argsort()]
-    target_mapping = target_permutation[source_permutation.argsort()]
-
-    # This describes the relation between mapping and permutation.
-    assert np.all(target_permutation[source_mapping] == source_permutation)
-    assert np.all(source_permutation[target_mapping] == target_permutation)
-
-    print("source_permutation", source_permutation)
-    print("target_permutation", target_permutation)
-    print("source_mapping", source_mapping)
-    print("target_mapping", target_mapping)
-
-    print("source_edges\n", source_edges)
-    target_edges = source_mapping[source_edges]
-    print("target_edges", target_edges)
-    
     source_edges = remove_edges(
         source_edges, noise_level.source_noise, generator)
     target_edges = remove_edges(
         target_edges, noise_level.target_noise, generator)
 
+    # Refill edges according to the noise level.
     if noise_level.refill_edges:
         source_edges = refill_edges(
             source_edges, dimension, edge_count - source_edges.shape[0], generator)
         target_edges = refill_edges(
             target_edges, dimension, edge_count - target_edges.shape[0], generator)
+
     return GeneratedGraph(
         source_edges=source_edges,
         target_edges=target_edges,
@@ -212,7 +211,7 @@ def generate_graph(
     target: nx.Graph | None,
     generator: np.random.Generator,
     noise_level: NoiseLevel,
-) -> tuple[nx.Graph, nx.Graph | None, np.array, np.array]:
+) -> tuple[nx.Graph, nx.Graph | None, np.ndarray, np.ndarray]:
     if target is None:
         generated_graph = add_synthetic_noise(source, generator, noise_level)
         source = nx.from_edgelist(generated_graph.source_edges)
@@ -225,40 +224,14 @@ def generate_graph(
         target_edges = np.array(target.edges)
         if (np.amin(target_edges) != 0):
             target_edges = target_edges - np.amin(target_edges)
-        dimension = max(np.amax(source_edges), np.amax(target_edges)) + 1
-        edge_count = max(source_edges.shape[0], target_edges.shape[0])
-
-        #Source permutation is the identity permutation
-        source_permutation = np.arange(dimension)
-        #Target permutation is a random permutation
-        target_permutation = np.arange(dimension)
-
-        #
-        source_mapping = source_permutation[target_permutation.argsort()]
-        target_mapping = target_permutation[source_permutation.argsort()]
-
-        #print("source_permutation", source_permutation)
-        #print("target_permutation", target_permutation)
-        #print("source_mapping", source_mapping)
-        #print("target_mapping", target_mapping)
-
-        #print("source_edges\n", source_edges)
-        #print("target_edges\n", target_edges)
-        ##target_edges = source_mapping[target_edges]
-        #print("target_edges\n", target_edges)
-
-        # This describes the relation between mapping and permutation.
-        assert np.all(target_permutation[source_mapping] == source_permutation)
-        assert np.all(source_permutation[target_mapping] == target_permutation)
-
-        generate_graph = GeneratedGraph(
-            source_edges=source_edges,
-            target_edges=target_edges,
-            source_mapping=source_mapping,
-            target_mapping=target_mapping,
-        )
-        return source, target, generate_graph.source_mapping, generate_graph.target_mapping
-    return source, target, mapping
+        target_edges, source_mapping, target_mapping = permute_edges(target_edges, np.amax(target_edges) + 1)
+        np.savetxt("source_edges.txt", source_edges, fmt='%d')
+        np.savetxt("target_edges.txt", target_edges, fmt='%d')
+        np.savetxt("source_mapping.txt", source_mapping, fmt='%d')
+        np.savetxt("target_mapping.txt", target_mapping, fmt='%d')
+        source = nx.from_edgelist(source_edges)
+        target = nx.from_edgelist(target_edges)
+        return source, target, source_mapping, target_mapping
 
 
 @dataclass
@@ -363,15 +336,23 @@ class Experiment:
                 noise_results = []
                 source, target, source_mapping, _ = generate_graph(
                     source_graph, target_graph, generator, noise_level)
-                    #save svg of graph
-                nx.draw(source, with_labels=False, node_size=2)
-                plt.savefig("source_graph.svg")
+                #save svg of graph
+                #nx.draw(source, with_labels=False, node_size=2)
+                #plt.savefig("source_graph.svg")
+                np.savetxt("source_graph.txt", source)
+                np.savetxt("target_graph.txt", target)
                 for algorithm in self.algorithms:
                     profile = Profile()
                     if algorithm.use_fugal:
                         start_time = TimeStamp('cpu')
-                        _, answer = fugal(
-                            source, target, algorithm.config, profile)
+                        _, answer = Fugal.main(
+                            {"Src": e_to_G(np.array(source.edges), 
+                                          source_mapping.shape[0]), 
+                             "Tar": e_to_G(np.array(target.edges),
+                                            source_mapping.shape[0])},
+                            algorithm.config.iter_count, 
+                            True, algorithm.config.mu
+                        )
                         profile.time = TimeStamp(
                             'cpu').elapsed_seconds(start_time)
                     else:
@@ -392,6 +373,17 @@ class Experiment:
                 graph_results.append(noise_results)
             results.append(graph_results)
         return ExperimentResults.from_results(self, results)
+
+#fucky wucky edgelist to array alg
+def e_to_G(e, n):
+    # n = np.amax(e) + 1
+    nedges = e.shape[0]
+    # G = sps.csr_matrix((np.ones(nedges), e.T), shape=(n, n), dtype=int)
+    G = sps.csr_matrix((np.ones(nedges), e.T), shape=(n, n), dtype=np.int8)
+    G += G.T
+    G.data = G.data.clip(0, 1)
+    # return G
+    return G.A
 
 
 @dataclass

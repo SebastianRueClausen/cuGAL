@@ -105,7 +105,7 @@ def append_phases_to_csv(profile: Profile, path: str):
     csvfile = open(filepath, 'w', newline='')
     writer = csv.writer(csvfile, delimiter=',',
                         quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    for row, phase in enumerate([f for f in phases if f in profile.phase_times]):
+    for row, phase in enumerate([f for f in phases]):# if f in profile.phase_times]):
         phase_times = extract_phase_times([profile], phase)
         writer.writerow(data[row] + phase_times)
 

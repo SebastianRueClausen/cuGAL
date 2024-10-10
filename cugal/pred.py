@@ -119,7 +119,7 @@ def find_quasi_permutation_matrix(
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
             gradient = gradient_function(P, features, λ)
             #Save gradient to file for debugging. Add the iteration number to the filename.
-            np.savetxt("gradient" + str(λ) + ".csv", gradient.cpu().numpy(), delimiter=",")
+            #np.savetxt("gradient" + str(λ) + ".csv", gradient.cpu().numpy(), delimiter=",")
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
@@ -139,7 +139,6 @@ def find_quasi_permutation_matrix(
                     P, K, u, v, alpha, config.sinkhorn_method)
             
             mask = abs(P) < 1e-4
-            print("Sparsity: " + str(mask.sum().div(mask.numel()).item()) + "\n")
             P[mask] = 0
 
             if not config.frank_wolfe_threshold is None and 'diff' in locals():
@@ -150,8 +149,9 @@ def find_quasi_permutation_matrix(
             if 'diff' in locals():
                 del diff
         #Save P to file for debugging. Add the iteration number to the filename.
-        np.savetxt("cuP" + str(λ) + ".csv", P.cpu().numpy(), delimiter=",")
+        #np.savetxt("cuP" + str(λ) + ".csv", P.cpu().numpy(), delimiter=",")
 
+    print("Sparsity: " + str(mask.sum().div(mask.numel()).item()) + "\n")
     return P
 
 
@@ -161,7 +161,6 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
         case HungarianMethod.SCIPY:
             _, column_indices = scipy.optimize.linear_sum_assignment(
                 quasi_permutation.cpu(), maximize=True)
-            return column_indices
         case HungarianMethod.GREEDY | HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.PARALLEL_GREEDY:
             column_indices = greedy_lap(quasi_permutation, config)
         case HungarianMethod.SPARSE:
@@ -197,6 +196,8 @@ def convert_to_permutation_matrix(
         permutation[i][col_ind[i]] = 1
         mapping.append((i, col_ind[i]))
 
+    np.savetxt("cuP.txt", permutation)
+    np.savetxt("mapping.txt", mapping)
     return permutation, mapping
 
 
