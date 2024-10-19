@@ -15,7 +15,7 @@ def greedy_lap(cost_matrix: torch.Tensor, config: Config) -> np.array:
                 row *= taken
                 m = row.argmax()
                 taken[m] = 0
-                res.append(m)
+                res.append(m.item())
             return res
 
         case HungarianMethod.RAND:

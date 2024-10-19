@@ -31,6 +31,7 @@ struct Constants {
     }
 };
 
+// Data stored on the CPU side.
 struct HostData {
     thrust::host_vector<int> column_of_star_at_row;
     thrust::host_vector<float> cost;
@@ -48,6 +49,7 @@ struct HostData {
     }
 };
 
+// Data stored on the GPU side.
 struct DeviceData {
     DeviceData(Constants const &constants, float *slack)
         : slack(slack), min_in_rows(constants.dimension), min_in_cols(constants.dimension),

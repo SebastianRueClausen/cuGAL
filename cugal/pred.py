@@ -160,7 +160,7 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
             _, column_indices = scipy.optimize.linear_sum_assignment(
                 quasi_permutation.cpu(), maximize=True)
         case HungarianMethod.GREEDY | HungarianMethod.RAND | HungarianMethod.MORE_RAND | HungarianMethod.DOUBLE_GREEDY | HungarianMethod.PARALLEL_GREEDY:
-            column_indices = greedy_lap(quasi_permutation, config)
+            column_indices: list = greedy_lap(quasi_permutation, config)
         case HungarianMethod.DENSE:
             assert has_cuda, "doesn't have cuda"
             column_indices = torch.empty(quasi_permutation.size(
