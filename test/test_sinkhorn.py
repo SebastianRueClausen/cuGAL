@@ -95,14 +95,3 @@ class TestSinkhorn(unittest.TestCase):
         matrix = random_matrix(128)
         test = sinkhorn(test_config.convert_tensor(matrix), test_config)
         assert_is_doubly_stochastic(test)
-
-    @unittest.skipUnless(condition=has_cuda, reason="requires CUDA")
-    def test_ĺog_stream(self):
-        n = 128
-        K = torch.randn((n, n), device='cuda')
-        add = torch.randn(n, device='cuda')
-        out = torch.zeros(n, device='cuda')
-        out_stream = torch.zeros(n, device='cuda')
-        cuda_kernels.sinkhorn_log_step(K, add, out)
-        cuda_kernels.sinkhorn_log_step_stream(K.cpu(), add, out_stream, n // 4)
-        assert torch.allclose(out, out_stream)

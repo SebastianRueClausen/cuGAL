@@ -22,12 +22,11 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
         sinkhorn_threshold=0, sinkhorn_method=SinkhornMethod.MIX,
     )
 
-    log_profiles, mix_profiles, stream_profiles, cpu_profiles = [], [], [], []
+    log_profiles, mix_profiles, cpu_profiles = [], [], []
 
     for matrix_size in matrix_sizes:
         cpu_matrix = torch.randn(
             (matrix_size, matrix_size), dtype=torch.float64) * 4.0
-        cpu_32bit_matrix = cpu_matrix.to(dtype=torch.float32)
         gpu_matrix = gpu_config.convert_tensor(cpu_matrix)
 
         profile = SinkhornProfile()
@@ -39,17 +38,12 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
         log_profiles.append(profile)
 
         profile = SinkhornProfile()
-        sinkhorn.loghorn_stream(cpu_32bit_matrix, gpu_config, profile)
-        stream_profiles.append(profile)
-
-        profile = SinkhornProfile()
         sinkhorn.sinkhorn_knopp(cpu_matrix, cpu_config, profile)
         cpu_profiles.append(profile)
 
     plots = [
         (mix_profiles, 'mix float32'),
         (log_profiles, 'log float32'),
-        (stream_profiles, 'log stream float32'),
         (cpu_profiles, 'cpu float64'),
     ]
 
