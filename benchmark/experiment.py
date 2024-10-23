@@ -148,6 +148,29 @@ class Algorithm:
         return cls(config=Config.from_dict(dict['config']), use_fugal=dict['use_fugal'])
 
 
+def algorithms_descriptions(algorithms: list[Algorithm]) -> list[str]:
+    uses_both = False
+    different_fields = set()
+    for a in algorithms:
+        for b in algorithms:
+            if a.use_fugal != b.use_fugal:
+                uses_both = True
+            a_dict, b_dict = a.to_dict(), b.to_dict()
+            for field in a_dict.keys():
+                if a_dict[field] != b_dict[field]:
+                    different_fields.add(field)
+    descriptions = []
+    for algorithm in algorithms:
+        description = ""
+        if uses_both:
+            description += "FUGAL" if algorithm.use_fugal else "cuGAL"
+        as_dict = algorithm.to_dict()
+        for field in different_fields:
+            description += f"-{field}: {str(as_dict[field])}"
+        descriptions.append(description)
+    return descriptions
+
+
 def create_graph_from_str(file: str) -> nx.Graph:
     """
     Creates a graph from a string.

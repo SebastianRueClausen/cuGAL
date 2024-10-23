@@ -24,7 +24,7 @@ __global__ void kernel(
 
 #pragma unroll
     for (auto i = tid; i < size; i += blockDim.x) {
-        sum += expf(K[bid][i] + add[i] - max);
+        sum += __expf(K[bid][i] + add[i] - max);
     }
 
     sum = block_sum_reduce(sum);
