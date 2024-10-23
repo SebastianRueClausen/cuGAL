@@ -12,7 +12,6 @@ setup(
             'sinkhorn_log.cu',
             'distance.cu',
             'regularize.cu',
-            "data_stream_test.cu",
             "update_quasi_permutation.cu",
             "hungarian/hungarian.cu",
         ],

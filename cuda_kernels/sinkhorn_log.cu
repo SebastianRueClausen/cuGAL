@@ -1,4 +1,3 @@
-#include "block.cuh"
 #include "common.cuh"
 #include <c10/cuda/CUDAGuard.h>
 #include <cuda.h>
@@ -42,31 +41,4 @@ void sinkhorn_log_step(torch::Tensor K, torch::Tensor add, torch::Tensor out) {
         out.packed_accessor32<float, 1>(), K.size(0)
     );
     cudaDeviceSynchronize();
-}
-
-void sinkhorn_log_step_stream(
-    torch::Tensor K, torch::Tensor add, torch::Tensor out, long rows_per_block
-) {
-    const long input_sizes[2] = {rows_per_block, K.size(1)};
-    const long output_sizes[2] = {1, 1};
-    auto blocks = create_max_possible_blocks(
-        input_sizes, output_sizes, div_ceil(K.size(0), rows_per_block)
-    );
-    for (long round = 0, rows_uploaded = 0; rows_uploaded < K.size(0);
-         round++, rows_uploaded += rows_per_block) {
-        auto block = &blocks[round % blocks.size()];
-        const auto row_amount =
-            std::min(K.size(0) - rows_uploaded, rows_per_block);
-        block->upload(
-            K.data_ptr<float>() + rows_uploaded * K.size(1), row_amount
-        );
-        const auto out_accessor = out.slice(0, rows_uploaded);
-        kernel<<<row_amount, 32 * 12, 0, block->stream>>>(
-            block->input, add.packed_accessor32<float, 1>(),
-            out_accessor.packed_accessor32<float, 1>(), K.size(1)
-        );
-    }
-    cudaDeviceSynchronize();
-    for (auto block : blocks)
-        block.destroy();
 }

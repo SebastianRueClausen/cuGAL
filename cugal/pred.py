@@ -39,7 +39,12 @@ def dense_gradient(
     iteration: int,
 ) -> torch.Tensor:
     gradient = -A.T @ P @ B - A @ P @ B.T
-    return add_feature_distance(gradient, features) + iteration*(1 - 2*P)
+    gradient = add_feature_distance(gradient, features) + iteration*(1 - 2*P)
+    if has_cuda and 'cuda' in str(P.device):
+        cuda_kernels.regularize(gradient, P, iteration)
+    else:
+        gradient += iteration - iteration * 2 * P
+    return gradient
 
 
 def sparse_gradient(
@@ -73,10 +78,8 @@ def update_quasi_permutation(
     q = scale(K, u, v)
     q -= P
     q *= alpha
-    diff = q
-    del q
-    P += diff
-    return diff
+    P += q
+    return q
 
 
 def find_quasi_permutation_matrix(
@@ -96,9 +99,9 @@ def find_quasi_permutation_matrix(
             B = Adjacency.from_graph(B, config.device)
     else:
         A = torch.tensor(nx.to_numpy_array(
-            A), dtype=config.dtype, device=config.device)
+            A, nodelist=sorted(A.nodes())), dtype=config.dtype, device=config.device)
         B = torch.tensor(nx.to_numpy_array(
-            B), dtype=config.dtype, device=config.device)
+            B, nodelist=sorted(B.nodes())), dtype=config.dtype, device=config.device)
 
     sinkhorn_cache = sinkhorn.init_from_cache_size(config.sinkhorn_cache_size)
 
@@ -115,8 +118,6 @@ def find_quasi_permutation_matrix(
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
             gradient = gradient_function(P, features, λ)
-            #Save gradient to file for debugging. Add the iteration number to the filename.
-            #np.savetxt("gradient" + str(λ) + ".csv", gradient.cpu().numpy(), delimiter=",")
             profile.log_time(start_time, Phase.GRADIENT)
 
             start_time = TimeStamp(config.device)
@@ -127,17 +128,13 @@ def find_quasi_permutation_matrix(
             profile.log_time(start_time, Phase.SINKHORN)
 
             alpha = 2.0 / float(2.0 + it)
-            if has_cuda and 'cuda' in config.device:
+            if has_cuda and 'cuda' in config.device and config.dtype == torch.float32:
                 is_log = config.sinkhorn_method == SinkhornMethod.LOG
                 cuda_kernels.update_quasi_permutation(
                     P, K, u, v, alpha, is_log)
             else:
                 diff = update_quasi_permutation(
                     P, K, u, v, alpha, config.sinkhorn_method)
-
-            # mask = abs(P) < 1e-4
-            # print("Sparsity: " + str(mask.sum().div(mask.numel()).item()) + "\n")
-            # P[mask] = 0
 
             if not config.frank_wolfe_threshold is None and 'diff' in locals():
                 if diff.max() < config.frank_wolfe_threshold:
@@ -146,10 +143,7 @@ def find_quasi_permutation_matrix(
 
             if 'diff' in locals():
                 del diff
-        #Save P to file for debugging. Add the iteration number to the filename.
-        #np.savetxt("cuP" + str(λ) + ".csv", P.cpu().numpy(), delimiter=",")
 
-    #print("Sparsity: " + str(mask.sum().div(mask.numel()).item()) + "\n")
     return P
 
 
@@ -196,13 +190,9 @@ def convert_to_permutation_matrix(
 
     permutation = np.zeros((n, n))
     mapping = []
-
     for i in range(n):
         permutation[i][col_ind[i]] = 1
         mapping.append((i, col_ind[i]))
-
-    #np.savetxt("cuP.txt", permutation)
-    #np.savetxt("mapping.txt", mapping)
     return permutation, mapping
 
 

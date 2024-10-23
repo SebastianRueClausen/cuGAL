@@ -15,16 +15,12 @@ void average_neighbor_features(
 
 // sinkhorn_log.cu
 void sinkhorn_log_step(torch::Tensor, torch::Tensor, torch::Tensor);
-void sinkhorn_log_step_stream(torch::Tensor, torch::Tensor, torch::Tensor, long);
 
 // distance.cu
 void add_distance(torch::Tensor, torch::Tensor, torch::Tensor);
 
 // regularize.cu
 void regularize(torch::Tensor, torch::Tensor, int);
-
-// data_stream_test.cu
-void data_stream_test(torch::Tensor);
 
 // update_quasi_permutation.cu
 void update_quasi_permutation(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, float, bool);
@@ -54,19 +50,12 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
         "sinkhorn_log_step", &sinkhorn_log_step,
         "a single sinkhorn-knopp step in the log domain"
     );
-    m.def(
-        "sinkhorn_log_step_stream", &sinkhorn_log_step_stream,
-        "a single sinkhorn-knopp step in the log domain with streaming"
-    );
 
     // distance.cu
     m.def("add_distance", &add_distance, "add euclidean distance to matrix");
 
     // regularize.cu
     m.def("regularize", &regularize, "regularize matrix");
-
-    // data_stream_test.cu
-    m.def("data_stream_test", &data_stream_test, "data stream test");
 
     // update_quasi_permutation.cu
     m.def("update_quasi_permutation", &update_quasi_permutation, "update quasi permutation matrix");

@@ -13,12 +13,8 @@ import networkx as nx
 import requests
 import gzip
 import datetime
-from fugal.pred import fugal
 import json
-import matplotlib.pyplot as plt
 import scipy.sparse as sps
-import sys
-sys.path.append("~/bachelor")
 import FUGAL.Fugal as Fugal
 
 
@@ -67,6 +63,7 @@ class GeneratedGraph:
     source_mapping: np.array
     target_mapping: np.array
 
+
 def permute_edges(edges: np.array, dimension: int) -> tuple[np.array, np.array, np.array]:
     source_permutation = np.arange(dimension)
     target_permutation = np.random.RandomState(seed=0).permutation(dimension)
@@ -75,6 +72,7 @@ def permute_edges(edges: np.array, dimension: int) -> tuple[np.array, np.array, 
     assert np.all(target_permutation[source_mapping] == source_permutation)
     assert np.all(source_permutation[target_mapping] == target_permutation)
     return source_mapping[edges], source_mapping, target_mapping
+
 
 def add_synthetic_noise(
     graph: nx.Graph, generator: np.random.Generator, noise_level: NoiseLevel,
@@ -85,7 +83,8 @@ def add_synthetic_noise(
     dimension = np.amax(source_edges) + 1
 
     # Permute the edges of the source graph to create a target graph
-    target_edges, source_mapping, target_mapping = permute_edges(source_edges, dimension)
+    target_edges, source_mapping, target_mapping = permute_edges(
+        source_edges, dimension)
 
     # Remove edges according to the noise level.
     edge_count = source_edges.shape[0]
@@ -230,11 +229,8 @@ def generate_graph(
         target_edges = np.array(target.edges)
         if (np.amin(target_edges) != 0):
             target_edges = target_edges - np.amin(target_edges)
-        target_edges, source_mapping, target_mapping = permute_edges(target_edges, np.amax(target_edges) + 1)
-        #np.savetxt("source_edges.txt", source_edges, fmt='%d')
-        #np.savetxt("target_edges.txt", target_edges, fmt='%d')
-        #np.savetxt("source_mapping.txt", source_mapping, fmt='%d')
-        #np.savetxt("target_mapping.txt", target_mapping, fmt='%d')
+        target_edges, source_mapping, target_mapping = permute_edges(
+            target_edges, np.amax(target_edges) + 1)
         source = nx.from_edgelist(source_edges)
         target = nx.from_edgelist(target_edges)
         return source, target, source_mapping, target_mapping
@@ -342,21 +338,19 @@ class Experiment:
                 noise_results = []
                 source, target, source_mapping, _ = generate_graph(
                     source_graph, target_graph, generator, noise_level)
-                #save svg of graph
-                #nx.draw(source, with_labels=False, node_size=2)
-                #plt.savefig("source_graph.svg")
-                #np.savetxt("source_graph.txt", source)
-                #np.savetxt("target_graph.txt", target)
+                # save svg of graph
+                # nx.draw(source, with_labels=False, node_size=2)
+                # plt.savefig("source_graph.svg")
                 for algorithm in self.algorithms:
                     profile = Profile()
                     if algorithm.use_fugal:
                         start_time = TimeStamp('cpu')
                         _, answer = Fugal.main(
-                            {"Src": e_to_G(np.array(source.edges), 
-                                          source_mapping.shape[0]), 
-                             "Tar": e_to_G(np.array(target.edges),
-                                            source_mapping.shape[0])},
-                            algorithm.config.iter_count, 
+                            {"Src": edges_to_adjacency_matrix(np.array(source.edges),
+                                                              source_mapping.shape[0]),
+                             "Tar": edges_to_adjacency_matrix(np.array(target.edges),
+                                                              source_mapping.shape[0])},
+                            algorithm.config.iter_count,
                             True, algorithm.config.mu
                         )
                         profile.time = TimeStamp(
@@ -380,15 +374,13 @@ class Experiment:
             results.append(graph_results)
         return ExperimentResults.from_results(self, results)
 
-#fucky wucky edgelist to array alg
-def e_to_G(e, n):
-    # n = np.amax(e) + 1
-    nedges = e.shape[0]
-    # G = sps.csr_matrix((np.ones(nedges), e.T), shape=(n, n), dtype=int)
-    G = sps.csr_matrix((np.ones(nedges), e.T), shape=(n, n), dtype=np.int8)
+
+def edges_to_adjacency_matrix(edges: np.array, dimension: int):
+    edge_count = edges.shape[0]
+    G = sps.csr_matrix((np.ones(edge_count), edges.T),
+                       shape=(dimension, dimension), dtype=np.int8)
     G += G.T
     G.data = G.data.clip(0, 1)
-    # return G
     return G.A
 
 
