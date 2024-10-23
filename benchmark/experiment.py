@@ -162,6 +162,7 @@ def create_graph_from_str(file: str) -> nx.Graph:
 
 class GraphKind(Enum):
     CA_HEP = "CA_HEP"
+    INF_POWER = "INF_POWER"
     NEWMAN_WATTS = "NEWMAN_WATTS"
     LOBSTER = "LOBSTER"
     PREDEFINED_GRAPHS = "PREDEFINED_GRAPHS"
@@ -174,12 +175,6 @@ class Graph:
 
     def get(self, generator: np.random.Generator) -> tuple[nx.Graph, nx.Graph | None]:
         match self.kind:
-            case GraphKind.CA_HEP:
-                response = requests.get(
-                    'https://snap.stanford.edu/data/ca-HepTh.txt.gz')
-                with gzip.GzipFile(fileobj=io.BytesIO(response.content)) as gz_file:
-                    file_content = gz_file.read().decode('utf-8')
-                return create_graph_from_str(file_content), None
             case GraphKind.NEWMAN_WATTS:
                 return nx.newman_watts_strogatz_graph(**self.parameters, seed=generator), None
             case GraphKind.LOBSTER:
@@ -193,6 +188,17 @@ class Graph:
 
                 return create_graph_from_str(file_content_1), \
                     create_graph_from_str(file_content_2)
+
+            case GraphKind.CA_HEP:
+                response = requests.get(
+                    'https://snap.stanford.edu/data/ca-HepTh.txt.gz')
+                with gzip.GzipFile(fileobj=io.BytesIO(response.content)) as gz_file:
+                    file_content = gz_file.read().decode('utf-8')
+                return create_graph_from_str(file_content), None
+            case GraphKind.INF_POWER:
+                graph_file = open("data/inf-power.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
 
     def to_dict(self) -> dict:
         return {'kind': self.kind.value, 'parameters': self.parameters}
