@@ -51,7 +51,7 @@ class HungarianMethod(Enum):
     SPARSE = "SPARSE"
 
 
-@dataclass
+@dataclass(frozen=True)
 class Config:
     """Configuration of the CUGAL algorithm."""
 

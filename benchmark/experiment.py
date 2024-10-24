@@ -131,7 +131,7 @@ def alignment_accuracy(ground_truth: np.array, mapping: np.array) -> float:
     return np.mean(mapping == ground_truth)
 
 
-@dataclass
+@dataclass(frozen=True)
 class Algorithm:
     config: Config
     use_fugal: bool
@@ -147,28 +147,6 @@ class Algorithm:
     def from_dict(cls, dict: dict):
         return cls(config=Config.from_dict(dict['config']), use_fugal=dict['use_fugal'])
 
-
-def algorithms_descriptions(algorithms: list[Algorithm]) -> list[str]:
-    uses_both = False
-    different_fields = set()
-    for a in algorithms:
-        for b in algorithms:
-            if a.use_fugal != b.use_fugal:
-                uses_both = True
-            a_dict, b_dict = a.to_dict(), b.to_dict()
-            for field in a_dict.keys():
-                if a_dict[field] != b_dict[field]:
-                    different_fields.add(field)
-    descriptions = []
-    for algorithm in algorithms:
-        description = ""
-        if uses_both:
-            description += "FUGAL" if algorithm.use_fugal else "cuGAL"
-        as_dict = algorithm.to_dict()
-        for field in different_fields:
-            description += f"-{field}: {str(as_dict[field])}"
-        descriptions.append(description)
-    return descriptions
 
 
 def create_graph_from_str(file: str) -> nx.Graph:
@@ -455,3 +433,26 @@ class ExperimentResults:
         dict['results'] = [[[result.to_dict() for result in b] for b in a]
                            for a in self.results]
         return dict
+
+    def algorithms_descriptions(algorithms: list[Algorithm]) -> dict[Algorithm, str]:
+        uses_both = False
+        different_fields = set()
+        for a in algorithms:
+            for b in algorithms:
+                if a.use_fugal != b.use_fugal:
+                    uses_both = True
+                a_dict, b_dict = a.config.to_dict(), b.config.to_dict()
+                for field in a_dict.keys():
+                    if str(a_dict[field]) != str(b_dict[field]):
+                        different_fields.add(field)
+        descriptions = {}
+        for algorithm in algorithms:
+            description = ""
+            if uses_both:
+                description += "FUGAL" if algorithm.use_fugal else "cuGAL"
+            as_dict = algorithm.config.to_dict()
+            for field in different_fields:
+                if algorithm.use_fugal: continue
+                description += f"-{field}: {str(as_dict[field])}"
+            descriptions[algorithm] = description
+        return descriptions
