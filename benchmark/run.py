@@ -26,11 +26,11 @@ experiment = Experiment(
         #    'source_file': 'data/MultiMagna/yeast0_Y2H1.txt',
         #    'target_file': f'data/MultiMagna/yeast{i}_Y2H1.txt',
         #}) for i in range(5, 26, 5)
-        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.01}),
-        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.05}),
-        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.10}),
-        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.20}),
-        Graph(GraphKind.INF_POWER, {}),
+        Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.01}),
+        Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.05}),
+        Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.10}),
+        Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.20}),
+        #Graph(GraphKind.INF_POWER, {}),
     ],
     algorithms=[
         Algorithm(config, use_fugal=False),
@@ -43,8 +43,6 @@ experiment = Experiment(
     ],
     noise_levels=[
         NoiseLevel(0.1, 0.0, False),
-        NoiseLevel(0.2, 0.0, False),
-        NoiseLevel(0.3, 0.0, False),
     ],
 )
 
