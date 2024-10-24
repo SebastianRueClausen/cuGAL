@@ -262,6 +262,16 @@ class Result:
             alignment_accuracy(answer, mapping),
             profile,
         )
+    
+    @staticmethod
+    def average(results: list[Result]):
+        ics = sum(result.ics for result in results) / len(results)
+        ec = sum(result.ec for result in results) / len(results)
+        sss = sum(result.sss for result in results) / len(results)
+        accuracy = sum(result.accuracy for result in results) / len(results)
+        profile = Profile.average([result.profile for result in results])
+        return Result(ics, ec, sss, accuracy, profile)
+
 
     def __str__(self) -> str:
         metrics = [self.ics, self.ec, self.sss,
@@ -304,6 +314,7 @@ class Experiment:
     debug: bool = False
     seed: int | None = None
     save_alignment: bool = False
+    num_runs: int = 1
 
     def to_dict(self) -> dict:
         dict = dataclasses.asdict(self)
@@ -337,47 +348,56 @@ class Experiment:
 
         # Run on each graph (Type Graph) provided for the experiment
         for graph in self.graphs:
-
             source_graph, target_graph = graph.get(generator)
             graph_results = []
+            
             for noise_level in self.noise_levels:
                 noise_results = []
                 source, target, source_mapping, _ = generate_graph(
                     source_graph, target_graph, generator, noise_level)
+                
                 # save svg of graph
                 # nx.draw(source, with_labels=False, node_size=2)
                 # plt.savefig("source_graph.svg")
-                for algorithm in self.algorithms:
-                    profile = Profile()
-                    if algorithm.use_fugal:
-                        start_time = TimeStamp('cpu')
-                        _, answer = Fugal.main(
-                            {"Src": edges_to_adjacency_matrix(np.array(source.edges),
-                                                              source_mapping.shape[0]),
-                             "Tar": edges_to_adjacency_matrix(np.array(target.edges),
-                                                              source_mapping.shape[0])},
-                            algorithm.config.iter_count,
-                            True, algorithm.config.mu
-                        )
-                        profile.time = TimeStamp(
-                            'cpu').elapsed_seconds(start_time)
-                    else:
-                        _, answer = cugal(
-                            source, target, algorithm.config, profile)
-                    noise_results.append(Result.calculate(
-                        profile,
-                        nx.to_numpy_array(source),
-                        nx.to_numpy_array(target),
-                        np.array([x for _, x in answer]),
-                        source_mapping,
-                    ))
 
-                    if self.save_alignment:
-                        with open(str(datetime.datetime.now()) + ".txt", "w") as f:
-                            f.write("\n".join(
-                                f"{x} {y}" for x, y in answer))
+                for algorithm in self.algorithms:
+                    # Run multiple times to get average results
+                    run_results = []
+                    for _ in range(self.num_runs):
+                        profile = Profile()
+                        if algorithm.use_fugal:
+                            start_time = TimeStamp('cpu')
+                            _, answer = Fugal.main(
+                                {"Src": edges_to_adjacency_matrix(np.array(source.edges),
+                                                                source_mapping.shape[0]),
+                                "Tar": edges_to_adjacency_matrix(np.array(target.edges),
+                                                                source_mapping.shape[0])},
+                                algorithm.config.iter_count,
+                                True, algorithm.config.mu
+                            )
+                            profile.time = TimeStamp(
+                                'cpu').elapsed_seconds(start_time)
+                        else:
+                            _, answer = cugal(
+                                source, target, algorithm.config, profile)
+                        
+                        if self.save_alignment:
+                            with open(str(datetime.datetime.now()) + ".txt", "w") as f:
+                                f.write("\n".join(
+                                    f"{x} {y}" for x, y in answer))
+                        
+                        run_results.append(Result.calculate(
+                            profile,
+                            nx.to_numpy_array(source),
+                            nx.to_numpy_array(target),
+                            np.array([x for _, x in answer]),
+                            source_mapping,
+                        ))
+                        
+                    noise_results.append(Result.average(run_results))
+                            
                 graph_results.append(noise_results)
-            results.append(graph_results)
+        results.append(graph_results)
         return ExperimentResults.from_results(self, results)
 
 
