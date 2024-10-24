@@ -30,7 +30,7 @@ experiment = Experiment(
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.05}),
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.10}),
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.20}),
-        Graph(GraphKind.INF_POWER, {}),
+        Graph(GraphKind.BIO_DMELA, {}),
     ],
     algorithms=[
         Algorithm(config, use_fugal=False),
