@@ -185,6 +185,7 @@ def create_graph_from_str(file: str) -> nx.Graph:
 class GraphKind(Enum):
     CA_HEP = "CA_HEP"
     INF_POWER = "INF_POWER"
+    BIO_DMELA = "BIO_DMELA"
     NEWMAN_WATTS = "NEWMAN_WATTS"
     LOBSTER = "LOBSTER"
     PREDEFINED_GRAPHS = "PREDEFINED_GRAPHS"
@@ -219,6 +220,10 @@ class Graph:
                 return create_graph_from_str(file_content), None
             case GraphKind.INF_POWER:
                 graph_file = open("data/inf-power.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.BIO_DMELA:
+                graph_file = open("data/bio-dmela.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
 

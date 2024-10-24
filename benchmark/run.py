@@ -8,7 +8,7 @@ config = Config(
     device='cuda:1', 
     sinkhorn_method=SinkhornMethod.LOG,
     dtype=torch.float32,
-    sinkhorn_threshold=1e-3,
+    sinkhorn_threshold=0,
     sinkhorn_iterations=500,
     mu=2,
     iter_count=15,
@@ -22,15 +22,15 @@ config = Config(
 
 experiment = Experiment(
     graphs=[
-        Graph(GraphKind.PREDEFINED_GRAPHS, {
-            'source_file': 'data/MultiMagna/yeast0_Y2H1.txt',
-            'target_file': f'data/MultiMagna/yeast{i}_Y2H1.txt',
-        }) for i in range(5, 26, 5)
+        #Graph(GraphKind.PREDEFINED_GRAPHS, {
+        #    'source_file': 'data/MultiMagna/yeast0_Y2H1.txt',
+        #    'target_file': f'data/MultiMagna/yeast{i}_Y2H1.txt',
+        #}) for i in range(5, 26, 5)
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.01}),
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.05}),
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.10}),
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.20}),
-        #Graph(GraphKind.INF_POWER, {}),
+        Graph(GraphKind.INF_POWER, {}),
     ],
     algorithms=[
         Algorithm(config, use_fugal=False),
@@ -38,10 +38,13 @@ experiment = Experiment(
         Algorithm(replace(config, sinkhorn_regularization=1e-1), use_fugal=False),
         Algorithm(replace(config, sinkhorn_regularization=5e-2), use_fugal=False),
         Algorithm(replace(config, sinkhorn_regularization=1e-2), use_fugal=False),
-        Algorithm(config, use_fugal=True),
+        
+        #Algorithm(config, use_fugal=True),
     ],
     noise_levels=[
         NoiseLevel(0.1, 0.0, False),
+        NoiseLevel(0.2, 0.0, False),
+        NoiseLevel(0.3, 0.0, False),
     ],
 )
 
