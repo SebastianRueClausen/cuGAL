@@ -26,27 +26,27 @@ experiment = Experiment(
         #    'source_file': 'data/MultiMagna/yeast0_Y2H1.txt',
         #    'target_file': f'data/MultiMagna/yeast{i}_Y2H1.txt',
         #}) for i in range(5, 26, 5)
-        Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.01}),
-        Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.05}),
-        Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.10}),
-        Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.20}),
-        #Graph(GraphKind.BIO_DMELA, {}),
+        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.01}),
+        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.05}),
+        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.10}),
+        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 7, 'p': 0.20}),
+        Graph(GraphKind.INF_EUROROAD, {}),
     ],
     algorithms=[
+        Algorithm(config, use_fugal=True),
         Algorithm(config, use_fugal=False),
         Algorithm(replace(config, sinkhorn_regularization=5e-1), use_fugal=False), 
         Algorithm(replace(config, sinkhorn_regularization=1e-1), use_fugal=False),
         Algorithm(replace(config, sinkhorn_regularization=5e-2), use_fugal=False),
         Algorithm(replace(config, sinkhorn_regularization=1e-2), use_fugal=False),
         
-        #Algorithm(config, use_fugal=True),
     ],
     noise_levels=[
         NoiseLevel(0.1, 0.0, False),
-        NoiseLevel(0.2, 0.0, False),
-        NoiseLevel(0.3, 0.0, False),
+        #NoiseLevel(0.2, 0.0, False),
+        #NoiseLevel(0.3, 0.0, False),
     ],
-    num_runs=5,
+    num_runs=1,
 )
 
 results = experiment.run()

@@ -128,14 +128,14 @@ def convex_init(A, B, D, mu, niter):
     P=P/n
     ones = torch.ones(n, dtype = torch.float64)
     mat_ones = torch.ones((n, n), dtype = torch.float64)
-    reg = 1.0
+    reg = 1
     K=mu*D
     for i in range(niter):
         for it in range(1, 11):
             G=-torch.mm(torch.mm(A.T, P), B)-torch.mm(torch.mm(A, P), B.T)+ K + i*(mat_ones - 2*P)
             #Save gradient to file for debugging. Add the iteration number to the filename.
             #np.savetxt("G" + str(i) + ".csv", G.cpu().numpy(), delimiter=",")
-            q = sinkhorn(ones, ones, G, reg, maxIter = 500, stopThr = 1e-3)
+            q = sinkhorn(ones, ones, G, reg, maxIter = 500, stopThr = 0)#1e-3)
             alpha = 2.0 / float(2.0 + it)
             P = P + alpha * (q - P)
         #Save P to file for debugging. Add the iteration number to the filename.

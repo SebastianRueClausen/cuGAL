@@ -16,6 +16,7 @@ import datetime
 import json
 import scipy.sparse as sps
 import FUGAL.Fugal as Fugal
+from typing import Self
 
 
 @dataclass
@@ -164,6 +165,8 @@ class GraphKind(Enum):
     CA_HEP = "CA_HEP"
     INF_POWER = "INF_POWER"
     BIO_DMELA = "BIO_DMELA"
+    INF_EUROROAD = "INF_EUROROAD"
+    CA_NETSCIENCE = "CA_NETSCIENCE"
     NEWMAN_WATTS = "NEWMAN_WATTS"
     LOBSTER = "LOBSTER"
     PREDEFINED_GRAPHS = "PREDEFINED_GRAPHS"
@@ -202,6 +205,14 @@ class Graph:
                 return create_graph_from_str(file_content), None
             case GraphKind.BIO_DMELA:
                 graph_file = open("data/bio-dmela.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.CA_NETSCIENCE:
+                graph_file = open("data/ca-netscience.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.INF_EUROROAD:
+                graph_file = open("data/inf-euroroad.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
 
@@ -264,7 +275,7 @@ class Result:
         )
     
     @staticmethod
-    def average(results: list[Result]):
+    def average(results: list[Self]) -> Self:
         ics = sum(result.ics for result in results) / len(results)
         ec = sum(result.ec for result in results) / len(results)
         sss = sum(result.sss for result in results) / len(results)
@@ -393,11 +404,11 @@ class Experiment:
                             np.array([x for _, x in answer]),
                             source_mapping,
                         ))
-                        
+
                     noise_results.append(Result.average(run_results))
                             
                 graph_results.append(noise_results)
-        results.append(graph_results)
+            results.append(graph_results)
         return ExperimentResults.from_results(self, results)
 
 
