@@ -364,8 +364,13 @@ class Experiment:
             
             for noise_level in self.noise_levels:
                 noise_results = []
-                source, target, source_mapping, _ = generate_graph(
-                    source_graph, target_graph, generator, noise_level)
+                sources, targets, source_mappings, target_mappings = [], [], [], []
+                for i in range(self.num_runs):
+                    source, target, source_mapping, _ = generate_graph(
+                        source_graph, target_graph, generator, noise_level)
+                    sources.append(source)
+                    targets.append(target)
+                    source_mappings.append(source_mapping)
                 
                 # save svg of graph
                 # nx.draw(source, with_labels=False, node_size=2)
@@ -374,15 +379,15 @@ class Experiment:
                 for algorithm in self.algorithms:
                     # Run multiple times to get average results
                     run_results = []
-                    for _ in range(self.num_runs):
+                    for i in range(self.num_runs):
                         profile = Profile()
                         if algorithm.use_fugal:
                             start_time = TimeStamp('cpu')
                             _, answer = Fugal.main(
                                 {"Src": edges_to_adjacency_matrix(np.array(source.edges),
-                                                                source_mapping.shape[0]),
+                                                                source_mappings[i].shape[0]),
                                 "Tar": edges_to_adjacency_matrix(np.array(target.edges),
-                                                                source_mapping.shape[0])},
+                                                                source_mappings[i].shape[0])},
                                 algorithm.config.iter_count,
                                 True, algorithm.config.mu
                             )
@@ -390,7 +395,7 @@ class Experiment:
                                 'cpu').elapsed_seconds(start_time)
                         else:
                             _, answer = cugal(
-                                source, target, algorithm.config, profile)
+                                sources[i], targets[i], algorithm.config, profile)
                         
                         if self.save_alignment:
                             with open(str(datetime.datetime.now()) + ".txt", "w") as f:
@@ -399,10 +404,10 @@ class Experiment:
                         
                         run_results.append(Result.calculate(
                             profile,
-                            nx.to_numpy_array(source),
-                            nx.to_numpy_array(target),
+                            nx.to_numpy_array(sources[i]),
+                            nx.to_numpy_array(targets[i]),
                             np.array([x for _, x in answer]),
-                            source_mapping,
+                            source_mappings[i],
                         ))
 
                     noise_results.append(Result.average(run_results))
