@@ -230,6 +230,7 @@ def cugal(
         features = features.distance_matrix()
 
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
+    np.savetxt("source_features.csv", features.source.cpu().numpy(), delimiter=",")
 
     # Frank-Wolfe
     quasi_permutation = find_quasi_permutation_matrix(

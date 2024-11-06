@@ -162,17 +162,34 @@ def create_graph_from_str(file: str) -> nx.Graph:
 
 
 class GraphKind(Enum):
+    # Real-world graphs
     CA_HEP = "CA_HEP"
-    INF_POWER = "INF_POWER"
-    BIO_DMELA = "BIO_DMELA"
-    INF_EUROROAD = "INF_EUROROAD"
+    CA_ERDOS = "CA_ERDOS"
+    CA_GRQC = "CA_GRQC"
     CA_NETSCIENCE = "CA_NETSCIENCE"
+    BIO_DMELA = "BIO_DMELA"
+    BIO_CELEGANS = "BIO_CELEGANS"
+    IN_ARENAS = "IN_ARENAS"
+    INF_POWER = "INF_POWER"
+    INF_EUROROAD = "INF_EUROROAD"
+    SOC_FACEBOOK = "SOC_FACEBOOK"
+    SOC_HAMSTERSTER = "SOC_HAMSTERSTER"
+    SOCFB_BOWDOIN47 = "SOCFB_BOWDOIN47"
+    SOCFB_HAMILTON46 = "SOCFB_HAMILTON46"
+    SOCFB_HAVERFORD76 = "SOCFB_HAVERFORD76"
+    SOCFB_SWARTHMORE42 = "SOCFB_SWARTHMORE42"
+
+    # Synthetic graphs
     NEWMAN_WATTS = "NEWMAN_WATTS"
     LOBSTER = "LOBSTER"
+
+    # Predefined graphs
     PREDEFINED_GRAPHS = "PREDEFINED_GRAPHS"
 
+    # Averaged results (only used for analysis)
+    AVERAGED = "AVERAGED"
 
-@dataclass
+@dataclass(frozen=True)
 class Graph:
     kind: GraphKind
     parameters: dict
@@ -199,6 +216,10 @@ class Graph:
                 with gzip.GzipFile(fileobj=io.BytesIO(response.content)) as gz_file:
                     file_content = gz_file.read().decode('utf-8')
                 return create_graph_from_str(file_content), None
+            case GraphKind.IN_ARENAS:
+                graph_file = open("data/in-arenas.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
             case GraphKind.INF_POWER:
                 graph_file = open("data/inf-power.txt", 'r')
                 file_content = graph_file.read()
@@ -207,12 +228,48 @@ class Graph:
                 graph_file = open("data/bio-dmela.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
+            case GraphKind.BIO_CELEGANS:
+                graph_file = open("data/bio-celegans.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
             case GraphKind.CA_NETSCIENCE:
                 graph_file = open("data/ca-netscience.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
+            case GraphKind.CA_ERDOS:
+                graph_file = open("data/ca-Erdos992.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.CA_GRQC:
+                graph_file = open("data/ca-GrQc.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
             case GraphKind.INF_EUROROAD:
                 graph_file = open("data/inf-euroroad.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOC_FACEBOOK:
+                graph_file = open("data/socfb-Bowdoin47.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOC_HAMSTERSTER:
+                graph_file = open("data/socfb-Hamilton46.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOCFB_BOWDOIN47:
+                graph_file = open("data/socfb-Bowdoin47.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOCFB_HAMILTON46:
+                graph_file = open("data/socfb-Hamilton46.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOCFB_HAVERFORD76:
+                graph_file = open("data/socfb-Haverford76.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOCFB_SWARTHMORE42:
+                graph_file = open("data/socfb-Swarthmore42.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
 
@@ -359,10 +416,14 @@ class Experiment:
 
         # Run on each graph (Type Graph) provided for the experiment
         for graph in self.graphs:
+            print(f"Running on {str(graph)}")
+
             source_graph, target_graph = graph.get(generator)
             graph_results = []
-            
+
             for noise_level in self.noise_levels:
+                print(f"Running with noise level {str(noise_level)}")
+
                 noise_results = []
                 sources, targets, source_mappings, target_mappings = [], [], [], []
                 for i in range(self.num_runs):
@@ -377,6 +438,7 @@ class Experiment:
                 # plt.savefig("source_graph.svg")
 
                 for algorithm in self.algorithms:
+                    print(f"Running with algorithm {str(algorithm)}")
                     # Run multiple times to get average results
                     run_results = []
                     for i in range(self.num_runs):
@@ -491,4 +553,20 @@ class ExperimentResults:
                 if algorithm.use_fugal: continue
                 description += f"-{field}: {str(as_dict[field])}"
             descriptions[algorithm] = description
+        return descriptions
+
+    def graph_descriptions(graphs: list[Graph]) -> dict[Graph, str]:
+        descriptions = {}
+        different_fields = set()
+        for graph in graphs:
+            for other_graph in graphs:
+                for field in graph.parameters.keys():
+                    if graph.parameters[field] != other_graph.parameters[field]:
+                        different_fields.add(field)
+        for graph in graphs:
+            description = graph.kind.value
+            for field in different_fields:
+                description += f"-{field}: {str(graph.parameters[field])}"
+            descriptions[str(graph)] = description
+        
         return descriptions
