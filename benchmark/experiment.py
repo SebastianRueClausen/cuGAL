@@ -16,6 +16,7 @@ import datetime
 import json
 import scipy.sparse as sps
 import FUGAL.Fugal as Fugal
+from typing import Self
 
 
 @dataclass
@@ -161,15 +162,34 @@ def create_graph_from_str(file: str) -> nx.Graph:
 
 
 class GraphKind(Enum):
+    # Real-world graphs
     CA_HEP = "CA_HEP"
-    INF_POWER = "INF_POWER"
+    CA_ERDOS = "CA_ERDOS"
+    CA_GRQC = "CA_GRQC"
+    CA_NETSCIENCE = "CA_NETSCIENCE"
     BIO_DMELA = "BIO_DMELA"
+    BIO_CELEGANS = "BIO_CELEGANS"
+    IN_ARENAS = "IN_ARENAS"
+    INF_POWER = "INF_POWER"
+    INF_EUROROAD = "INF_EUROROAD"
+    SOC_FACEBOOK = "SOC_FACEBOOK"
+    SOC_HAMSTERSTER = "SOC_HAMSTERSTER"
+    SOCFB_BOWDOIN47 = "SOCFB_BOWDOIN47"
+    SOCFB_HAMILTON46 = "SOCFB_HAMILTON46"
+    SOCFB_HAVERFORD76 = "SOCFB_HAVERFORD76"
+    SOCFB_SWARTHMORE42 = "SOCFB_SWARTHMORE42"
+
+    # Synthetic graphs
     NEWMAN_WATTS = "NEWMAN_WATTS"
     LOBSTER = "LOBSTER"
+
+    # Predefined graphs
     PREDEFINED_GRAPHS = "PREDEFINED_GRAPHS"
 
+    # Averaged results (only used for analysis)
+    AVERAGED = "AVERAGED"
 
-@dataclass
+@dataclass(frozen=True)
 class Graph:
     kind: GraphKind
     parameters: dict
@@ -196,12 +216,60 @@ class Graph:
                 with gzip.GzipFile(fileobj=io.BytesIO(response.content)) as gz_file:
                     file_content = gz_file.read().decode('utf-8')
                 return create_graph_from_str(file_content), None
+            case GraphKind.IN_ARENAS:
+                graph_file = open("data/in-arenas.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
             case GraphKind.INF_POWER:
                 graph_file = open("data/inf-power.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
             case GraphKind.BIO_DMELA:
                 graph_file = open("data/bio-dmela.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.BIO_CELEGANS:
+                graph_file = open("data/bio-celegans.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.CA_NETSCIENCE:
+                graph_file = open("data/ca-netscience.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.CA_ERDOS:
+                graph_file = open("data/ca-Erdos992.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.CA_GRQC:
+                graph_file = open("data/ca-GrQc.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.INF_EUROROAD:
+                graph_file = open("data/inf-euroroad.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOC_FACEBOOK:
+                graph_file = open("data/socfb-Bowdoin47.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOC_HAMSTERSTER:
+                graph_file = open("data/socfb-Hamilton46.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOCFB_BOWDOIN47:
+                graph_file = open("data/socfb-Bowdoin47.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOCFB_HAMILTON46:
+                graph_file = open("data/socfb-Hamilton46.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOCFB_HAVERFORD76:
+                graph_file = open("data/socfb-Haverford76.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.SOCFB_SWARTHMORE42:
+                graph_file = open("data/socfb-Swarthmore42.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
 
@@ -262,6 +330,16 @@ class Result:
             alignment_accuracy(answer, mapping),
             profile,
         )
+    
+    @staticmethod
+    def average(results: list[Self]) -> Self:
+        ics = sum(result.ics for result in results) / len(results)
+        ec = sum(result.ec for result in results) / len(results)
+        sss = sum(result.sss for result in results) / len(results)
+        accuracy = sum(result.accuracy for result in results) / len(results)
+        profile = Profile.average([result.profile for result in results])
+        return Result(ics, ec, sss, accuracy, profile)
+
 
     def __str__(self) -> str:
         metrics = [self.ics, self.ec, self.sss,
@@ -304,6 +382,7 @@ class Experiment:
     debug: bool = False
     seed: int | None = None
     save_alignment: bool = False
+    num_runs: int = 1
 
     def to_dict(self) -> dict:
         dict = dataclasses.asdict(self)
@@ -337,45 +416,64 @@ class Experiment:
 
         # Run on each graph (Type Graph) provided for the experiment
         for graph in self.graphs:
+            print(f"Running on {str(graph)}")
 
             source_graph, target_graph = graph.get(generator)
             graph_results = []
+
             for noise_level in self.noise_levels:
+                print(f"Running with noise level {str(noise_level)}")
+
                 noise_results = []
-                source, target, source_mapping, _ = generate_graph(
-                    source_graph, target_graph, generator, noise_level)
+                sources, targets, source_mappings, target_mappings = [], [], [], []
+                for i in range(self.num_runs):
+                    source, target, source_mapping, _ = generate_graph(
+                        source_graph, target_graph, generator, noise_level)
+                    sources.append(source)
+                    targets.append(target)
+                    source_mappings.append(source_mapping)
+                
                 # save svg of graph
                 # nx.draw(source, with_labels=False, node_size=2)
                 # plt.savefig("source_graph.svg")
-                for algorithm in self.algorithms:
-                    profile = Profile()
-                    if algorithm.use_fugal:
-                        start_time = TimeStamp('cpu')
-                        _, answer = Fugal.main(
-                            {"Src": edges_to_adjacency_matrix(np.array(source.edges),
-                                                              source_mapping.shape[0]),
-                             "Tar": edges_to_adjacency_matrix(np.array(target.edges),
-                                                              source_mapping.shape[0])},
-                            algorithm.config.iter_count,
-                            True, algorithm.config.mu
-                        )
-                        profile.time = TimeStamp(
-                            'cpu').elapsed_seconds(start_time)
-                    else:
-                        _, answer = cugal(
-                            source, target, algorithm.config, profile)
-                    noise_results.append(Result.calculate(
-                        profile,
-                        nx.to_numpy_array(source),
-                        nx.to_numpy_array(target),
-                        np.array([x for _, x in answer]),
-                        source_mapping,
-                    ))
 
-                    if self.save_alignment:
-                        with open(str(datetime.datetime.now()) + ".txt", "w") as f:
-                            f.write("\n".join(
-                                f"{x} {y}" for x, y in answer))
+                for algorithm in self.algorithms:
+                    print(f"Running with algorithm {str(algorithm)}")
+                    # Run multiple times to get average results
+                    run_results = []
+                    for i in range(self.num_runs):
+                        profile = Profile()
+                        if algorithm.use_fugal:
+                            start_time = TimeStamp('cpu')
+                            _, answer = Fugal.main(
+                                {"Src": edges_to_adjacency_matrix(np.array(source.edges),
+                                                                source_mappings[i].shape[0]),
+                                "Tar": edges_to_adjacency_matrix(np.array(target.edges),
+                                                                source_mappings[i].shape[0])},
+                                algorithm.config.iter_count,
+                                True, algorithm.config.mu
+                            )
+                            profile.time = TimeStamp(
+                                'cpu').elapsed_seconds(start_time)
+                        else:
+                            _, answer = cugal(
+                                sources[i], targets[i], algorithm.config, profile)
+                        
+                        if self.save_alignment:
+                            with open(str(datetime.datetime.now()) + ".txt", "w") as f:
+                                f.write("\n".join(
+                                    f"{x} {y}" for x, y in answer))
+                        
+                        run_results.append(Result.calculate(
+                            profile,
+                            nx.to_numpy_array(sources[i]),
+                            nx.to_numpy_array(targets[i]),
+                            np.array([x for _, x in answer]),
+                            source_mappings[i],
+                        ))
+
+                    noise_results.append(Result.average(run_results))
+                            
                 graph_results.append(noise_results)
             results.append(graph_results)
         return ExperimentResults.from_results(self, results)
@@ -455,4 +553,20 @@ class ExperimentResults:
                 if algorithm.use_fugal: continue
                 description += f"-{field}: {str(as_dict[field])}"
             descriptions[algorithm] = description
+        return descriptions
+
+    def graph_descriptions(graphs: list[Graph]) -> dict[Graph, str]:
+        descriptions = {}
+        different_fields = set()
+        for graph in graphs:
+            for other_graph in graphs:
+                for field in graph.parameters.keys():
+                    if graph.parameters[field] != other_graph.parameters[field]:
+                        different_fields.add(field)
+        for graph in graphs:
+            description = graph.kind.value
+            for field in different_fields:
+                description += f"-{field}: {str(graph.parameters[field])}"
+            descriptions[str(graph)] = description
+        
         return descriptions
