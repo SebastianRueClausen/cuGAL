@@ -92,8 +92,8 @@ def prompt_user_for_analysis_options(results: ExperimentResults) -> tuple[Experi
         plot_type = PlotType.HEATMAP
 
         # Prompt the user for what to plot on each axis
-        x_axis = input('What do you want to plot on the x-axis? ([g]raphs/[a]lgorithms/[n]oise levels): ')
-        y_axis = input('What do you want to plot on the y-axis? ([g]raphs/[a]lgorithms/[n]oise levels): ')
+        x_axis = input('What do you want to plot on the x-axis? ([g]raphs/[a]lgorithms/[n]oise levels/[c]ustom): ')
+        y_axis = input('What do you want to plot on the y-axis? ([g]raphs/[a]lgorithms/[n]oise levels/[c]ustom): ')
 
         plot = Plot(plot_type, {'x_axis': x_axis.lower(), 'y_axis': y_axis.lower()})
 
@@ -157,6 +157,54 @@ def bar_plot_results(results: ExperimentResults, plot: Plot):
     plt.title('Time of Experiments')
     plt.savefig(file.name + '_time.png', dpi=300, bbox_inches = "tight")
 
+def prompt_custom_heatmap_axis(results: ExperimentResults):
+    data_choice = input('Select from [g]raphs, [a]lgorithms, [n]oise levels: ')
+    match data_choice: 
+        case 'g': data = results.experiment.graphs
+        case 'a': data = results.experiment.algorithms
+        case 'n': data = results.experiment.noise_levels
+        case _: raise ValueError('Invalid data choice')        
+        
+    group_or_series = input('Would you like to select [s]pecific series or [g]roup series: ')
+    if group_or_series == 's':
+        series_range = input('Enter the series you would like to group by: ')
+        series = np.array([eval(f"data[{series_range}])") for i in series_range.split(',')]).flatten()
+    elif group_or_series == 'g':
+        match data_choice: 
+            case 'a': data_dict = [d.config.to_dict() for d in data]
+            case 'g': data_dict = [d.parameters for d in data]
+            case 'n': data_dict = [d.to_dict() for d in data]
+
+        print("Data dict ", data_dict)
+        # Find keys which exist in all data dicts
+        data_common_keys = set(data_dict[0].keys())
+        for d in data_dict[1:]:
+            data_common_keys = data_common_keys.intersection(set(d.keys()))
+        if len(data_common_keys) == 0: print('No common keys found'); return None, None
+        print("Common keys ", data_common_keys)
+
+        key_chosen = False
+        group_by = input('Enter the config dict entry to group by: ')
+        while not key_chosen:
+            if group_by in data_common_keys:
+                key_chosen = True
+            else:
+                group_by = input('Invalid key, try again: ')
+        
+        # Find the index of entries in all results, where the value of the key is the same
+        series = []
+        
+            
+    else:
+        raise ValueError('Invalid group or series choice')
+
+    print("Series ", series)
+
+    return series, data
+    
+        
+
+
 def heatmap_plot_results(results: ExperimentResults, plot: Plot):
     print("Plotting heatmap")
 
@@ -177,6 +225,8 @@ def heatmap_plot_results(results: ExperimentResults, plot: Plot):
         case 'n':
             x_labels = [str(n.source_noise*100) + "% Noise" for n in results.experiment.noise_levels]
             accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[1] == n] for n in results.experiment.noise_levels]
+        case 'c':
+            x_labels, accuracy_matrix = prompt_custom_heatmap_axis(results)
         case _:
             raise ValueError('Invalid x-axis value')
         

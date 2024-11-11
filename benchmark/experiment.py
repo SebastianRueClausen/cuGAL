@@ -28,6 +28,9 @@ class NoiseLevel:
     def __str__(self):
         return str(dataclasses.asdict(self))
 
+    def to_dict(self) -> dict:
+        return dataclasses.asdict(self)
+
 
 def refill_edges(edges: np.array, dimension: int, edge_amount: int, generator: np.random.Generator) -> np.array:
     """Randomly insert `edge_amount` of edges."""
@@ -55,6 +58,7 @@ def remove_edges(edges: np.array, noise: float, generator: np.random.Generator):
                 bin_count[f] -= 1
                 rows_to_delete.append(i)
     return np.delete(edges, rows_to_delete, axis=0)
+
 
 
 @dataclass
