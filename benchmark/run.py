@@ -28,7 +28,7 @@ for mu in mus:
             #    'target_file': f'data/MultiMagna/yeast{i}_Y2H1.txt',
             #}) for i in range(5, 26, 5)
             #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': i, 'p': 0.2}) for i in range(5, 26, 5)
-            Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 10, 'p': i}) for i in range(0.1, 0.6, 0.1)
+            Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 10, 'p': i}) for i in [0.1, 0.2, 0.3, 0.4, 0.5]
             #Graph(GraphKind.BIO_CELEGANS, {}),
             #Graph(GraphKind.BIO_DMELA, {}),
             #Graph(GraphKind.CA_ERDOS, {}),
@@ -44,34 +44,33 @@ for mu in mus:
             #Graph(GraphKind.SOCFB_HAVERFORD76, {}),
             #Graph(GraphKind.SOCFB_SWARTHMORE42, {}),
         ],
-        algorithms=[
+        algorithms=np.array([
             #Algorithm(config, use_fugal=True),
-            Algorithm(replace(config, mu=mu, use_fugal=False)),
-            Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False),
-            Algorithm(replace(config, sinkhorn_regularization=0.1, mu=mu), use_fugal=False),
-            Algorithm(replace(config, sinkhorn_regularization=0.05, mu=mu), use_fugal=False),
+            [Algorithm(replace(config, mu=mu), use_fugal=False)                              for mu in mus],
+            [Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False) for mu in mus],
+            [Algorithm(replace(config, sinkhorn_regularization=0.1, mu=mu), use_fugal=False) for mu in mus],
+            [Algorithm(replace(config, sinkhorn_regularization=0.05, mu=mu), use_fugal=False)for mu in mus],
             #Algorithm(replace(config, sinkhorn_regularization=0.01), use_fugal=False),
             #Algorithm(replace(config, sinkhorn_threshold=1e-1), use_fugal=False),
             #Algorithm(replace(config, sinkhorn_threshold=1e-2), use_fugal=False),
             #Algorithm(replace(config, sinkhorn_threshold=1e-3), use_fugal=False),
             #Algorithm(replace(config, sinkhorn_threshold=1e-4), use_fugal=False),
-
-        ],
+        ]).flatten(),
         noise_levels=[
             #NoiseLevel(0.0, 0.0, False),
-            #NoiseLevel(0.1, 0.0, False),
-            NoiseLevel(0.2, 0.0, False),
+            NoiseLevel(0.1, 0.0, False),
+            #NoiseLevel(0.2, 0.0, False),
             #NoiseLevel(0.3, 0.0, False),
         ],
         num_runs=20,
-    ),
+    )
 
     #[graph.get(np.random.default_rng()) for graph in experiment.graphs]
-    results = experiment.run(),
+    results = experiment.run()
 
-    print([result.accuracy for _, _, _, result in results.all_results()]),
-    print([sum(result.profile.phase_times.values()) for _, _,_, result in results.all_results()]),
+    print([result.accuracy for _, _, _, result in results.all_results()])
+    print([sum(result.profile.phase_times.values()) for _, _,_, result in results.all_results()])
 
-    folder = "results",
+    folder = "results"
     #if not os.path.exists(folder): os.makedirs(folder)
     results.dump(folder)
