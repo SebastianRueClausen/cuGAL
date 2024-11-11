@@ -129,7 +129,7 @@ def bar_plot_results(results: ExperimentResults, plot: Plot):
     #    plt.vlines(pos[1:-1], 0, -0.4, color='black', lw=1.5, clip_on=False, transform=plt.gca().get_xaxis_transform())
 
         ## Draw second level axes ticklables
-        for ps0, ps1, lbl in zip(pos[:-1], pos[1:], [ExperimentResults.graph_descriptions(results.experiment.graphs)[str(g)]]): #[re.sub(" {|, ", "\n{", str(g)) for g in results.experiment.graphs]):
+        for ps0, ps1, lbl in zip(pos[:-1], pos[1:], [ExperimentResults.graph_descriptions(results.experiment.graphs)[str(g)] for g in results.experiment.graphs]): #[re.sub(" {|, ", "\n{", str(g)) for g in results.experiment.graphs]):
             plt.text((ps0 + ps1) / 2, -0.16, lbl, ha='center', clip_on=False, transform=plt.gca().get_xaxis_transform(), weight = 'bold', size=6)
         for i, res in enumerate(results.all_results()):
             plt.bar(i, res[3].accuracy, label=alg_desc[res[2]],
