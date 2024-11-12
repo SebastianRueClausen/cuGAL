@@ -45,7 +45,6 @@ for mu in mus:
             #Graph(GraphKind.SOCFB_SWARTHMORE42, {}),
         ],
         algorithms=np.array([
-        algorithms=np.array([
             #Algorithm(config, use_fugal=True),
             [Algorithm(replace(config, mu=mu, use_fugal=False))                              for mu in mus],
             [Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False) for mu in mus],
@@ -60,7 +59,6 @@ for mu in mus:
             #Algorithm(replace(config, sinkhorn_threshold=1e-2), use_fugal=False),
             #Algorithm(replace(config, sinkhorn_threshold=1e-3), use_fugal=False),
             #Algorithm(replace(config, sinkhorn_threshold=1e-4), use_fugal=False),
-        ]).flatten(),
         ]).flatten(),
         noise_levels=[
             #NoiseLevel(0.0, 0.0, False),

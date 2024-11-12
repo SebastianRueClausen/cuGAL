@@ -11,3 +11,6 @@ ENV_DIR
 *.egg*
 .vscode
 .venv
+.png
+.jpg
+.jpeg
