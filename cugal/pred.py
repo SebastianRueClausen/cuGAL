@@ -133,8 +133,19 @@ def find_quasi_permutation_matrix(
                 cuda_kernels.update_quasi_permutation(
                     P, K, u, v, alpha, is_log)
             else:
-                diff = update_quasi_permutation(
-                    P, K, u, v, alpha, config.sinkhorn_method)
+                diff = update_quasi_permutation(P, K, u, v, alpha, config.sinkhorn_method)
+                #scale = sinkhorn.scale_kernel_matrix_log if \
+                #    config.sinkhorn_method == SinkhornMethod.LOG else sinkhorn.scale_kernel_matrix
+                #q = scale(K, u, v)
+                #difference = P - q
+                #duality_gap = torch.trace(difference @ gradient.T)
+                #print(duality_gap)
+                #if duality_gap < config.frank_wolfe_threshold:
+                #    print("break")
+                #    break
+                #q -= P
+                #q *= alpha
+                #P += q
 
             if not config.frank_wolfe_threshold is None and 'diff' in locals():
                 if diff.max() < config.frank_wolfe_threshold:

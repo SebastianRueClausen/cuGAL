@@ -19,7 +19,7 @@ import FUGAL.Fugal as Fugal
 from typing import Self
 
 
-@dataclass
+@dataclass(frozen=True)
 class NoiseLevel:
     source_noise: float
     target_noise: float
@@ -391,10 +391,11 @@ class Experiment:
     def to_dict(self) -> dict:
         dict = dataclasses.asdict(self)
         dict['algorithms'] = [algorithm.to_dict()
-                              for algorithm in self.algorithms]
-        dict['graphs'] = [graph.to_dict() for graph in self.graphs]
-        dict['noise_levels'] = [dataclasses.asdict(
-            level) for level in self.noise_levels]
+                                for algorithm in self.algorithms]
+        dict['graphs'] = [graph.to_dict() 
+                                for graph in self.graphs]
+        dict['noise_levels'] = [dataclasses.asdict(level) 
+                                for level in self.noise_levels]
         return dict
 
     @classmethod

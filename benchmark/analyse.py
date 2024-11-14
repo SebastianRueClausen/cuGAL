@@ -137,6 +137,7 @@ def bar_plot_results(results: ExperimentResults, plot: Plot):
 
     ## Draw the Accuracy plot
     draw_x_axis_labels()
+    print("Legend handles labels ", plt.gca().get_legend_handles_labels())
     legend_without_duplicate_labels(plt.gca().get_legend_handles_labels()[1])
 
 
