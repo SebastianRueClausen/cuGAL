@@ -16,7 +16,7 @@ setup(
             "hungarian/hungarian.cu",
         ],
             extra_compile_args={
-            'nvcc': ["--threads", "20", "-O3"],
+            'nvcc': ["--threads", "20", "-O3", "--use_fast_math"],
         }),
     ],
     cmdclass={

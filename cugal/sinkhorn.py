@@ -2,7 +2,8 @@ import torch
 from cugal.config import Config, SinkhornMethod
 from cugal.profile import SinkhornProfile, TimeStamp
 from dataclasses import dataclass, field
-from typing import TypeAlias
+from typing import Optional, TypeAlias
+import math
 
 try:
     import cuda_kernels
@@ -136,6 +137,23 @@ def scale_kernel_matrix_log(K: torch.Tensor, log_u: torch.Tensor, log_v: torch.T
     return K
 
 
+def marginal_error(K: torch.Tensor, u: torch.Tensor, v: torch.Tensor) -> float:
+    return torch.sum(abs(torch.sum(scale_kernel_matrix(K.clone(), u, v), dim=0) - 1)).item()
+
+
+def marginal_error_log(K: torch.Tensor, log_u: torch.Tensor, log_v: torch.Tensor) -> float:
+    return torch.sum(abs(torch.sum(scale_kernel_matrix_log(K.clone(), log_u, log_v), dim=0) - 1)).item()
+
+
+def momentum_weight(errors: list[float]) -> Optional[float]:
+    if len(errors) < 2:
+        return None
+    ratio = min(errors[-1] / errors[-2], 0.99)
+    if math.isnan(ratio):
+        ratio = 0.99
+    return 2 / (1 + math.sqrt(1 - ratio))
+
+
 def sinkhorn_knopp(
     C: torch.Tensor,
     config: Config,
@@ -147,16 +165,26 @@ def sinkhorn_knopp(
     K = torch.exp(C / -config.sinkhorn_regularization)
     u = start.get_u(K, config)
 
+    errors = []
+    w = 1.0
+
     for iteration in range(config.sinkhorn_iterations):
         prev_v = v if iteration != 0 else u
         prev_u = u
 
-        v = 1 / (u @ K + M_EPS)
-        u = 1 / (K @ v + M_EPS)
+        v = prev_v ** (1 - w) * (1 / (u @ K + M_EPS)) ** w
+        u = prev_u ** (1 - w) * (1 / (K @ v + M_EPS)) ** w
 
         if iteration % config.sinkhorn_eval_freq == 0:
+            error = marginal_error(K, u, v)
             if relative_difference(u, prev_u) + relative_difference(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
+            errors.append(error)
+
+            w_new = momentum_weight(errors)
+            if not w_new is None:
+                if config.frank_wolfe_threshold is None:
+                    w = w_new
 
     start.update(K, u)
 
@@ -173,10 +201,7 @@ def loghorn(
     start: SinkhornInit = FixedInit(),
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     start_time = TimeStamp(config.device)
-
-    test_sinkhorn_reg = C.abs().max() / config.sinkhorn_regularization
-    K = - C / test_sinkhorn_reg
-    #print(K.abs().max())
+    K = - C / config.sinkhorn_regularization
 
     use_cuda = can_use_cuda(config)
     if use_cuda:
@@ -184,6 +209,9 @@ def loghorn(
 
     u = start.get_u(K, config)
     v = torch.zeros(K.shape[1], device=config.device, dtype=config.dtype)
+
+    errors = []
+    w = 1
 
     for iteration in range(config.sinkhorn_iterations):
         prev_v = torch.clone(v)
@@ -193,12 +221,20 @@ def loghorn(
             cuda_kernels.sinkhorn_log_step(K_transpose, u, v)
             cuda_kernels.sinkhorn_log_step(K, v, u)
         else:
-            v = -torch.logsumexp(K + u[:, None], 0)
-            u = -torch.logsumexp(K + v[None, :], 1)
+            v = v * (1 - w) - w * torch.logsumexp(K + u[:, None], 0)
+            u = u * (1 - w) - w * torch.logsumexp(K + v[None, :], 1)
 
         if iteration % config.sinkhorn_eval_freq == 0 and iteration != 0:
+            error = marginal_error_log(K, u, v)
             if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
+            errors.append(error)
+
+            w_new = momentum_weight(errors)
+            if not w_new is None:
+                if config.frank_wolfe_threshold is None:
+                    print(w_new)
+                    w = w_new
 
     start.update(K, u)
 
