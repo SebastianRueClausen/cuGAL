@@ -174,8 +174,11 @@ def loghorn(
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     start_time = TimeStamp(config.device)
 
-    test_sinkhorn_reg = C.abs().max() / config.sinkhorn_regularization
-    K = - C / test_sinkhorn_reg
+    if config.dynamic_sinkhorn_regularization:
+        sinkhorn_reg = C.abs().max() / config.sinkhorn_scaling
+        K = - C / sinkhorn_reg
+    else:
+        K = - C / config.sinkhorn_regularization
     #print(K.abs().max())
 
     use_cuda = can_use_cuda(config)

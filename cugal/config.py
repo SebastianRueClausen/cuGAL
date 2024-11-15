@@ -75,6 +75,12 @@ class Config:
     sinkhorn_iterations: int = 500
     """The maximum number of sinkhorn iterations performed."""
 
+    dynamic_sinkhorn_regularization: bool = False
+    """If true, the values of the cost matrix will be scaled to a fixed range."""
+
+    sinkhorn_scaling: float = 1.0
+    """The scaling factor used when dynamic_sinkhorn_regularization is True."""
+
     sinkhorn_threshold: float = 1e-3
     """The error threshold tolerated when running Sinkhorn."""
 
