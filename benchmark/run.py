@@ -20,6 +20,8 @@ config = Config(
     recompute_distance=True,
     hungarian_method=HungarianMethod.SCIPY,
     sinkhorn_regularization=1,
+    dynamic_sinkhorn_regularization=True,
+    sinkhorn_scaling=1,
     )
 mus = [0.1, 0.5, 1, 2]
 experiment = Experiment(
@@ -51,13 +53,14 @@ experiment = Experiment(
         #[Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.1, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.05, mu=mu), use_fugal=False)for mu in mus],
-        Algorithm(replace(config, sinkhorn_regularization=8), use_fugal=False),
-        Algorithm(replace(config, sinkhorn_regularization=16), use_fugal=False),
-        Algorithm(replace(config, sinkhorn_regularization=32), use_fugal=False),
-        Algorithm(replace(config, sinkhorn_regularization=48), use_fugal=False),
-        Algorithm(replace(config, sinkhorn_regularization=64), use_fugal=False),
-        Algorithm(replace(config, sinkhorn_regularization=96), use_fugal=False),
-        Algorithm(replace(config, sinkhorn_regularization=128), use_fugal=False),
+        Algorithm(replace(config, sinkhorn_scaling=32), use_fugal=False),
+        Algorithm(replace(config, sinkhorn_scaling=48), use_fugal=False),
+        Algorithm(replace(config, sinkhorn_scaling=64), use_fugal=False),
+        Algorithm(replace(config, sinkhorn_scaling=96), use_fugal=False),
+        Algorithm(replace(config, sinkhorn_scaling=128), use_fugal=False),
+        Algorithm(replace(config, sinkhorn_scaling=256), use_fugal=False),
+        Algorithm(replace(config, sinkhorn_scaling=512), use_fugal=False),
+        Algorithm(replace(config, dynamic_sinkhorn_regularization=False, sinkhorn_regularization=0.5), use_fugal=False)
         #[Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.1, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.05, mu=mu), use_fugal=False)for mu in mus],
@@ -74,7 +77,6 @@ experiment = Experiment(
         #NoiseLevel(0.3, 0.0, False),
     ],
     num_runs=10,
-    seed=1
 )
 
 #[graph.get(np.random.default_rng()) for graph in experiment.graphs]
@@ -85,4 +87,4 @@ print([sum(result.profile.phase_times.values()) for _, _,_, result in results.al
 
 folder = "results"
 #if not os.path.exists(folder): os.makedirs(folder)
-#results.dump(folder)
+results.dump(folder)

@@ -133,7 +133,7 @@ def bar_plot_results(results: ExperimentResults, plot: Plot):
             plt.text((ps0 + ps1) / 2, -0.16, lbl, ha='center', clip_on=False, transform=plt.gca().get_xaxis_transform(), weight = 'bold', size=6)
         for i, res in enumerate(results.all_results()):
             plt.bar(i, res[3].accuracy, label=alg_desc[res[2]],
-                    color=cmap(int.from_bytes(str(res[2]).encode(), 'little') % 20))
+                    color=cmap(int.from_bytes(str(res[2]).encode(), 'little') % 21))
 
     ## Draw the Accuracy plot
     draw_x_axis_labels()
@@ -149,7 +149,7 @@ def bar_plot_results(results: ExperimentResults, plot: Plot):
     plt.clf()
     for i, res in enumerate(results.all_results()):
         plt.bar(i, res[3].profile.time, label=alg_desc[res[2]], 
-                color=cmap(int.from_bytes(str(res[2]).encode(), 'little') % 20))
+                color=cmap(int.from_bytes(str(res[2]).encode(), 'little') % 21))
 
     draw_x_axis_labels()
     legend_without_duplicate_labels(plt.gca().get_legend_handles_labels()[1])
