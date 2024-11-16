@@ -20,7 +20,7 @@ config = Config(
     recompute_distance=True,
     hungarian_method=HungarianMethod.SCIPY,
     sinkhorn_regularization=1,
-    dynamic_sinkhorn_regularization=True
+    dynamic_sinkhorn_regularization=True,
     sinkhorn_scaling=1,
     )
 mus = [0.1, 0.5, 1, 2]
@@ -60,7 +60,7 @@ experiment = Experiment(
         Algorithm(replace(config, sinkhorn_scaling=128), use_fugal=False),
         Algorithm(replace(config, sinkhorn_scaling=256), use_fugal=False),
         Algorithm(replace(config, sinkhorn_scaling=512), use_fugal=False),
-        Algorithm(replace(config, dynamic_sinkhorn_regularization=True, sinkhorn_regularization=0.5), use_fugal=False)
+        Algorithm(replace(config, dynamic_sinkhorn_regularization=False, sinkhorn_regularization=0.5), use_fugal=False)
         #[Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.1, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.05, mu=mu), use_fugal=False)for mu in mus],
