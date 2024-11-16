@@ -171,11 +171,13 @@ class GraphKind(Enum):
     CA_ERDOS = "CA_ERDOS"
     CA_GRQC = "CA_GRQC"
     CA_NETSCIENCE = "CA_NETSCIENCE"
+    CA_ASTROPH = "CA_ASTROPH"
     BIO_DMELA = "BIO_DMELA"
     BIO_CELEGANS = "BIO_CELEGANS"
     IN_ARENAS = "IN_ARENAS"
     INF_POWER = "INF_POWER"
     INF_EUROROAD = "INF_EUROROAD"
+    EMAIL_ENRON = "EMAIL_ENRON"
     SOC_FACEBOOK = "SOC_FACEBOOK"
     SOC_HAMSTERSTER = "SOC_HAMSTERSTER"
     SOCFB_BOWDOIN47 = "SOCFB_BOWDOIN47"
@@ -248,8 +250,16 @@ class Graph:
                 graph_file = open("data/ca-GrQc.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
+            case GraphKind.CA_ASTROPH:
+                graph_file = open("data/CA-AstroPh.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
             case GraphKind.INF_EUROROAD:
                 graph_file = open("data/inf-euroroad.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.EMAIL_ENRON:
+                graph_file = open("data/email-Enron.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
             case GraphKind.SOC_FACEBOOK:
