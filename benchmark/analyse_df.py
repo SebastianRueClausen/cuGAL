@@ -225,15 +225,26 @@ def heatmap_plot_results(results: ExperimentResults, df: DataFrame, plot: Plot):
     num_algs    = len(results.experiment.algorithms)
     print("num_noises ", num_noises, " num_results ", num_results, " num_graphs ", num_graphs, " num_algs ", num_algs)
 
+
+    accuracy_matrix: pd.DataFrame
+
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     match plot.params['x_axis']:
         case 'g':
-            [print(a for a in list(df.groupby("graph", group_keys=True)))]
-            x_labels = list(df.groupby(['graph']))
-            accuracy_matrix = df.groupby(['graph'])['accuracy']
+            x_labels = list(df.assign(graph=df['graph'].astype(str))
+                         .groupby(['graph'])['graph_desc']
+                         .apply(lambda x: x.iloc[0])
+            )
+            acc_x_selection = (
+                df.assign(graph=df['graph'].astype(str))
+                  .groupby(['graph'])
+                )
         case 'a':
-            x_labels = [ExperimentResults.algorithms_descriptions(results.experiment.algorithms)[a] for a in results.experiment.algorithms]
-            accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[2] == a] for a in results.experiment.algorithms]
+            #x_labels = [ExperimentResults.algorithms_descriptions(results.experiment.algorithms)[a] for a in results.experiment.algorithms]
+            x_labels = list(df.groupby(['algorithm'])['algorithm_desc']
+                            .apply(lambda x: x.iloc[0])
+                )
+            accuracy_matrix = df.groupby(['algorithm'])['accuracy']
         case 'n':
             x_labels = [str(n.source_noise*100) + "% Noise" for n in results.experiment.noise_levels]
             accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[1] == n] for n in results.experiment.noise_levels]
@@ -244,11 +255,19 @@ def heatmap_plot_results(results: ExperimentResults, df: DataFrame, plot: Plot):
         
     match plot.params['y_axis']:
         case 'g':
-            y_labels = [ExperimentResults.graph_descriptions(results.experiment.graphs)[str(g)] for g in results.experiment.graphs]
-            accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[0] == g] for g in results.experiment.graphs]
+            y_labels = list(df.assign(graph=df['graph'].astype(str))
+                            .groupby(['graph'])['graph_desc']
+                            .apply(lambda x: x.iloc[0])
+                )
+            print(list(acc_x_selection['accuracy'].apply(lambda x: x)))
+            accuracy_matrix = acc_x_selection.groupby(['graph'])['accuracy'].apply(list)
         case 'a':
-            y_labels = [ExperimentResults.algorithms_descriptions(results.experiment.algorithms)[a] for a in results.experiment.algorithms]
-            accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[2] == a] for a in results.experiment.algorithms]
+            y_labels = list(df.assign(algorithm=df['algorithm'].astype(str))
+                            .groupby(['algorithm'])['algorithm_desc']
+                            .apply(lambda x: x.iloc[0])
+                )
+            print("x_acc ", acc_x_selection)
+            accuracy_matrix = acc_x_selection.groupby(['algorithm'])['accuracy']
         case 'n':
             y_labels = [str(n.source_noise*100) + "% Noise" for n in results.experiment.noise_levels]
             accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[1] == n] for n in results.experiment.noise_levels]
@@ -258,7 +277,7 @@ def heatmap_plot_results(results: ExperimentResults, df: DataFrame, plot: Plot):
     print("x_labels ", x_labels, " y_labels ", y_labels, " accuracy_matrix ", accuracy_matrix)
 
 
-    im = ax.imshow(accuracy_matrix)
+    ax.imshow(accuracy_matrix, cmap='viridis')
     ax.set_xticks(np.arange(len(x_labels)), x_labels)
     ax.set_yticks(np.arange(len(y_labels)), y_labels)
 

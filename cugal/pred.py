@@ -56,8 +56,10 @@ def sparse_gradient(
     iteration: int,
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
-        gradient = B.mul(A.mul(P).T).T
+        A_mul_P = A.mul(P)
+        gradient = B.mul(A_mul_P.T).T
         gradient *= -2
+        del A_mul_P
     else:
         gradient = B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
             - B.mul(A.mul(P).T).T
@@ -105,12 +107,16 @@ def find_quasi_permutation_matrix(
 
     sinkhorn_cache = sinkhorn.init_from_cache_size(config.sinkhorn_cache_size)
 
+    #print("A size", A.number_of_nodes())
+
     if type(A) is Adjacency:
         P = torch.full([A.number_of_nodes()] * 2, fill_value=1 /
                        A.number_of_nodes(), device=config.device, dtype=config.dtype)
     else:
         P = torch.full([A.shape[0]] * 2, fill_value=1 /
                        A.shape[0], device=config.device, dtype=config.dtype)
+
+    #print("P size", P.size())
 
     for λ in tqdm(range(config.iter_count), desc="λ"):
         for it in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
@@ -154,6 +160,8 @@ def find_quasi_permutation_matrix(
 
             if 'diff' in locals():
                 del diff
+            
+            del K, u, v
 
     return P
 
@@ -224,10 +232,15 @@ def cugal(
     node_count = max(max(source.nodes()), max(target.nodes()))
     source.add_nodes_from(set(range(node_count)) - set(source.nodes()))
     target.add_nodes_from(set(range(node_count)) - set(target.nodes()))
+    
+    #print("source and target size: ",
+        #source.size(), target.size())
 
     if config.use_sparse_adjacency and "cuda" in config.device:
         source, target = Adjacency.from_graph(
             source, config.device), Adjacency.from_graph(target, config.device)
+        
+    #print("Adjacency size:", source.number_of_nodes())
 
     # Feature extraction
     start_time = TimeStamp(config.device)
@@ -243,6 +256,7 @@ def cugal(
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
     np.savetxt("source_features.csv", features.source.cpu().numpy(), delimiter=",")
 
+    
     # Frank-Wolfe
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, features, config, profile)

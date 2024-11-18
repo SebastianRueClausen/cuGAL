@@ -48,6 +48,8 @@ class Adjacency:
         """Create from networkx graph."""
 
         node_count = graph.number_of_nodes()
+        #print("node count", graph.size())
+        #print("node count'", len(list(graph.nodes)))
         dtype = torch.int32
 
         edges = list(nx.edges(graph))
@@ -131,6 +133,7 @@ class Adjacency:
         assert matrix.shape[0] == self.number_of_nodes(
         ) and matrix.shape[1] == self.number_of_nodes(), "matrix must match size"
 
+        #print("matrx size", matrix.shape)
         use_cuda = \
             has_cuda and "cuda" in str(
                 matrix.device) and matrix.dtype in [torch.float32, torch.float64]

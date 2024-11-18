@@ -40,6 +40,7 @@ experiment = Experiment(
         Graph(GraphKind.IN_ARENAS, {}),
         Graph(GraphKind.INF_POWER, {}),
         Graph(GraphKind.INF_EUROROAD, {}),
+        Graph(GraphKind.EMAIL_ENRON, {}),
         #Graph(GraphKind.SOC_FACEBOOK, {}),
         #Graph(GraphKind.SOC_HAMSTERSTER, {}),
         #Graph(GraphKind.SOCFB_BOWDOIN47, {}),
@@ -60,6 +61,7 @@ experiment = Experiment(
         Algorithm(replace(config, sinkhorn_scaling=128), use_fugal=False),
         Algorithm(replace(config, sinkhorn_scaling=256), use_fugal=False),
         Algorithm(replace(config, sinkhorn_scaling=512), use_fugal=False),
+        Algorithm(replace(config, sinkhorn_scaling=1024), use_fugal=False),
         Algorithm(replace(config, dynamic_sinkhorn_regularization=False, sinkhorn_regularization=0.5), use_fugal=False)
         #[Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.1, mu=mu), use_fugal=False) for mu in mus],
