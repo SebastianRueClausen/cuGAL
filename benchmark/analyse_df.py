@@ -267,7 +267,7 @@ def heatmap_plot_results(results: ExperimentResults, df: DataFrame, plot: Plot):
                             .apply(lambda x: x.iloc[0])
                 )
             print("x_acc ", acc_x_selection)
-            accuracy_matrix = acc_x_selection.groupby(['algorithm'])['accuracy']
+            accuracy_matrix = acc_x_selection.apply(lambda x: x.iloc[0]).groupby(['algorithm']).apply(lambda x: x)
         case 'n':
             y_labels = [str(n.source_noise*100) + "% Noise" for n in results.experiment.noise_levels]
             accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[1] == n] for n in results.experiment.noise_levels]
@@ -275,8 +275,9 @@ def heatmap_plot_results(results: ExperimentResults, df: DataFrame, plot: Plot):
             raise ValueError('Invalid y-axis value')
         
     print("x_labels ", x_labels, " y_labels ", y_labels, " accuracy_matrix ", accuracy_matrix)
+    
 
-
+    accuracy_matrix = np.array(accuracy_matrix)
     ax.imshow(accuracy_matrix, cmap='viridis')
     ax.set_xticks(np.arange(len(x_labels)), x_labels)
     ax.set_yticks(np.arange(len(y_labels)), y_labels)

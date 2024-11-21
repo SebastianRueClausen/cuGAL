@@ -156,13 +156,14 @@ def find_quasi_permutation_matrix(
             if not config.frank_wolfe_threshold is None and 'diff' in locals():
                 if diff.max() < config.frank_wolfe_threshold:
                     del diff
+                    profile.frank_wolfe_iterations += it
                     break
 
             if 'diff' in locals():
                 del diff
             
             del K, u, v
-
+        profile.frank_wolfe_iterations += config.frank_wolfe_iter_count
     return P
 
 

@@ -48,6 +48,7 @@ class TimeStamp:
 @dataclass
 class Profile:
     sinkhorn_profiles: list[SinkhornProfile] = field(default_factory=list)
+    frank_wolfe_iterations: int = 0
     phase_times: dict[Phase, float] = field(default_factory=dict)
     time: float = 0.0
     max_memory: int | None = None
