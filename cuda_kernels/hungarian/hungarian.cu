@@ -69,6 +69,7 @@ __managed__ __device__ uint32_t match_count;
 __managed__ __device__ bool goto_5;
 __managed__ __device__ bool repeat_kernel;
 
+//
 __global__ void calculate_min_in_rows(Constants constants, float *slack, float *min_in_rows) {
     const auto tid = threadIdx.x, bid = blockIdx.x;
     float min = INFINITY;
@@ -109,7 +110,7 @@ __global__ void compress_matrix(Constants constants, float *slack, uint32_t *zer
     const auto index = blockDim.x * blockIdx.x + threadIdx.x;
     if (index >= constants.dimension * constants.dimension)
         return;
-    if (std::abs(slack[index]) < 0.0001) {
+    if (std::abs(slack[index]) < 0.000001) {
         const auto block = index / constants.data_block_size;
         const auto base_index = block * constants.data_block_size;
         const auto offset = atomicAdd(zeros_in_block + block, 1);

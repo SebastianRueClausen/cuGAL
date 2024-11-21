@@ -2,8 +2,10 @@ import torch
 import matplotlib.pyplot as plt
 
 
-def heatmap(matrix: torch.Tensor):
+def heatmap(matrix: torch.Tensor, path: str | None = None):
     plt.imshow(matrix.cpu().numpy(), cmap='hot', interpolation='nearest')
+    if not path is None:
+        plt.savefig(path)
     plt.show()
 
 

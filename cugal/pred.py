@@ -15,6 +15,7 @@ from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import Features
 
 from cugal.greedy_lap import greedy_lap
+import cugal.util as util
 
 try:
     import cuda_kernels
@@ -112,8 +113,11 @@ def find_quasi_permutation_matrix(
         P = torch.full([A.shape[0]] * 2, fill_value=1 /
                        A.shape[0], device=config.device, dtype=config.dtype)
 
+    it = 2
+    import math
     for λ in tqdm(range(config.iter_count), desc="λ"):
-        for it in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
+        it //= math.ceil(((λ + 1) / 2))
+        for _ in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
             start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
@@ -128,25 +132,27 @@ def find_quasi_permutation_matrix(
             profile.log_time(start_time, Phase.SINKHORN)
 
             alpha = 2.0 / float(2.0 + it)
-            if has_cuda and 'cuda' in config.device and config.dtype == torch.float32:
+            if True and has_cuda and 'cuda' in config.device and config.dtype == torch.float32:
                 is_log = config.sinkhorn_method == SinkhornMethod.LOG
                 cuda_kernels.update_quasi_permutation(
                     P, K, u, v, alpha, is_log)
             else:
-                diff = update_quasi_permutation(P, K, u, v, alpha, config.sinkhorn_method)
-                #scale = sinkhorn.scale_kernel_matrix_log if \
+                diff = update_quasi_permutation(
+                    P, K, u, v, alpha, config.sinkhorn_method)
+                # scale = sinkhorn.scale_kernel_matrix_log if \
                 #    config.sinkhorn_method == SinkhornMethod.LOG else sinkhorn.scale_kernel_matrix
-                #q = scale(K, u, v)
-                #difference = P - q
-                #duality_gap = torch.trace(difference @ gradient.T)
-                #print(duality_gap)
-                #if duality_gap < config.frank_wolfe_threshold:
+                # q = scale(K, u, v)
+                # difference = P - q
+                # duality_gap = torch.trace(difference @ gradient.T)
+                # print(duality_gap)
+                # if duality_gap < config.frank_wolfe_threshold:
                 #    print("break")
                 #    break
-                #q -= P
-                #q *= alpha
-                #P += q
+                # q -= P
+                # q *= alpha
+                # P += q
 
+            """
             if not config.frank_wolfe_threshold is None and 'diff' in locals():
                 if diff.max() < config.frank_wolfe_threshold:
                     del diff
@@ -154,6 +160,9 @@ def find_quasi_permutation_matrix(
 
             if 'diff' in locals():
                 del diff
+
+            it += 1
+            """
 
     return P
 
@@ -171,7 +180,7 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
             column_indices = torch.empty(quasi_permutation.size(
                 0), device=config.device, dtype=torch.int32)
             cuda_kernels.dense_hungarian(
-                quasi_permutation * -1.0, column_indices)
+                1 - quasi_permutation, column_indices)
             column_indices = column_indices.cpu().numpy()
         case HungarianMethod.SPARSE:
             sparse = quasi_permutation.to_sparse_csr().cpu()
@@ -191,20 +200,14 @@ def convert_to_permutation_matrix(
     config: Config,
     profile: Profile,
 ) -> tuple[np.array, list[tuple[int, int]]]:
-    """Convert quasi permutation matrix M into true permutation matrix.
-    Also returns a mapping from source to target graph.
-    """
-
     n = len(quasi_permutation)
-
     col_ind = hungarian(quasi_permutation, config, profile)
-
     permutation = np.zeros((n, n))
     mapping = []
     for i in range(n):
         permutation[i][col_ind[i]] = 1
         mapping.append((i, col_ind[i]))
-    return permutation, mapping
+    return quasi_permutation.cpu().numpy(), mapping
 
 
 def cugal(
@@ -229,11 +232,12 @@ def cugal(
         source, target = Adjacency.from_graph(
             source, config.device), Adjacency.from_graph(target, config.device)
 
-    # Feature extraction
+    # Feature extraction.
     start_time = TimeStamp(config.device)
     features = Features.create(source, target, config)
+
+    # check source and target feature tensors have no NaN values.
     if config.safe_mode:
-        # check source and target feature tensors have no NaN values
         assert features.source.isfinite().all(), "source feature tensor has NaN values"
         assert features.target.isfinite().all(), "target feature tensor has NaN values"
 
@@ -241,19 +245,18 @@ def cugal(
         features = features.distance_matrix()
 
     profile.log_time(start_time, Phase.FEATURE_EXTRACTION)
-    np.savetxt("source_features.csv", features.source.cpu().numpy(), delimiter=",")
 
-    # Frank-Wolfe
+    # Frank-Wolfe.
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, features, config, profile)
     if config.safe_mode:
         # check quasi_permutation tensor has no NaN values
         assert quasi_permutation.isfinite().all(), "quasi_permutation tensor has NaN values"
 
-    # Round to permutation matrix
+    # Round to permutation matrix.
     output = convert_to_permutation_matrix(quasi_permutation, config, profile)
     if config.safe_mode:
-        # check output permutation matrix has no NaN values
+        # Check output permutation matrix has no NaN values.
         assert np.isfinite(output[0]).all(
         ), "output permutation matrix has NaN values"
 
