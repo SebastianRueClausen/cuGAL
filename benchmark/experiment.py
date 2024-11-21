@@ -60,7 +60,6 @@ def remove_edges(edges: np.array, noise: float, generator: np.random.Generator):
     return np.delete(edges, rows_to_delete, axis=0)
 
 
-
 @dataclass
 class GeneratedGraph:
     source_edges: np.array
@@ -153,7 +152,6 @@ class Algorithm:
         return cls(config=Config.from_dict(dict['config']), use_fugal=dict['use_fugal'])
 
 
-
 def create_graph_from_str(file: str) -> nx.Graph:
     """
     Creates a graph from a string.
@@ -194,6 +192,7 @@ class GraphKind(Enum):
 
     # Averaged results (only used for analysis)
     AVERAGED = "AVERAGED"
+
 
 @dataclass(frozen=True)
 class Graph:
@@ -344,7 +343,7 @@ class Result:
             alignment_accuracy(answer, mapping),
             profile,
         )
-    
+
     @staticmethod
     def average(results: list[Self]) -> Self:
         ics = sum(result.ics for result in results) / len(results)
@@ -353,7 +352,6 @@ class Result:
         accuracy = sum(result.accuracy for result in results) / len(results)
         profile = Profile.average([result.profile for result in results])
         return Result(ics, ec, sss, accuracy, profile)
-
 
     def __str__(self) -> str:
         metrics = [self.ics, self.ec, self.sss,
@@ -401,10 +399,10 @@ class Experiment:
     def to_dict(self) -> dict:
         dict = dataclasses.asdict(self)
         dict['algorithms'] = [algorithm.to_dict()
-                                for algorithm in self.algorithms]
-        dict['graphs'] = [graph.to_dict() 
-                                for graph in self.graphs]
-        dict['noise_levels'] = [dataclasses.asdict(level) 
+                              for algorithm in self.algorithms]
+        dict['graphs'] = [graph.to_dict()
+                          for graph in self.graphs]
+        dict['noise_levels'] = [dataclasses.asdict(level)
                                 for level in self.noise_levels]
         return dict
 
@@ -440,17 +438,13 @@ class Experiment:
                 print(f"Running with noise level {str(noise_level)}")
 
                 noise_results = []
-                sources, targets, source_mappings, target_mappings = [], [], [], []
+                sources, targets, source_mappings = [], [], []
                 for i in range(self.num_runs):
                     source, target, source_mapping, _ = generate_graph(
                         source_graph, target_graph, generator, noise_level)
                     sources.append(source)
                     targets.append(target)
                     source_mappings.append(source_mapping)
-                
-                # save svg of graph
-                # nx.draw(source, with_labels=False, node_size=2)
-                # plt.savefig("source_graph.svg")
 
                 for algorithm in self.algorithms:
                     print(f"Running with algorithm {str(algorithm)}")
@@ -462,9 +456,9 @@ class Experiment:
                             start_time = TimeStamp('cpu')
                             _, answer = Fugal.main(
                                 {"Src": edges_to_adjacency_matrix(np.array(source.edges),
-                                                                source_mappings[i].shape[0]),
-                                "Tar": edges_to_adjacency_matrix(np.array(target.edges),
-                                                                source_mappings[i].shape[0])},
+                                                                  source_mappings[i].shape[0]),
+                                 "Tar": edges_to_adjacency_matrix(np.array(target.edges),
+                                                                  source_mappings[i].shape[0])},
                                 algorithm.config.iter_count,
                                 True, algorithm.config.mu
                             )
@@ -473,12 +467,12 @@ class Experiment:
                         else:
                             _, answer = cugal(
                                 sources[i], targets[i], algorithm.config, profile)
-                        
+
                         if self.save_alignment:
                             with open(str(datetime.datetime.now()) + ".txt", "w") as f:
                                 f.write("\n".join(
                                     f"{x} {y}" for x, y in answer))
-                        
+
                         run_results.append(Result.calculate(
                             profile,
                             nx.to_numpy_array(sources[i]),
@@ -488,7 +482,6 @@ class Experiment:
                         ))
 
                     noise_results.append(Result.average(run_results))
-                            
                 graph_results.append(noise_results)
             results.append(graph_results)
         return ExperimentResults.from_results(self, results)
@@ -565,7 +558,8 @@ class ExperimentResults:
                 description += "FUGAL" if algorithm.use_fugal else "cuGAL"
             as_dict = algorithm.config.to_dict()
             for field in different_fields:
-                if algorithm.use_fugal: continue
+                if algorithm.use_fugal:
+                    continue
                 description += f"-{field}: {str(as_dict[field])}"
             descriptions[algorithm] = description
         return descriptions
@@ -583,5 +577,5 @@ class ExperimentResults:
             for field in different_fields:
                 description += f"-{field}: {str(graph.parameters[field])}"
             descriptions[str(graph)] = description
-        
+
         return descriptions

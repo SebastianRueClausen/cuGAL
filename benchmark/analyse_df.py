@@ -161,7 +161,8 @@ def bar_plot_results(results: ExperimentResults, df: DataFrame, plot: Plot):
     # Draw the Time plot
     plt.clf()
     for i, res in enumerate(results.all_results()):
-        plt.bar(i, res[3].profile.time, label=alg_desc[res[2]], 
+        plt.bar(i, float(res['time']), 
+                label=res['accuracy'], 
                 color=cmap(int.from_bytes(str(res[2]).encode(), 'little') % 20))
 
     #draw_x_axis_labels()
