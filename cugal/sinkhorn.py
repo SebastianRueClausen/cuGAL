@@ -223,24 +223,26 @@ def loghorn(
         prev_v = torch.clone(v)
         prev_u = torch.clone(u)
 
-        if use_cuda:
+        if False and use_cuda:
             cuda_kernels.sinkhorn_log_step(K_transpose, u, v)
             cuda_kernels.sinkhorn_log_step(K, v, u)
         else:
             v = v * (1 - w) - w * torch.logsumexp(K + u[:, None], 0)
             u = u * (1 - w) - w * torch.logsumexp(K + v[None, :], 1)
 
+            if iteration <= 200:
+                error = marginal_error_log(K, u, v)
+                errors.append(error)
         if iteration % config.sinkhorn_eval_freq == 0 and iteration != 0:
-            error = marginal_error_log(K, u, v)
             if relative_difference_log(u, prev_u) + relative_difference_log(v, prev_v) < config.sinkhorn_threshold * 2:
                 break
-            errors.append(error)
-
-            w_new = momentum_weight(errors)
-            if not w_new is None:
-                if config.frank_wolfe_threshold is None:
-                    print(w_new)
-                    w = w_new
+            
+            if iteration == 200:
+                w_new = momentum_weight(errors)
+                if not w_new is None:
+                    if config.sinkhorn_momentum:
+                        #print(w_new)
+                        w = w_new
 
     start.update(K, u)
 

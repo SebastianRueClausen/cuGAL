@@ -87,6 +87,9 @@ class Config:
     sinkhorn_eval_freq: int = 10
     """How many Sinhorn iterations performed between checking for the potential of stopping."""
 
+    sinkhorn_momentum: bool = False
+    """If true, the Sinkhorn algorithm will use momentum."""
+
     mu: float = 0.5
     """The contribution of node features in finding the alignment."""
 
