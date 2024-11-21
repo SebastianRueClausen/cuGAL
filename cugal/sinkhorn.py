@@ -37,6 +37,8 @@ def marginal_error(K: torch.Tensor, u: torch.Tensor, v: torch.Tensor) -> float:
 def marginal_error_log(K: torch.Tensor, log_u: torch.Tensor, log_v: torch.Tensor) -> float:
     if has_cuda:
         return cuda_kernels.sinkhorn_log_marginal(K, log_u, log_v)
+        assert abs(true - cuda) < 1e-4
+        return cuda
     return torch.sum(abs(torch.sum(scale_kernel_matrix_log(K.clone(), log_u, log_v), dim=0) - 1)).item()
 
 
@@ -99,6 +101,7 @@ class SinkhornState:
                 momentum = self.lehmann_momentum(config, errors)
         profile.iteration_count = iteration + 1
         profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
+        profile.errors = errors
         return K, self.u, self.v
 
     def solve_standard(
@@ -122,6 +125,7 @@ class SinkhornState:
                 momentum = self.lehmann_momentum(config, errors)
         profile.iteration_count = iteration + 1
         profile.time = TimeStamp(config.device).elapsed_seconds(start_time)
+        profile.errors = errors
         return K, self.u, self.v
 
     def solve(
