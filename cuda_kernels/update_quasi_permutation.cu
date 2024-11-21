@@ -16,7 +16,7 @@ __global__ void log_kernel(
     const auto bid = blockIdx.x;
 #pragma unroll
     for (auto col = tid; col < size; col += blockDim.x) {
-        float scaled = expf(K[bid][col] + log_v[col] + log_u[bid]);
+        float scaled = __expf(K[bid][col] + log_v[col] + log_u[bid]);
         P[bid][col] += (scaled - P[bid][col]) * alpha;
     }
 }

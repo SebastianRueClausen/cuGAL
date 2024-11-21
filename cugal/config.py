@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 import dataclasses
 from enum import Enum
+from typing import Optional
 
 import torch
 
@@ -98,6 +99,8 @@ class Config:
 
     sinkhorn_cache_size: int = 0
     """The size of the cache used to warm-start Sinkhorn."""
+
+    sinkhorn_momentum_start: Optional[int] = None
 
     recompute_distance: bool = False
     """Avoid storing distance matrix by doing recalculating each iteration."""
