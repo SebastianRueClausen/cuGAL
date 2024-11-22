@@ -37,8 +37,6 @@ def marginal_error(K: torch.Tensor, u: torch.Tensor, v: torch.Tensor) -> float:
 def marginal_error_log(K: torch.Tensor, log_u: torch.Tensor, log_v: torch.Tensor) -> float:
     if has_cuda:
         return cuda_kernels.sinkhorn_log_marginal(K, log_u, log_v)
-        assert abs(true - cuda) < 1e-4
-        return cuda
     return torch.sum(abs(torch.sum(scale_kernel_matrix_log(K.clone(), log_u, log_v), dim=0) - 1)).item()
 
 
@@ -63,10 +61,10 @@ class SinkhornState:
 
     def lehmann_momentum(self, config: Config, errors: list[float]) -> float:
         if config.sinkhorn_momentum_start is None or len(errors) * config.sinkhorn_eval_freq < config.sinkhorn_momentum_start:
-            return 1
+            return 1.0
         index = config.sinkhorn_momentum_start // config.sinkhorn_eval_freq
         if len(errors) < index - 1:
-            return 1
+            return 1.0
         ratio = min(errors[index - 1] / errors[index - 2], 0.99)
         if math.isnan(ratio):
             ratio = 0.99
@@ -84,11 +82,12 @@ class SinkhornState:
         K = - C / config.sinkhorn_regularization
         if use_cuda:
             K_transpose = K.t().contiguous()
-        errors, momentum = [], 1
+        errors, momentum = [], 1.0
         for iteration in range(config.sinkhorn_iterations):
             if use_cuda:
-                cuda_kernels.sinkhorn_log_step(K_transpose, self.u, self.v)
-                cuda_kernels.sinkhorn_log_step(K, self.v, self.u)
+                cuda_kernels.sinkhorn_log_step(
+                    K_transpose, self.u, self.v, momentum)
+                cuda_kernels.sinkhorn_log_step(K, self.v, self.u, momentum)
             else:
                 self.v = self.v * (1 - momentum) - momentum * \
                     torch.logsumexp(K + self.u[:, None], 0)
