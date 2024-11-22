@@ -81,6 +81,7 @@ class Features:
             target_features = extract_features_cuda(
                 target, config).to(config.dtype)
         else:
+            assert type(source) == nx.Graph, "expected cuda to be available"
             source_features = torch.tensor(extract_features_nx(
                 source), device=config.device, dtype=config.dtype)
             target_features = torch.tensor(extract_features_nx(

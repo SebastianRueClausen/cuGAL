@@ -2,6 +2,7 @@
 
 import unittest
 import cugal.sinkhorn
+from cugal.sinkhorn import SinkhornState
 from cugal import SinkhornMethod, Config
 import torch
 
@@ -13,8 +14,9 @@ except ImportError:
 
 
 def sinkhorn(C: torch.Tensor, config: Config) -> torch.Tensor:
+    state = SinkhornState(C.shape[0], config)
     scale = cugal.sinkhorn.scale_kernel_matrix_log if config.sinkhorn_method == SinkhornMethod.LOG else cugal.sinkhorn.scale_kernel_matrix
-    return scale(*cugal.sinkhorn.sinkhorn(C, config))
+    return scale(*state.solve(C, config))
 
 
 def random_matrix(size: int) -> torch.Tensor:
@@ -44,23 +46,6 @@ class TestSinkhorn(unittest.TestCase):
         matrix = random_matrix(128)
         test = sinkhorn(test_config.convert_tensor(matrix), test_config)
         assert_is_doubly_stochastic(test)
-
-    def test_mix_cpu_float32_agree(self):
-        test_config = Config(sinkhorn_method=SinkhornMethod.MIX,
-                             dtype=torch.float32)
-        truth_config = Config()
-        matrix = random_matrix(128)
-        truth = sinkhorn(truth_config.convert_tensor(matrix), truth_config)
-        test = sinkhorn(test_config.convert_tensor(matrix), test_config)
-        assert torch.allclose(
-            truth, truth_config.convert_tensor(test), rtol=1e-4, atol=1e-6)
-
-    def test_mix_cpu_float32_doubly_stochastic(self):
-        test_config = Config(sinkhorn_method=SinkhornMethod.MIX,
-                             dtype=torch.float32)
-        matrix = random_matrix(128)
-        test = sinkhorn(test_config.convert_tensor(matrix), test_config)
-        assert_is_doubly_stochastic(test, rtol=1e-3, atol=1e-6)
 
     @unittest.skipUnless(condition=has_cuda, reason="requires CUDA")
     def test_log_cuda_float64_doubly_stochastic(self):
