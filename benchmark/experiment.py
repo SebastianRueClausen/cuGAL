@@ -15,7 +15,7 @@ import gzip
 import datetime
 import json
 import scipy.sparse as sps
-import FUGAL.Fugal as Fugal
+import fugal.Fugal as Fugal
 from typing import Self
 
 
@@ -470,8 +470,7 @@ class Experiment:
                             np.array([x for _, x in answer]),
                             source_mappings[i],
                         ))
-
-                    noise_results.append(Result.average(run_results))
+                    noise_results.append(Result.average(run_results) if len(run_results) > 1 else run_results[0])
                 graph_results.append(noise_results)
             results.append(graph_results)
         return ExperimentResults.from_results(self, results)

@@ -208,7 +208,6 @@ def cugal(
     start_time = TimeStamp(config.device)
     features = Features.create(source, target, config)
 
-    # check source and target feature tensors have no NaN values.
     if config.safe_mode:
         assert features.source.isfinite().all(), "source feature tensor has NaN values"
         assert features.target.isfinite().all(), "target feature tensor has NaN values"
@@ -222,13 +221,11 @@ def cugal(
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, features, config, profile)
     if config.safe_mode:
-        # check quasi_permutation tensor has no NaN values
         assert quasi_permutation.isfinite().all(), "quasi_permutation tensor has NaN values"
 
     # Round to permutation matrix.
     output = convert_to_permutation_matrix(quasi_permutation, config, profile)
     if config.safe_mode:
-        # Check output permutation matrix has no NaN values.
         assert np.isfinite(output[0]).all(
         ), "output permutation matrix has NaN values"
 
