@@ -13,9 +13,9 @@ from cugal import sinkhorn
 from cugal.config import Config, HungarianMethod, SinkhornMethod
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import Features
+from cugal.sinkhorn import SinkhornState
 
 from cugal.greedy_lap import greedy_lap
-import cugal.util as util
 
 try:
     import cuda_kernels
@@ -57,10 +57,8 @@ def sparse_gradient(
     iteration: int,
 ) -> torch.Tensor:
     if A is A_transpose and B is B_transpose:
-        A_mul_P = A.mul(P)
-        gradient = B.mul(A_mul_P.T).T
+        gradient = B.mul(A.mul(P).T).T
         gradient *= -2
-        del A_mul_P
     else:
         gradient = B_transpose.mul(A_transpose.mul(P, negate_lhs=True).T).T \
             - B.mul(A.mul(P).T).T
@@ -91,6 +89,8 @@ def find_quasi_permutation_matrix(
     config: Config,
     profile: Profile,
 ) -> torch.Tensor:
+    sinkhorn_state = SinkhornState(A.number_of_nodes(), config)
+
     if config.use_sparse_adjacency:
         if not type(A) is Adjacency:
             assert not nx.is_directed(
@@ -106,10 +106,6 @@ def find_quasi_permutation_matrix(
         B = torch.tensor(nx.to_numpy_array(
             B, nodelist=sorted(B.nodes())), dtype=config.dtype, device=config.device)
 
-    sinkhorn_cache = sinkhorn.init_from_cache_size(config.sinkhorn_cache_size)
-
-    #print("A size", A.number_of_nodes())
-
     if type(A) is Adjacency:
         P = torch.full([A.number_of_nodes()] * 2, fill_value=1 /
                        A.number_of_nodes(), device=config.device, dtype=config.dtype)
@@ -117,11 +113,8 @@ def find_quasi_permutation_matrix(
         P = torch.full([A.shape[0]] * 2, fill_value=1 /
                        A.shape[0], device=config.device, dtype=config.dtype)
 
-    it = 2
-    import math
     for λ in tqdm(range(config.iter_count), desc="λ"):
-        it //= math.ceil(((λ + 1) / 2))
-        for _ in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
+        for it in tqdm(range(1, config.frank_wolfe_iter_count + 1), desc="frank-wolfe", leave=False):
             start_time = TimeStamp(config.device)
             gradient_function = partial(sparse_gradient, A, B, A, B) \
                 if config.use_sparse_adjacency else partial(dense_gradient, A, B)
@@ -130,8 +123,7 @@ def find_quasi_permutation_matrix(
 
             start_time = TimeStamp(config.device)
             sinkhorn_profile = SinkhornProfile()
-            K, u, v = sinkhorn.sinkhorn(
-                gradient, config, sinkhorn_profile, sinkhorn_cache)
+            K, u, v = sinkhorn_state.solve(gradient, config, sinkhorn_profile)
             profile.sinkhorn_profiles.append(sinkhorn_profile)
             profile.log_time(start_time, Phase.SINKHORN)
 
@@ -143,35 +135,7 @@ def find_quasi_permutation_matrix(
             else:
                 diff = update_quasi_permutation(
                     P, K, u, v, alpha, config.sinkhorn_method)
-                # scale = sinkhorn.scale_kernel_matrix_log if \
-                #    config.sinkhorn_method == SinkhornMethod.LOG else sinkhorn.scale_kernel_matrix
-                # q = scale(K, u, v)
-                # difference = P - q
-                # duality_gap = torch.trace(difference @ gradient.T)
-                # print(duality_gap)
-                # if duality_gap < config.frank_wolfe_threshold:
-                #    print("break")
-                #    break
-                # q -= P
-                # q *= alpha
-                # P += q
 
-            """
-            if not config.frank_wolfe_threshold is None and 'diff' in locals():
-                if diff.max() < config.frank_wolfe_threshold:
-                    del diff
-                    profile.frank_wolfe_iterations += it
-                    break
-
-            if 'diff' in locals():
-                del diff
-
-            it += 1
-            """
-
-            
-            del K, u, v
-        profile.frank_wolfe_iterations += config.frank_wolfe_iter_count
     return P
 
 
@@ -235,21 +199,15 @@ def cugal(
     node_count = max(max(source.nodes()), max(target.nodes()))
     source.add_nodes_from(set(range(node_count)) - set(source.nodes()))
     target.add_nodes_from(set(range(node_count)) - set(target.nodes()))
-    
-    #print("source and target size: ",
-        #source.size(), target.size())
 
     if config.use_sparse_adjacency and "cuda" in config.device:
         source, target = Adjacency.from_graph(
             source, config.device), Adjacency.from_graph(target, config.device)
-        
-    #print("Adjacency size:", source.number_of_nodes())
 
     # Feature extraction.
     start_time = TimeStamp(config.device)
     features = Features.create(source, target, config)
 
-    # check source and target feature tensors have no NaN values.
     if config.safe_mode:
         assert features.source.isfinite().all(), "source feature tensor has NaN values"
         assert features.target.isfinite().all(), "target feature tensor has NaN values"
@@ -263,13 +221,11 @@ def cugal(
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, features, config, profile)
     if config.safe_mode:
-        # check quasi_permutation tensor has no NaN values
         assert quasi_permutation.isfinite().all(), "quasi_permutation tensor has NaN values"
 
     # Round to permutation matrix.
     output = convert_to_permutation_matrix(quasi_permutation, config, profile)
     if config.safe_mode:
-        # Check output permutation matrix has no NaN values.
         assert np.isfinite(output[0]).all(
         ), "output permutation matrix has NaN values"
 

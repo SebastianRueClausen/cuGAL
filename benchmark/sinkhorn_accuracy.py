@@ -32,8 +32,11 @@ def mean_difference(a, b: np.ndarray) -> float:
 
 
 def test(matrix: np.ndarray, config: Config) -> np.ndarray:
+    state = sinkhorn.SinkhornState(matrix.shape[0], config)
     scale = sinkhorn.scale_kernel_matrix_log if config.sinkhorn_method == SinkhornMethod.LOG else sinkhorn.scale_kernel_matrix
-    return scale(*sinkhorn.sinkhorn(config.convert_tensor(torch.from_numpy(matrix)), config)).numpy()
+    K, u, v = state.solve(config.convert_tensor(
+        torch.from_numpy(matrix)), config)
+    return scale(K, u, v).numpy()
 
 
 def test_accuracy():
@@ -43,18 +46,15 @@ def test_accuracy():
 
     iteration_counts = [10, 20, 40, 80, 160, 320]
 
-    double_results, log_results, mix_results = [], [], []
+    double_results, log_results = [], []
 
     for iteration_count in iteration_counts:
         double_results.append(mean_difference(ground_truth_result, test(
             matrix, Config(sinkhorn_threshold=1e-20, sinkhorn_iterations=iteration_count))))
         log_results.append(mean_difference(ground_truth_result, test(matrix, Config(
             sinkhorn_method=SinkhornMethod.LOG, dtype=torch.float32, sinkhorn_iterations=iteration_count, sinkhorn_threshold=1e-20))))
-        mix_results.append(mean_difference(ground_truth_result, test(matrix, Config(
-            sinkhorn_method=SinkhornMethod.MIX, dtype=torch.float32, sinkhorn_iterations=iteration_count, sinkhorn_threshold=1e-20))))
 
     plots = [
-        (mix_results, 'mix float32'),
         (log_results, 'log float32'),
         (double_results, 'float64'),
     ]

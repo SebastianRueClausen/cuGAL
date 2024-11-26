@@ -14,7 +14,8 @@ void average_neighbor_features(
 );
 
 // sinkhorn_log.cu
-void sinkhorn_log_step(torch::Tensor, torch::Tensor, torch::Tensor);
+void sinkhorn_log_step(torch::Tensor, torch::Tensor, torch::Tensor, float);
+float sinkhorn_log_marginal(torch::Tensor, torch::Tensor, torch::Tensor);
 
 // distance.cu
 void add_distance(torch::Tensor, torch::Tensor, torch::Tensor);
@@ -49,6 +50,10 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def(
         "sinkhorn_log_step", &sinkhorn_log_step,
         "a single sinkhorn-knopp step in the log domain"
+    );
+    m.def(
+        "sinkhorn_log_marginal", &sinkhorn_log_marginal,
+        "calculate the marginal error in the log domain"
     );
 
     // distance.cu
