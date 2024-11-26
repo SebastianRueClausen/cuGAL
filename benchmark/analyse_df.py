@@ -10,6 +10,7 @@ from enum import Enum
 from experiment import Algorithm, ExperimentResults, Result, Graph, GraphKind, Experiment
 import pandas as pd
 from pandas import DataFrame
+from cugal.profile import Phase
 
 class PlotType(Enum):
     BAR = "bar"
@@ -76,10 +77,26 @@ def prompt_user_and_load_results():
     df['profile'] = [r.profile for r in df['result']]
     df['time'] = [p.time for p in df['profile']]
 
+    # Extract phase times from profiles
+    phases: list[Phase] = set([p.phase_times.keys() for p in df['profile']])
+    for phase in phases:
+        df[phase.name] = [p.phase_times[phase] for p in df['profile']]
+
+    # Add descriptions for algorithms and graphs
     alg_desc = ExperimentResults.algorithms_descriptions(df['algorithm'])
     df['algorithm_desc'] = [alg_desc[a] for a in df['algorithm']]
     graph_desc = ExperimentResults.graph_descriptions(df['graph'])
     df['graph_desc'] = [graph_desc[str(g)] for g in df['graph']]
+
+    # Add all algorithm configurations to the dataframe
+    alg_config_keys = set([list(a.config.to_dict().keys()) for a in rdf['algorithm']])
+    for key in alg_config_keys:
+        df[key] = [a.config.to_dict()[key] for a in df['algorithm']]
+
+    # Add all graph parameters to the dataframe
+    graph_config_keys = set([list(g.parameters.keys()) for g in df['graph']])
+    for key in graph_config_keys:
+        df[key] = [g.parameters[key] for g in df['graph']]
 
     print(df)
 
