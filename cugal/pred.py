@@ -134,7 +134,8 @@ def find_quasi_permutation_matrix(
             else:
                 diff = update_quasi_permutation(
                     P, K, u, v, alpha, config.sinkhorn_method)
-                duality_gap = abs(torch.sum(gradient * (diff / alpha)).cpu().item())
+                duality_gap = abs(
+                    torch.sum(gradient * (diff / alpha)).cpu().item())
 
             if not config.frank_wolfe_threshold is None and duality_gap < config.frank_wolfe_threshold:
                 break

@@ -19,17 +19,13 @@ def assert_agree(sinkhorn_method: SinkhornMethod):
     K = torch.randn((n, n), dtype=torch.float32, device='cuda')
     alpha = 0.2
     cuda_P, torch_P = P.clone(), P.clone()
-    cuda_kernels.update_quasi_permutation(
-        cuda_P, K, u, v, alpha, sinkhorn_method == SinkhornMethod.LOG)
+    cuda_kernels.update_quasi_permutation_log(
+        cuda_P, K, u, v, alpha, 0.0)
     update_quasi_permutation(torch_P, K, u, v, alpha, sinkhorn_method)
     assert torch.allclose(cuda_P, torch_P, rtol=0.0001, atol=1e-6)
 
 
 class TestUpdateQuasiPermutation(unittest.TestCase):
-    @unittest.skipUnless(condition=has_cuda, reason="requires cuda_kernels installed")
-    def test_agree(self):
-        assert_agree(SinkhornMethod.STANDARD)
-
     @unittest.skipUnless(condition=has_cuda, reason="requires cuda_kernels installed")
     def test_agree_log(self):
         assert_agree(SinkhornMethod.LOG)
