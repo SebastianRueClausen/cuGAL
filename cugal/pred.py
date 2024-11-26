@@ -128,13 +128,16 @@ def find_quasi_permutation_matrix(
             profile.log_time(start_time, Phase.SINKHORN)
 
             alpha = 2.0 / float(2.0 + it)
-            if True and has_cuda and 'cuda' in config.device and config.dtype == torch.float32:
-                is_log = config.sinkhorn_method == SinkhornMethod.LOG
-                cuda_kernels.update_quasi_permutation(
-                    P, K, u, v, alpha, is_log)
+            if has_cuda and 'cuda' in config.device and config.dtype == torch.float32 and config.sinkhorn_method == SinkhornMethod.LOG:
+                duality_gap = cuda_kernels.update_quasi_permutation_log(
+                    P, K, u, v, alpha, config.sinkhorn_regularization)
             else:
                 diff = update_quasi_permutation(
                     P, K, u, v, alpha, config.sinkhorn_method)
+                duality_gap = abs(torch.sum(gradient * (diff / alpha)).cpu().item())
+
+            if not config.frank_wolfe_threshold is None and duality_gap < config.frank_wolfe_threshold:
+                break
 
     return P
 
