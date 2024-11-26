@@ -31,13 +31,13 @@ def scale_kernel_matrix_log(K: torch.Tensor, log_u: torch.Tensor, log_v: torch.T
 
 
 def marginal_error(K: torch.Tensor, u: torch.Tensor, v: torch.Tensor) -> float:
-    return torch.sum(abs(torch.sum(scale_kernel_matrix(K.clone(), u, v), dim=0) - 1)).item()
+    return torch.mean(abs(torch.sum(scale_kernel_matrix(K.clone(), u, v), dim=0) - 1)).item()
 
 
 def marginal_error_log(K: torch.Tensor, log_u: torch.Tensor, log_v: torch.Tensor) -> float:
     if has_cuda:
-        return cuda_kernels.sinkhorn_log_marginal(K, log_u, log_v)
-    return torch.sum(abs(torch.sum(scale_kernel_matrix_log(K.clone(), log_u, log_v), dim=0) - 1)).item()
+        return cuda_kernels.sinkhorn_log_marginal(K, log_u, log_v) / log_u.shape[0]
+    return torch.mean(abs(torch.sum(scale_kernel_matrix_log(K.clone(), log_u, log_v), dim=0) - 1)).item()
 
 
 @dataclass

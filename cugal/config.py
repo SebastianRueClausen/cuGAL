@@ -21,12 +21,6 @@ class SinkhornMethod(str, Enum):
     Computational intensive but numerically stable and optimized for the GPU.
     """
 
-    MIX = "MIX"
-    """Start out in logarithmic space and switch over to standard
-    Sinkhorn-Knopp when the cost matrix has stabilized.
-    """
-
-
 class HungarianMethod(Enum):
     """The method used for Hungarian algorithm."""
 
@@ -97,10 +91,13 @@ class Config:
     use_sparse_adjacency: bool = False
     """Use sparse matrix representation for adjacency matrices."""
 
-    sinkhorn_cache_size: int = 0
+    use_sinkhorn_warm_start: bool = True
     """The size of the cache used to warm-start Sinkhorn."""
 
     sinkhorn_momentum_start: Optional[int] = None
+    """The Sinkhron-Knopp iteration where it will begin to use momentum.
+    If set too early, the convergence will not have stabilized and it may choose a very suboptimal
+    overrelaxation value, which can hurt convergence and cause overflows."""
 
     recompute_distance: bool = False
     """Avoid storing distance matrix by doing recalculating each iteration."""
