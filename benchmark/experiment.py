@@ -15,7 +15,7 @@ import gzip
 import datetime
 import json
 import scipy.sparse as sps
-import fugal.Fugal as Fugal
+#import fugal.Fugal as Fugal
 from typing import Self
 
 
