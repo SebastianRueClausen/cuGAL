@@ -89,7 +89,8 @@ def find_quasi_permutation_matrix(
     config: Config,
     profile: Profile,
 ) -> torch.Tensor:
-    sinkhorn_state = SinkhornState(A.number_of_nodes(), config)
+    n = A.number_of_nodes()
+    sinkhorn_state = SinkhornState(n, config)
 
     if config.use_sparse_adjacency:
         if not type(A) is Adjacency:
@@ -126,6 +127,9 @@ def find_quasi_permutation_matrix(
             K, u, v = sinkhorn_state.solve(gradient, config, sinkhorn_profile)
             profile.sinkhorn_profiles.append(sinkhorn_profile)
             profile.log_time(start_time, Phase.SINKHORN)
+
+            if not config.use_sinkhorn_warm_start:
+                sinkhorn_state = SinkhornState(n, config)
 
             alpha = 2.0 / float(2.0 + it)
             if has_cuda and 'cuda' in config.device and config.dtype == torch.float32 and config.sinkhorn_method == SinkhornMethod.LOG:
@@ -212,7 +216,6 @@ def cugal(
     start_time = TimeStamp(config.device)
     features = Features.create(source, target, config)
 
-    # check source and target feature tensors have no NaN values.
     if config.safe_mode:
         assert features.source.isfinite().all(), "source feature tensor has NaN values"
         assert features.target.isfinite().all(), "target feature tensor has NaN values"
@@ -226,13 +229,11 @@ def cugal(
     quasi_permutation = find_quasi_permutation_matrix(
         source, target, features, config, profile)
     if config.safe_mode:
-        # check quasi_permutation tensor has no NaN values
         assert quasi_permutation.isfinite().all(), "quasi_permutation tensor has NaN values"
 
     # Round to permutation matrix.
     output = convert_to_permutation_matrix(quasi_permutation, config, profile)
     if config.safe_mode:
-        # Check output permutation matrix has no NaN values.
         assert np.isfinite(output[0]).all(
         ), "output permutation matrix has NaN values"
 

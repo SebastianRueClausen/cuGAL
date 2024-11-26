@@ -12,7 +12,7 @@ import time
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
 from sklearn.metrics.pairwise import euclidean_distances
-from algorithms.FUGAL.pred import feature_extraction,eucledian_dist,convex_initQAP
+from fugal.pred import feature_extraction,eucledian_dist,convex_initQAP
 #from pred import feature_extraction,eucledian_dist,convex_init
 def create_L(A, B, lalpha=1, mind=None, weighted=True):
     n = A.shape[0]
