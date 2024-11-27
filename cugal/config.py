@@ -65,6 +65,9 @@ class Config:
     dtype: torch.dtype = torch.float64
     """The data type used for computations."""
 
+    torch_sinkhorn: bool = False
+    """If true, the torch Sinkhorn implementation will be used."""
+
     sinkhorn_regularization: float = 1.0
     """Regularization of the cost matrix when running Sinkhorn.
 
