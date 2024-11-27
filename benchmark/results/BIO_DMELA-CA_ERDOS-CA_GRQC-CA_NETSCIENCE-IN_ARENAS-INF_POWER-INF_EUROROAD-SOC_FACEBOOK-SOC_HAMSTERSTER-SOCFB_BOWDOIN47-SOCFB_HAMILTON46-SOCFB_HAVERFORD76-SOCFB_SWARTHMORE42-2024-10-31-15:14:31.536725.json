@@ -1,0 +1,1337 @@
+{
+    "experiment": {
+        "algorithms": [
+            {
+                "use_fugal": false,
+                "config": {
+                    "safe_mode": false,
+                    "device": "cuda:1",
+                    "dtype": "float32",
+                    "sinkhorn_regularization": 1,
+                    "sinkhorn_method": "LOG",
+                    "sinkhorn_iterations": 500,
+                    "sinkhorn_threshold": 0,
+                    "sinkhorn_eval_freq": 10,
+                    "mu": 2,
+                    "iter_count": 15,
+                    "frank_wolfe_iter_count": 10,
+                    "frank_wolfe_threshold": 0,
+                    "use_sparse_adjacency": true,
+                    "sinkhorn_cache_size": 1,
+                    "recompute_distance": true,
+                    "hungarian_method": "SCIPY"
+                }
+            },
+            {
+                "use_fugal": false,
+                "config": {
+                    "safe_mode": false,
+                    "device": "cuda:1",
+                    "dtype": "float32",
+                    "sinkhorn_regularization": 0.5,
+                    "sinkhorn_method": "LOG",
+                    "sinkhorn_iterations": 500,
+                    "sinkhorn_threshold": 0,
+                    "sinkhorn_eval_freq": 10,
+                    "mu": 2,
+                    "iter_count": 15,
+                    "frank_wolfe_iter_count": 10,
+                    "frank_wolfe_threshold": 0,
+                    "use_sparse_adjacency": true,
+                    "sinkhorn_cache_size": 1,
+                    "recompute_distance": true,
+                    "hungarian_method": "SCIPY"
+                }
+            },
+            {
+                "use_fugal": false,
+                "config": {
+                    "safe_mode": false,
+                    "device": "cuda:1",
+                    "dtype": "float32",
+                    "sinkhorn_regularization": 0.1,
+                    "sinkhorn_method": "LOG",
+                    "sinkhorn_iterations": 500,
+                    "sinkhorn_threshold": 0,
+                    "sinkhorn_eval_freq": 10,
+                    "mu": 2,
+                    "iter_count": 15,
+                    "frank_wolfe_iter_count": 10,
+                    "frank_wolfe_threshold": 0,
+                    "use_sparse_adjacency": true,
+                    "sinkhorn_cache_size": 1,
+                    "recompute_distance": true,
+                    "hungarian_method": "SCIPY"
+                }
+            },
+            {
+                "use_fugal": false,
+                "config": {
+                    "safe_mode": false,
+                    "device": "cuda:1",
+                    "dtype": "float32",
+                    "sinkhorn_regularization": 0.05,
+                    "sinkhorn_method": "LOG",
+                    "sinkhorn_iterations": 500,
+                    "sinkhorn_threshold": 0,
+                    "sinkhorn_eval_freq": 10,
+                    "mu": 2,
+                    "iter_count": 15,
+                    "frank_wolfe_iter_count": 10,
+                    "frank_wolfe_threshold": 0,
+                    "use_sparse_adjacency": true,
+                    "sinkhorn_cache_size": 1,
+                    "recompute_distance": true,
+                    "hungarian_method": "SCIPY"
+                }
+            },
+            {
+                "use_fugal": false,
+                "config": {
+                    "safe_mode": false,
+                    "device": "cuda:1",
+                    "dtype": "float32",
+                    "sinkhorn_regularization": 0.01,
+                    "sinkhorn_method": "LOG",
+                    "sinkhorn_iterations": 500,
+                    "sinkhorn_threshold": 0,
+                    "sinkhorn_eval_freq": 10,
+                    "mu": 2,
+                    "iter_count": 15,
+                    "frank_wolfe_iter_count": 10,
+                    "frank_wolfe_threshold": 0,
+                    "use_sparse_adjacency": true,
+                    "sinkhorn_cache_size": 1,
+                    "recompute_distance": true,
+                    "hungarian_method": "SCIPY"
+                }
+            }
+        ],
+        "graphs": [
+            {
+                "kind": "BIO_DMELA",
+                "parameters": {}
+            },
+            {
+                "kind": "CA_ERDOS",
+                "parameters": {}
+            },
+            {
+                "kind": "CA_GRQC",
+                "parameters": {}
+            },
+            {
+                "kind": "CA_NETSCIENCE",
+                "parameters": {}
+            },
+            {
+                "kind": "IN_ARENAS",
+                "parameters": {}
+            },
+            {
+                "kind": "INF_POWER",
+                "parameters": {}
+            },
+            {
+                "kind": "INF_EUROROAD",
+                "parameters": {}
+            },
+            {
+                "kind": "SOC_FACEBOOK",
+                "parameters": {}
+            },
+            {
+                "kind": "SOC_HAMSTERSTER",
+                "parameters": {}
+            },
+            {
+                "kind": "SOCFB_BOWDOIN47",
+                "parameters": {}
+            },
+            {
+                "kind": "SOCFB_HAMILTON46",
+                "parameters": {}
+            },
+            {
+                "kind": "SOCFB_HAVERFORD76",
+                "parameters": {}
+            },
+            {
+                "kind": "SOCFB_SWARTHMORE42",
+                "parameters": {}
+            }
+        ],
+        "noise_levels": [
+            {
+                "source_noise": 0.3,
+                "target_noise": 0.0,
+                "refill_edges": false
+            }
+        ],
+        "debug": false,
+        "seed": 2542119015,
+        "save_alignment": false,
+        "num_runs": 10
+    },
+    "commit": "a45d339dfc4458260a054d0cd2ac98ff21d5f971",
+    "time": "2024-10-31 15:14:31.536725",
+    "results": [
+        [
+            [
+                {
+                    "ics": 0.0019672259376588837,
+                    "ec": 0.0027088369719398086,
+                    "sss": 0.0011409355353371076,
+                    "accuracy": 0.6969295279318274,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0018245952010154723,
+                            "GRADIENT": 1.4675017174720764,
+                            "SINKHORN": 39.999408523559566,
+                            "HUNGARIAN": 6.7923158203125
+                        },
+                        "time": 48.479531574249265,
+                        "max_memory": 1312793600
+                    }
+                },
+                {
+                    "ics": 0.0020532676287692126,
+                    "ec": 0.0028273802020168455,
+                    "sss": 0.0011909074541463674,
+                    "accuracy": 0.7222913566887597,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00035788480043411254,
+                            "GRADIENT": 1.4202562063217161,
+                            "SINKHORN": 40.0123656982422,
+                            "HUNGARIAN": 1.0404097778320314
+                        },
+                        "time": 42.66628382205963,
+                        "max_memory": 1312793600
+                    }
+                },
+                {
+                    "ics": 0.0020415346708905313,
+                    "ec": 0.002811332425209001,
+                    "sss": 0.0011841094284731617,
+                    "accuracy": 0.7092384688218585,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036786240339279177,
+                            "GRADIENT": 1.4272748359680176,
+                            "SINKHORN": 40.00231088256836,
+                            "HUNGARIAN": 0.703753125
+                        },
+                        "time": 42.32520959377289,
+                        "max_memory": 1312793600
+                    }
+                },
+                {
+                    "ics": 0.000723532402518675,
+                    "ec": 0.0009964741281038348,
+                    "sss": 0.00041935395658851545,
+                    "accuracy": 0.052549709184363594,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036780159771442414,
+                            "GRADIENT": 1.4149772135734555,
+                            "SINKHORN": 40.00127513427735,
+                            "HUNGARIAN": 0.6931050231933594
+                        },
+                        "time": 42.30106143951416,
+                        "max_memory": 1312793600
+                    }
+                },
+                {
+                    "ics": 0.0006609566271657086,
+                    "ec": 0.00091023251317425,
+                    "sss": 0.00038306391264818554,
+                    "accuracy": 0.009360205599891789,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00034150080084800717,
+                            "GRADIENT": 1.5977908506393432,
+                            "SINKHORN": 39.994372171020515,
+                            "HUNGARIAN": 0.694442822265625
+                        },
+                        "time": 42.482968187332155,
+                        "max_memory": 1312793600
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.0005189620758483034,
+                    "ec": 0.0006085064737904203,
+                    "sss": 0.0002801884918937639,
+                    "accuracy": 0.20901639344262293,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003284223973751068,
+                            "GRADIENT": 1.2845784450054167,
+                            "SINKHORN": 27.853724548339848,
+                            "HUNGARIAN": 3.331012548828125
+                        },
+                        "time": 32.606582927703855,
+                        "max_memory": 893719040
+                    }
+                },
+                {
+                    "ics": 0.0006121091151031271,
+                    "ec": 0.0007173667639306586,
+                    "sss": 0.00033041400012134934,
+                    "accuracy": 0.21803278688524586,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003270688027143478,
+                            "GRADIENT": 0.8596527264118192,
+                            "SINKHORN": 27.862132402038576,
+                            "HUNGARIAN": 0.7955098022460938
+                        },
+                        "time": 29.646124720573425,
+                        "max_memory": 893719040
+                    }
+                },
+                {
+                    "ics": 0.00033266799733865603,
+                    "ec": 0.00038987879631345205,
+                    "sss": 0.00017954624573787912,
+                    "accuracy": 0.12404918032786885,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00034024320244789124,
+                            "GRADIENT": 0.7709850282192229,
+                            "SINKHORN": 27.868349493408196,
+                            "HUNGARIAN": 0.7016895019531251
+                        },
+                        "time": 29.469213318824767,
+                        "max_memory": 893719040
+                    }
+                },
+                {
+                    "ics": 0.00026613439787092486,
+                    "ec": 0.0003125321061062617,
+                    "sss": 0.0001437667038952234,
+                    "accuracy": 0.05559016393442624,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00035191679894924164,
+                            "GRADIENT": 0.8005666917800902,
+                            "SINKHORN": 27.875288771057132,
+                            "HUNGARIAN": 1.05685654296875
+                        },
+                        "time": 29.861768293380738,
+                        "max_memory": 893719040
+                    }
+                },
+                {
+                    "ics": 0.0002661343978709248,
+                    "ec": 0.0003122041740375533,
+                    "sss": 0.00014369015983228865,
+                    "accuracy": 0.027278688524590162,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00034639680087566376,
+                            "GRADIENT": 0.8057603799819948,
+                            "SINKHORN": 27.88356435699463,
+                            "HUNGARIAN": 0.7433168884277344
+                        },
+                        "time": 29.56164684295654,
+                        "max_memory": 893719040
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.019840560274176723,
+                    "ec": 0.027511233134877338,
+                    "sss": 0.011665493968068064,
+                    "accuracy": 0.4974506974506975,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003611455976963043,
+                            "GRADIENT": 0.63608530254364,
+                            "SINKHORN": 14.989707674407963,
+                            "HUNGARIAN": 2.0111513793945313
+                        },
+                        "time": 17.720561456680297,
+                        "max_memory": 415508480
+                    }
+                },
+                {
+                    "ics": 0.02315601251676352,
+                    "ec": 0.03211604240066432,
+                    "sss": 0.013641796204845184,
+                    "accuracy": 0.559066859066859,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003476319968700409,
+                            "GRADIENT": 0.6637671624660492,
+                            "SINKHORN": 14.987046716308592,
+                            "HUNGARIAN": 0.3422198669433594
+                        },
+                        "time": 16.07716038227081,
+                        "max_memory": 415508480
+                    }
+                },
+                {
+                    "ics": 0.008672329012069735,
+                    "ec": 0.012031669807715695,
+                    "sss": 0.005068800177541719,
+                    "accuracy": 0.32101972101972104,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003437536031007767,
+                            "GRADIENT": 0.635822736120224,
+                            "SINKHORN": 14.992592247009279,
+                            "HUNGARIAN": 0.23425292053222657
+                        },
+                        "time": 15.946142578125,
+                        "max_memory": 415508480
+                    }
+                },
+                {
+                    "ics": 0.0016987036209208759,
+                    "ec": 0.0023558050280046107,
+                    "sss": 0.0009880024358680226,
+                    "accuracy": 0.08696488696488697,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003689407974481583,
+                            "GRADIENT": 0.635747270154953,
+                            "SINKHORN": 14.99189743118286,
+                            "HUNGARIAN": 0.23014140014648438
+                        },
+                        "time": 15.941586065292359,
+                        "max_memory": 415508480
+                    }
+                },
+                {
+                    "ics": 0.0012293249888243182,
+                    "ec": 0.0017049381657856424,
+                    "sss": 0.0007148272657249833,
+                    "accuracy": 0.02506012506012506,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00034302400052547456,
+                            "GRADIENT": 0.6355604158878326,
+                            "SINKHORN": 14.989028379821775,
+                            "HUNGARIAN": 0.2246251022338867
+                        },
+                        "time": 15.946082377433777,
+                        "max_memory": 415508480
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.02724288840262582,
+                    "ec": 0.03818211024530437,
+                    "sss": 0.01618708027218373,
+                    "accuracy": 0.3894459102902375,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00025207360088825225,
+                            "GRADIENT": 0.3266527458190918,
+                            "SINKHORN": 3.573297278213501,
+                            "HUNGARIAN": 0.0013410400032997133
+                        },
+                        "time": 3.91872718334198,
+                        "max_memory": 69508096
+                    }
+                },
+                {
+                    "ics": 0.032275711159737416,
+                    "ec": 0.04524348120873608,
+                    "sss": 0.019232095433650297,
+                    "accuracy": 0.4113456464379948,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.000238713601231575,
+                            "GRADIENT": 0.3631416455745696,
+                            "SINKHORN": 3.5810391069412235,
+                            "HUNGARIAN": 0.0012289312124252319
+                        },
+                        "time": 3.962676525115967,
+                        "max_memory": 3498496
+                    }
+                },
+                {
+                    "ics": 0.021334792122538294,
+                    "ec": 0.029923391164205275,
+                    "sss": 0.01261917067094288,
+                    "accuracy": 0.3137203166226913,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0002418144017457962,
+                            "GRADIENT": 0.3280934172630311,
+                            "SINKHORN": 3.577974297714234,
+                            "HUNGARIAN": 0.0012266080021858215
+                        },
+                        "time": 3.924594449996948,
+                        "max_memory": 3498496
+                    }
+                },
+                {
+                    "ics": 0.01717724288840262,
+                    "ec": 0.024122194446421438,
+                    "sss": 0.010148608244602753,
+                    "accuracy": 0.26912928759894456,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00023829119801521302,
+                            "GRADIENT": 0.3634188096523284,
+                            "SINKHORN": 3.579645956611633,
+                            "HUNGARIAN": 0.0012127359986305237
+                        },
+                        "time": 3.9614568948745728,
+                        "max_memory": 3498496
+                    }
+                },
+                {
+                    "ics": 0.00973741794310722,
+                    "ec": 0.013617822716696624,
+                    "sss": 0.00571483050462197,
+                    "accuracy": 0.14934036939313983,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00024152640253305435,
+                            "GRADIENT": 0.3264381564855575,
+                            "SINKHORN": 3.5825877696990966,
+                            "HUNGARIAN": 0.001154844796657562
+                        },
+                        "time": 3.9272979736328124,
+                        "max_memory": 3498496
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.018001666821001946,
+                    "ec": 0.025297485972441726,
+                    "sss": 0.010630274597990801,
+                    "accuracy": 0.9131509267431597,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003181024044752121,
+                            "GRADIENT": 0.3261300419330597,
+                            "SINKHORN": 4.068376226615905,
+                            "HUNGARIAN": 0.015490764617919922
+                        },
+                        "time": 4.43501079082489,
+                        "max_memory": 30989824
+                    }
+                },
+                {
+                    "ics": 0.01831651078803593,
+                    "ec": 0.02573947083950724,
+                    "sss": 0.010818039858665135,
+                    "accuracy": 0.9189761694616063,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003208287984132767,
+                            "GRADIENT": 0.326283376288414,
+                            "SINKHORN": 4.06773996372223,
+                            "HUNGARIAN": 0.01553729600906372
+                        },
+                        "time": 4.434848117828369,
+                        "max_memory": 30989824
+                    }
+                },
+                {
+                    "ics": 0.017909065654227244,
+                    "ec": 0.02516977983706366,
+                    "sss": 0.010574976997980465,
+                    "accuracy": 0.9114739629302736,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00032403519451618194,
+                            "GRADIENT": 0.32620629713535315,
+                            "SINKHORN": 4.072839548873901,
+                            "HUNGARIAN": 0.015498185634613037
+                        },
+                        "time": 4.439791464805603,
+                        "max_memory": 30989824
+                    }
+                },
+                {
+                    "ics": 0.017631262153903142,
+                    "ec": 0.024774347047996133,
+                    "sss": 0.010408705570653815,
+                    "accuracy": 0.8979699911738747,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003230528026819229,
+                            "GRADIENT": 0.3244407289743424,
+                            "SINKHORN": 4.062742542648315,
+                            "HUNGARIAN": 0.015503987407684328
+                        },
+                        "time": 4.428029727935791,
+                        "max_memory": 30989824
+                    }
+                },
+                {
+                    "ics": 0.0056579312899342525,
+                    "ec": 0.007950009491163583,
+                    "sss": 0.0033167011343385607,
+                    "accuracy": 0.05048543689320388,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00032243199944496155,
+                            "GRADIENT": 0.3240566716909409,
+                            "SINKHORN": 4.057620184326172,
+                            "HUNGARIAN": 0.015521468925476073
+                        },
+                        "time": 4.422545123100281,
+                        "max_memory": 30989824
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.0005307855626326965,
+                    "ec": 0.0006823162547885903,
+                    "sss": 0.0002986538765255471,
+                    "accuracy": 0.059259259259259255,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00040030720233917236,
+                            "GRADIENT": 0.6542800220966338,
+                            "SINKHORN": 19.717581199646,
+                            "HUNGARIAN": 27.592834570312498
+                        },
+                        "time": 48.071531534194946,
+                        "max_memory": 586478592
+                    }
+                },
+                {
+                    "ics": 0.0013193812556869882,
+                    "ec": 0.0016932023363462432,
+                    "sss": 0.0007422010100979497,
+                    "accuracy": 0.12163529649868447,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036624960005283356,
+                            "GRADIENT": 0.6576472770214081,
+                            "SINKHORN": 19.724424687194823,
+                            "HUNGARIAN": 8.25389619140625
+                        },
+                        "time": 28.7336665391922,
+                        "max_memory": 586478592
+                    }
+                },
+                {
+                    "ics": 0.0014255383682135274,
+                    "ec": 0.0018303388247391413,
+                    "sss": 0.0008020644430298013,
+                    "accuracy": 0.11918639951426838,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003441408038139343,
+                            "GRADIENT": 0.6310590245723725,
+                            "SINKHORN": 19.733791532897946,
+                            "HUNGARIAN": 0.8573821838378907
+                        },
+                        "time": 21.317783308029174,
+                        "max_memory": 586478592
+                    }
+                },
+                {
+                    "ics": 0.0009857446163178648,
+                    "ec": 0.0012664331192758357,
+                    "sss": 0.0005546240969958005,
+                    "accuracy": 0.09208662214126695,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003420064002275467,
+                            "GRADIENT": 0.6317909859657286,
+                            "SINKHORN": 19.741514544677734,
+                            "HUNGARIAN": 0.4994237396240234
+                        },
+                        "time": 20.968463611602782,
+                        "max_memory": 586478592
+                    }
+                },
+                {
+                    "ics": 0.0005611161662117077,
+                    "ec": 0.0007206473785881064,
+                    "sss": 0.00031560786364278573,
+                    "accuracy": 0.05636510827767658,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00033156800270080564,
+                            "GRADIENT": 0.7009632901430132,
+                            "SINKHORN": 19.749295867919926,
+                            "HUNGARIAN": 0.3887813568115234
+                        },
+                        "time": 20.939885306358338,
+                        "max_memory": 586478592
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.00155257586450247,
+                    "ec": 0.0020042908194777,
+                    "sss": 0.0008758950260361774,
+                    "accuracy": 0.07052810902896081,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00031665919423103333,
+                            "GRADIENT": 0.31579745609760285,
+                            "SINKHORN": 4.095914265441895,
+                            "HUNGARIAN": 0.2648290557861328
+                        },
+                        "time": 4.697867798805237,
+                        "max_memory": 97947136
+                    }
+                },
+                {
+                    "ics": 0.003387438249823571,
+                    "ec": 0.00437063208523919,
+                    "sss": 0.0019135497078301305,
+                    "accuracy": 0.09812606473594548,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00031588159501552584,
+                            "GRADIENT": 0.3132208826780319,
+                            "SINKHORN": 4.086016481590271,
+                            "HUNGARIAN": 0.06292317810058594
+                        },
+                        "time": 4.483314204216003,
+                        "max_memory": 33212928
+                    }
+                },
+                {
+                    "ics": 0.002117148906139732,
+                    "ec": 0.00273430767546139,
+                    "sss": 0.0011953999300889989,
+                    "accuracy": 0.08705281090289609,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00032112959921360015,
+                            "GRADIENT": 0.31359122905731207,
+                            "SINKHORN": 4.085285294532776,
+                            "HUNGARIAN": 0.024850829124450684
+                        },
+                        "time": 4.4449503183364865,
+                        "max_memory": 33212928
+                    }
+                },
+                {
+                    "ics": 0.0017642907551164433,
+                    "ec": 0.0022791950585374842,
+                    "sss": 0.000995840743465716,
+                    "accuracy": 0.075809199318569,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00031709119975566863,
+                            "GRADIENT": 0.3142682072401047,
+                            "SINKHORN": 4.086967808723449,
+                            "HUNGARIAN": 0.01811443510055542
+                        },
+                        "time": 4.440487718582153,
+                        "max_memory": 33212928
+                    }
+                },
+                {
+                    "ics": 0.002893436838390967,
+                    "ec": 0.0037322895734910265,
+                    "sss": 0.001634059950462659,
+                    "accuracy": 0.06712095400340715,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00031430080235004426,
+                            "GRADIENT": 0.31399239652156824,
+                            "SINKHORN": 4.0873403633117675,
+                            "HUNGARIAN": 0.0162042781829834
+                        },
+                        "time": 4.438673663139343,
+                        "max_memory": 33212928
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.03786246696766089,
+                    "ec": 0.054093983278884795,
+                    "sss": 0.02278028184435599,
+                    "accuracy": 0.9937388987566607,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003683072000741958,
+                            "GRADIENT": 0.6894643924713135,
+                            "SINKHORN": 5.119005015563965,
+                            "HUNGARIAN": 0.057100588989257815
+                        },
+                        "time": 5.986507058143616,
+                        "max_memory": 123078656
+                    }
+                },
+                {
+                    "ics": 0.03788024221740315,
+                    "ec": 0.05411937695419947,
+                    "sss": 0.02279122841315289,
+                    "accuracy": 0.9935168738898759,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.000938889592885971,
+                            "GRADIENT": 0.6886477844476699,
+                            "SINKHORN": 5.178285189247131,
+                            "HUNGARIAN": 0.057184751510620115
+                        },
+                        "time": 6.13478364944458,
+                        "max_memory": 123078656
+                    }
+                },
+                {
+                    "ics": 0.03781625131833102,
+                    "ec": 0.054028034836363356,
+                    "sss": 0.022751858744439135,
+                    "accuracy": 0.9910746003552399,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.000374579194188118,
+                            "GRADIENT": 0.6896641060829163,
+                            "SINKHORN": 5.114085351943969,
+                            "HUNGARIAN": 0.05672730865478516
+                        },
+                        "time": 5.982976961135864,
+                        "max_memory": 123078656
+                    }
+                },
+                {
+                    "ics": 0.027493571284676548,
+                    "ec": 0.03928092446935655,
+                    "sss": 0.01645061211671185,
+                    "accuracy": 0.2991119005328597,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0005580992013216018,
+                            "GRADIENT": 0.6917057626485825,
+                            "SINKHORN": 5.150111849403382,
+                            "HUNGARIAN": 0.05830071983337402
+                        },
+                        "time": 6.068942022323609,
+                        "max_memory": 123078656
+                    }
+                },
+                {
+                    "ics": 0.023705073056276442,
+                    "ec": 0.03386760157616091,
+                    "sss": 0.01414209545143757,
+                    "accuracy": 0.01425399644760213,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036440959870815277,
+                            "GRADIENT": 0.9773006336688995,
+                            "SINKHORN": 5.126902044677736,
+                            "HUNGARIAN": 0.061707670593261724
+                        },
+                        "time": 6.291470456123352,
+                        "max_memory": 123078656
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.04053053094590949,
+                    "ec": 0.057861895166850294,
+                    "sss": 0.02441772125210067,
+                    "accuracy": 0.99485738980121,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036947520077228543,
+                            "GRADIENT": 0.7513894500494004,
+                            "SINKHORN": 5.214400388336182,
+                            "HUNGARIAN": 0.06084434814453125
+                        },
+                        "time": 6.166870093345642,
+                        "max_memory": 130043904
+                    }
+                },
+                {
+                    "ics": 0.04053156835487686,
+                    "ec": 0.05786336481384417,
+                    "sss": 0.024418348895081952,
+                    "accuracy": 0.994770959377701,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003738047987222672,
+                            "GRADIENT": 0.7424260967731475,
+                            "SINKHORN": 5.216768727493287,
+                            "HUNGARIAN": 0.05955069465637207
+                        },
+                        "time": 6.154054737091064,
+                        "max_memory": 130043904
+                    }
+                },
+                {
+                    "ics": 0.040596925119820736,
+                    "ec": 0.05795642498801109,
+                    "sss": 0.024458597043586223,
+                    "accuracy": 0.9924373379429559,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00038554560244083403,
+                            "GRADIENT": 0.7425697765827179,
+                            "SINKHORN": 5.214887661743164,
+                            "HUNGARIAN": 0.0594543556213379
+                        },
+                        "time": 6.152218222618103,
+                        "max_memory": 130043904
+                    }
+                },
+                {
+                    "ics": 0.03748366080876403,
+                    "ec": 0.05351377341085182,
+                    "sss": 0.022554315345744612,
+                    "accuracy": 0.7867329299913569,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003808768004179001,
+                            "GRADIENT": 0.7423473690509796,
+                            "SINKHORN": 5.216935093688965,
+                            "HUNGARIAN": 0.05976366767883301
+                        },
+                        "time": 6.154533791542053,
+                        "max_memory": 130043904
+                    }
+                },
+                {
+                    "ics": 0.025435193061808824,
+                    "ec": 0.036308863629900816,
+                    "sss": 0.015184579405493559,
+                    "accuracy": 0.016551426101987902,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003772320032119751,
+                            "GRADIENT": 0.7424595806121828,
+                            "SINKHORN": 5.216286115646361,
+                            "HUNGARIAN": 0.06414771232604981
+                        },
+                        "time": 6.159115529060363,
+                        "max_memory": 130043904
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.03798807873250619,
+                    "ec": 0.05430217823742067,
+                    "sss": 0.022862746778392458,
+                    "accuracy": 0.9932948490230906,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00037795520424842836,
+                            "GRADIENT": 0.6895403392314912,
+                            "SINKHORN": 5.122661305999757,
+                            "HUNGARIAN": 0.058662831878662114
+                        },
+                        "time": 5.992771434783935,
+                        "max_memory": 123078656
+                    }
+                },
+                {
+                    "ics": 0.03799163378245464,
+                    "ec": 0.05430725432442054,
+                    "sss": 0.02286493738623577,
+                    "accuracy": 0.9928507992895204,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00037021440267562863,
+                            "GRADIENT": 0.6893285918235779,
+                            "SINKHORN": 5.124925702285767,
+                            "HUNGARIAN": 0.05751042213439941
+                        },
+                        "time": 5.993961358070374,
+                        "max_memory": 123078656
+                    }
+                },
+                {
+                    "ics": 0.0379359379999289,
+                    "ec": 0.05422775060254603,
+                    "sss": 0.02283067354352361,
+                    "accuracy": 0.9903641207815272,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036587840020656584,
+                            "GRADIENT": 0.6890247909545898,
+                            "SINKHORN": 5.121848146057129,
+                            "HUNGARIAN": 0.057403977584838874
+                        },
+                        "time": 5.991032314300537,
+                        "max_memory": 123078656
+                    }
+                },
+                {
+                    "ics": 0.027453280718594097,
+                    "ec": 0.03923686798666533,
+                    "sss": 0.016431286230094995,
+                    "accuracy": 0.3001332149200711,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003742688000202179,
+                            "GRADIENT": 0.6890619267463685,
+                            "SINKHORN": 5.121958026885986,
+                            "HUNGARIAN": 0.05731501693725586
+                        },
+                        "time": 5.990206384658814,
+                        "max_memory": 123078656
+                    }
+                },
+                {
+                    "ics": 0.02332942277839004,
+                    "ec": 0.03334748708476146,
+                    "sss": 0.013918020213206293,
+                    "accuracy": 0.015719360568383654,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.000368860799074173,
+                            "GRADIENT": 0.6891162023067474,
+                            "SINKHORN": 5.1236641872406015,
+                            "HUNGARIAN": 0.06106551361083984
+                        },
+                        "time": 5.996193861961364,
+                        "max_memory": 123078656
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.040217233437765836,
+                    "ec": 0.057434310979378345,
+                    "sss": 0.024227262842975134,
+                    "accuracy": 0.9938634399308555,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003724128007888794,
+                            "GRADIENT": 0.7429009470939637,
+                            "SINKHORN": 5.218733042907715,
+                            "HUNGARIAN": 0.059498703765869146
+                        },
+                        "time": 6.157768893241882,
+                        "max_memory": 130043392
+                    }
+                },
+                {
+                    "ics": 0.04021308380189638,
+                    "ec": 0.057428433262962486,
+                    "sss": 0.024224716626048633,
+                    "accuracy": 0.9937770095073464,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003789119958877563,
+                            "GRADIENT": 0.7427024828433989,
+                            "SINKHORN": 5.219633787918092,
+                            "HUNGARIAN": 0.059874352264404296
+                        },
+                        "time": 6.1593116283416744,
+                        "max_memory": 130043392
+                    }
+                },
+                {
+                    "ics": 0.04022345789157001,
+                    "ec": 0.057443007537046765,
+                    "sss": 0.02423110416274086,
+                    "accuracy": 0.9915730337078651,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00037480959594249726,
+                            "GRADIENT": 0.7426957218170167,
+                            "SINKHORN": 5.218406380081177,
+                            "HUNGARIAN": 0.05952890892028808
+                        },
+                        "time": 6.158255863189697,
+                        "max_memory": 130043392
+                    }
+                },
+                {
+                    "ics": 0.03569516774903002,
+                    "ec": 0.05096936983955511,
+                    "sss": 0.021458054849916895,
+                    "accuracy": 0.7079948141745895,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003738592028617859,
+                            "GRADIENT": 0.7424956644058228,
+                            "SINKHORN": 5.2164074966430665,
+                            "HUNGARIAN": 0.060229261016845705
+                        },
+                        "time": 6.15624680519104,
+                        "max_memory": 130043392
+                    }
+                },
+                {
+                    "ics": 0.025435193061808824,
+                    "ec": 0.036325682329281975,
+                    "sss": 0.015187445926528759,
+                    "accuracy": 0.014477095937770097,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00037797760069370267,
+                            "GRADIENT": 0.7424322178363801,
+                            "SINKHORN": 5.216361656188964,
+                            "HUNGARIAN": 0.06407714920043946
+                        },
+                        "time": 6.160029602050781,
+                        "max_memory": 130043392
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.062222893487052976,
+                    "ec": 0.0888371903269494,
+                    "sss": 0.03798323371996516,
+                    "accuracy": 0.9948132780082988,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003637631982564926,
+                            "GRADIENT": 0.4067371935129166,
+                            "SINKHORN": 4.293169903564452,
+                            "HUNGARIAN": 0.017007724952697752
+                        },
+                        "time": 4.801787042617798,
+                        "max_memory": 51133952
+                    }
+                },
+                {
+                    "ics": 0.062180939435130644,
+                    "ec": 0.08877732378083567,
+                    "sss": 0.037956686103159894,
+                    "accuracy": 0.9948132780082988,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003596128016710281,
+                            "GRADIENT": 0.4041165631055833,
+                            "SINKHORN": 4.286830863952636,
+                            "HUNGARIAN": 0.016825132751464845
+                        },
+                        "time": 4.793573975563049,
+                        "max_memory": 51133952
+                    }
+                },
+                {
+                    "ics": 0.06226988202520599,
+                    "ec": 0.08890397877166673,
+                    "sss": 0.03801303627772012,
+                    "accuracy": 0.9942600276625173,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003741151988506317,
+                            "GRADIENT": 0.4033289665460587,
+                            "SINKHORN": 4.284265255928039,
+                            "HUNGARIAN": 0.01684055690765381
+                        },
+                        "time": 4.79068922996521,
+                        "max_memory": 51133952
+                    }
+                },
+                {
+                    "ics": 0.0599607310074007,
+                    "ec": 0.08560664422530591,
+                    "sss": 0.036564351833289974,
+                    "accuracy": 0.8931535269709544,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003637184023857117,
+                            "GRADIENT": 0.4031769595861435,
+                            "SINKHORN": 4.283738326835632,
+                            "HUNGARIAN": 0.016977964973449708
+                        },
+                        "time": 4.789887309074402,
+                        "max_memory": 51133952
+                    }
+                },
+                {
+                    "ics": 0.040448740539361296,
+                    "ec": 0.05775026901348394,
+                    "sss": 0.02436740877345213,
+                    "accuracy": 0.019432918395573998,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.000362662398815155,
+                            "GRADIENT": 0.4054870465040207,
+                            "SINKHORN": 4.288936235237122,
+                            "HUNGARIAN": 0.01853593921661377
+                        },
+                        "time": 4.7993079662323,
+                        "max_memory": 51133952
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.05576085176085176,
+                    "ec": 0.07967035598050867,
+                    "sss": 0.03391588023334912,
+                    "accuracy": 0.9943942133815552,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036728319823741914,
+                            "GRADIENT": 0.46166697304248816,
+                            "SINKHORN": 4.510279357528686,
+                            "HUNGARIAN": 0.02321541442871094
+                        },
+                        "time": 5.0844361066818236,
+                        "max_memory": 67043328
+                    }
+                },
+                {
+                    "ics": 0.05578378378378378,
+                    "ec": 0.0797031410492905,
+                    "sss": 0.033930273122518846,
+                    "accuracy": 0.9941531042796866,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036722239553928373,
+                            "GRADIENT": 0.46059145028591153,
+                            "SINKHORN": 4.50987617778778,
+                            "HUNGARIAN": 0.02216336326599121
+                        },
+                        "time": 5.083430457115173,
+                        "max_memory": 67043328
+                    }
+                },
+                {
+                    "ics": 0.055475839475839464,
+                    "ec": 0.07926244737313418,
+                    "sss": 0.033736652105876994,
+                    "accuracy": 0.9880650994575044,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036372160017490387,
+                            "GRADIENT": 0.46067482330799103,
+                            "SINKHORN": 4.507079075622558,
+                            "HUNGARIAN": 0.02262715835571289
+                        },
+                        "time": 5.0811385154724125,
+                        "max_memory": 67043328
+                    }
+                },
+                {
+                    "ics": 0.04755610155610156,
+                    "ec": 0.06794525506397289,
+                    "sss": 0.02882399225230623,
+                    "accuracy": 0.6977094635322484,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.0003650208026170731,
+                            "GRADIENT": 0.4604059262752533,
+                            "SINKHORN": 4.506604964447022,
+                            "HUNGARIAN": 0.022331270599365235
+                        },
+                        "time": 5.080452275276184,
+                        "max_memory": 67043328
+                    }
+                },
+                {
+                    "ics": 0.03085667485667486,
+                    "ec": 0.0440884238150485,
+                    "sss": 0.018488328937997,
+                    "accuracy": 0.01868595539481615,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {
+                            "FEATURE_EXTRACTION": 0.00036157439947128296,
+                            "GRADIENT": 0.4603584321737289,
+                            "SINKHORN": 4.506293552780152,
+                            "HUNGARIAN": 0.02415752658843994
+                        },
+                        "time": 5.081603097915649,
+                        "max_memory": 67043328
+                    }
+                }
+            ]
+        ]
+    ]
+}
