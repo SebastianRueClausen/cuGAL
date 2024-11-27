@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 import dataclasses
 from enum import Enum
+from typing import Optional
 
 import torch
 
@@ -64,6 +65,9 @@ class Config:
     dtype: torch.dtype = torch.float64
     """The data type used for computations."""
 
+    torch_sinkhorn: bool = False
+    """If true, the torch Sinkhorn implementation will be used."""
+
     sinkhorn_regularization: float = 1.0
     """Regularization of the cost matrix when running Sinkhorn.
 
@@ -107,6 +111,8 @@ class Config:
 
     sinkhorn_cache_size: int = 0
     """The size of the cache used to warm-start Sinkhorn."""
+
+    sinkhorn_momentum_start: Optional[int] = None
 
     recompute_distance: bool = False
     """Avoid storing distance matrix by doing recalculating each iteration."""

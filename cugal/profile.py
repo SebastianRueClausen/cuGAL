@@ -24,6 +24,11 @@ class SinkhornProfile:
     iteration_count: int = 0
     time: float = 0.0
 
+    @staticmethod
+    def average(profiles: list[Self]):
+        time = sum([profile.time for profile in profiles]) / len(profiles)
+        iteration_count = int(sum([profile.iteration_count for profile in profiles]) / len(profiles))
+        return SinkhornProfile([], iteration_count, time)
 
 class TimeStamp:
     def __init__(self, device: str):
@@ -48,10 +53,10 @@ class TimeStamp:
 @dataclass
 class Profile:
     sinkhorn_profiles: list[SinkhornProfile] = field(default_factory=list)
-    frank_wolfe_iterations: int = 0
     phase_times: dict[Phase, float] = field(default_factory=dict)
     time: float = 0.0
     max_memory: int | None = None
+    frank_wolfe_iterations: int = 0
 
     def log_time(self, start_time: TimeStamp, phase: Phase):
         now = TimeStamp(start_time.device)
@@ -77,7 +82,15 @@ class Profile:
         phase_times = {phase: sum([p.phase_times[phase] for p in profiles]) / len(profiles) for phase in profiles[0].phase_times.keys()}
         time = sum([profile.time for profile in profiles]) / len(profiles)
         max_memory = max([profile.max_memory for profile in profiles if profile.max_memory is not None], default=0)
-        sinkhorn_profiles = []
+        sinkhorn_count = len(profiles[0].sinkhorn_profiles)
+        if all(len(profile.sinkhorn_profiles) == sinkhorn_count for profile in profiles):
+            print('average')
+            sinkhorn_profiles = [
+                SinkhornProfile.average([profile.sinkhorn_profiles[i] for profile in profiles]) for i in range(sinkhorn_count)
+            ]
+        else:
+            print('no average')
+            sinkhorn_profiles = []
         return Profile(sinkhorn_profiles, phase_times, time, max_memory)
 
 

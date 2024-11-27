@@ -10,7 +10,6 @@ from enum import Enum
 from experiment import Algorithm, ExperimentResults, Result, Graph, GraphKind, Experiment
 import pandas as pd
 from pandas import DataFrame
-from cugal.profile import Phase
 
 class PlotType(Enum):
     BAR = "bar"
@@ -77,26 +76,10 @@ def prompt_user_and_load_results():
     df['profile'] = [r.profile for r in df['result']]
     df['time'] = [p.time for p in df['profile']]
 
-    # Extract phase times from profiles
-    phases: list[Phase] = set([p.phase_times.keys() for p in df['profile']])
-    for phase in phases:
-        df[phase.name] = [p.phase_times[phase] for p in df['profile']]
-
-    # Add descriptions for algorithms and graphs
     alg_desc = ExperimentResults.algorithms_descriptions(df['algorithm'])
     df['algorithm_desc'] = [alg_desc[a] for a in df['algorithm']]
     graph_desc = ExperimentResults.graph_descriptions(df['graph'])
     df['graph_desc'] = [graph_desc[str(g)] for g in df['graph']]
-
-    # Add all algorithm configurations to the dataframe
-    alg_config_keys = set([list(a.config.to_dict().keys()) for a in rdf['algorithm']])
-    for key in alg_config_keys:
-        df[key] = [a.config.to_dict()[key] for a in df['algorithm']]
-
-    # Add all graph parameters to the dataframe
-    graph_config_keys = set([list(g.parameters.keys()) for g in df['graph']])
-    for key in graph_config_keys:
-        df[key] = [g.parameters[key] for g in df['graph']]
 
     print(df)
 
@@ -243,26 +226,15 @@ def heatmap_plot_results(results: ExperimentResults, df: DataFrame, plot: Plot):
     num_algs    = len(results.experiment.algorithms)
     print("num_noises ", num_noises, " num_results ", num_results, " num_graphs ", num_graphs, " num_algs ", num_algs)
 
-
-    accuracy_matrix: pd.DataFrame
-
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     match plot.params['x_axis']:
         case 'g':
-            x_labels = list(df.assign(graph=df['graph'].astype(str))
-                         .groupby(['graph'])['graph_desc']
-                         .apply(lambda x: x.iloc[0])
-            )
-            acc_x_selection = (
-                df.assign(graph=df['graph'].astype(str))
-                  .groupby(['graph'])
-                )
+            [print(a for a in list(df.groupby("graph", group_keys=True)))]
+            x_labels = list(df.groupby(['graph']))
+            accuracy_matrix = df.groupby(['graph'])['accuracy']
         case 'a':
-            #x_labels = [ExperimentResults.algorithms_descriptions(results.experiment.algorithms)[a] for a in results.experiment.algorithms]
-            x_labels = list(df.groupby(['algorithm'])['algorithm_desc']
-                            .apply(lambda x: x.iloc[0])
-                )
-            accuracy_matrix = df.groupby(['algorithm'])['accuracy']
+            x_labels = [ExperimentResults.algorithms_descriptions(results.experiment.algorithms)[a] for a in results.experiment.algorithms]
+            accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[2] == a] for a in results.experiment.algorithms]
         case 'n':
             x_labels = [str(n.source_noise*100) + "% Noise" for n in results.experiment.noise_levels]
             accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[1] == n] for n in results.experiment.noise_levels]
@@ -273,19 +245,11 @@ def heatmap_plot_results(results: ExperimentResults, df: DataFrame, plot: Plot):
         
     match plot.params['y_axis']:
         case 'g':
-            y_labels = list(df.assign(graph=df['graph'].astype(str))
-                            .groupby(['graph'])['graph_desc']
-                            .apply(lambda x: x.iloc[0])
-                )
-            print(list(acc_x_selection['accuracy'].apply(lambda x: x)))
-            accuracy_matrix = acc_x_selection.groupby(['graph'])['accuracy'].apply(list)
+            y_labels = [ExperimentResults.graph_descriptions(results.experiment.graphs)[str(g)] for g in results.experiment.graphs]
+            accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[0] == g] for g in results.experiment.graphs]
         case 'a':
-            y_labels = list(df.assign(algorithm=df['algorithm'].astype(str))
-                            .groupby(['algorithm'])['algorithm_desc']
-                            .apply(lambda x: x.iloc[0])
-                )
-            print("x_acc ", acc_x_selection)
-            accuracy_matrix = acc_x_selection.apply(lambda x: x.iloc[0]).groupby(['algorithm']).apply(lambda x: x)
+            y_labels = [ExperimentResults.algorithms_descriptions(results.experiment.algorithms)[a] for a in results.experiment.algorithms]
+            accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[2] == a] for a in results.experiment.algorithms]
         case 'n':
             y_labels = [str(n.source_noise*100) + "% Noise" for n in results.experiment.noise_levels]
             accuracy_matrix = [[r[3].accuracy for r in results.all_results() if r[1] == n] for n in results.experiment.noise_levels]
@@ -293,10 +257,9 @@ def heatmap_plot_results(results: ExperimentResults, df: DataFrame, plot: Plot):
             raise ValueError('Invalid y-axis value')
         
     print("x_labels ", x_labels, " y_labels ", y_labels, " accuracy_matrix ", accuracy_matrix)
-    
 
-    accuracy_matrix = np.array(accuracy_matrix)
-    ax.imshow(accuracy_matrix, cmap='viridis')
+
+    im = ax.imshow(accuracy_matrix)
     ax.set_xticks(np.arange(len(x_labels)), x_labels)
     ax.set_yticks(np.arange(len(y_labels)), y_labels)
 
