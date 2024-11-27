@@ -6,8 +6,9 @@ lib64
 share
 pyvenv.cf
 build
-benchmark/results
 ENV_DIR
+benchmark/results/*.png
+benchmark/results/*.jpg
 *.egg*
 .vscode
 .venv
