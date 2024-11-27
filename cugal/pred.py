@@ -147,6 +147,7 @@ def find_quasi_permutation_matrix(
 
 
 def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile) -> np.array:
+    profile.sparsity = torch.count_nonzero(quasi_permutation).item() / torch.numel(quasi_permutation)
     start_time = TimeStamp(config.device)
     match config.hungarian_method:
         case HungarianMethod.SCIPY:
@@ -170,6 +171,7 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
             ))
             _, column_indices = scipy.sparse.csgraph.min_weight_full_bipartite_matching(
                 sparse, maximize=True)
+            
     profile.log_time(start_time, Phase.HUNGARIAN)
     return column_indices
 
