@@ -8,6 +8,13 @@ from cugal.config import Config, SinkhornMethod
 from cugal.profile import SinkhornProfile
 
 
+def run(cost: torch.Tensor, config: Config) -> SinkhornProfile:
+    state = sinkhorn.SinkhornState(cost.shape[0], config)
+    profile = SinkhornProfile()
+    state.solve(cost, config, profile)
+    return profile
+
+
 def benchmark_random_matrices(matrix_sizes: list[int]):
     cpu_config = Config(
         device='cpu', dtype=torch.float64, sinkhorn_iterations=200,
@@ -17,32 +24,15 @@ def benchmark_random_matrices(matrix_sizes: list[int]):
         device='cuda', dtype=torch.float32, sinkhorn_iterations=200,
         sinkhorn_threshold=0, sinkhorn_method=SinkhornMethod.LOG,
     )
-    gpu_mix_config = Config(
-        device='cuda', dtype=torch.float32, sinkhorn_iterations=200,
-        sinkhorn_threshold=0, sinkhorn_method=SinkhornMethod.MIX,
-    )
-
-    log_profiles, mix_profiles, cpu_profiles = [], [], []
-
+    log_profiles, cpu_profiles = [], []
     for matrix_size in matrix_sizes:
         cpu_matrix = torch.randn(
             (matrix_size, matrix_size), dtype=torch.float64) * 4.0
         gpu_matrix = gpu_config.convert_tensor(cpu_matrix)
-
-        profile = SinkhornProfile()
-        sinkhorn.mixhorn(gpu_matrix, gpu_mix_config, profile)
-        mix_profiles.append(profile)
-
-        profile = SinkhornProfile()
-        sinkhorn.loghorn(gpu_matrix, gpu_config, profile)
-        log_profiles.append(profile)
-
-        profile = SinkhornProfile()
-        sinkhorn.sinkhorn_knopp(cpu_matrix, cpu_config, profile)
-        cpu_profiles.append(profile)
+        log_profiles.append(run(gpu_matrix, gpu_config))
+        cpu_profiles.append(run(cpu_matrix, cpu_config))
 
     plots = [
-        (mix_profiles, 'mix float32'),
         (log_profiles, 'log float32'),
         (cpu_profiles, 'cpu float64'),
     ]

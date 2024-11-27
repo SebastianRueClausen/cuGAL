@@ -14,6 +14,7 @@ from cugal.config import Config, HungarianMethod, SinkhornMethod
 from cugal.profile import Profile, Phase, SinkhornProfile, TimeStamp
 from cugal.feature_extraction import Features
 from cugal.sinkhorn import SinkhornState
+from cugal.sinkhorn import SinkhornState
 
 from cugal.greedy_lap import greedy_lap
 
