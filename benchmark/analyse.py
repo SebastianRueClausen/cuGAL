@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import json
 import re
+import matplotlib
 import matplotlib.pyplot as plt
 import readline
 import os
@@ -12,6 +13,7 @@ from experiment import Algorithm, ExperimentResults, Result, Graph, GraphKind, E
 class PlotType(Enum):
     BAR = "bar"
     HEATMAP = "heatmap"
+    LINE = "line"
 
 @dataclass
 class Plot():
@@ -87,7 +89,7 @@ def prompt_user_for_analysis_options(results: ExperimentResults) -> tuple[Experi
         results.experiment = combined_experiment
     
     # Ask the user how to plot the results
-    type_prompt = input('Do you want to plot the results as a bar plot or a heatmap? ([[b]ar]/[h]eatmap): ')
+    type_prompt = input('Do you want to plot the results as a bar plot, line plot or a heatmap? ([[b]ar]/[h]eatmap/[l]ine): ')
     if type_prompt.lower() == 'h':
         plot_type = PlotType.HEATMAP
 
@@ -97,6 +99,9 @@ def prompt_user_for_analysis_options(results: ExperimentResults) -> tuple[Experi
 
         plot = Plot(plot_type, {'x_axis': x_axis.lower(), 'y_axis': y_axis.lower()})
 
+    elif type_prompt.lower() == 'l':
+        plot_type = PlotType.LINE
+        plot = Plot(plot_type, {})
     else:
         plot_type = PlotType.BAR
         plot = Plot(plot_type, {})
@@ -261,8 +266,74 @@ def heatmap_plot_results(results: ExperimentResults, plot: Plot):
     fig.tight_layout()
     plt.savefig(file.name + '_heatmap.png', dpi=300, bbox_inches = "tight")
 
+def line_plot_results(results: ExperimentResults, plot: Plot):
+    num_noises  = len(results.experiment.noise_levels)
+    num_results = len(list(results.all_results()))
+    num_graphs  = len(results.experiment.graphs)
+    num_algs    = len(results.experiment.algorithms)
+    print("num_noises ", num_noises, " num_results ", num_results, " num_graphs ", num_graphs, " num_algs ", num_algs)
+
+
+    # Bar plot the accuracy with labels for each experiment
+    cmap = plt.get_cmap('tab20')
+
+    alg_desc = ExperimentResults.algorithms_descriptions(results.experiment.algorithms)
+
+    def legend_without_duplicate_labels(labels):
+        unique = [l for i, l in enumerate(labels) if l not in labels[:i]]
+        plt.legend(unique, loc='center left', bbox_to_anchor=(1, 0.5))
+
+    def draw_x_axis_labels():
+        #x_pos = np.linspace(num_results / num_noises / 2, num_results - (num_results / num_noises / 2), num_noises)
+        #plt.xticks(x_pos, [str(n.source_noise*100) + "% Noise" for n in results.experiment.noise_levels])
+
+        ## Draw vertical lines (I am not including the lines at the ends)
+        pos = [((i)*num_algs-0.5) for i in range(num_graphs+1)]
+    #    plt.vlines(pos[1:-1], 0, -0.4, color='black', lw=1.5, clip_on=False, transform=plt.gca().get_xaxis_transform())
+
+        ## Draw second level axes ticklables
+        for ps0, ps1, lbl in zip(pos[:-1], pos[1:], [ExperimentResults.graph_descriptions(results.experiment.graphs)[str(g)] for g in results.experiment.graphs]): #[re.sub(" {|, ", "\n{", str(g)) for g in results.experiment.graphs]):
+            plt.text((ps0 + ps1) / 2, -0.16, lbl, ha='center', clip_on=False, transform=plt.gca().get_xaxis_transform(), weight = 'bold', size=6)
+        plt.plot(range(num_algs), [res[3].accuracy for res in results.all_results()])
+        plt.xticks(
+            range(num_algs),
+            ['.'.join(re.findall(r'\d+', alg_desc[res[2]])) for res in results.all_results()])
+        plt.xlabel(input('Enter the x-axis label: '))
+
+    ## Draw the Accuracy plot
+    draw_x_axis_labels()
+    print("Legend handles labels ", plt.gca().get_legend_handles_labels())
+    legend_without_duplicate_labels(plt.gca().get_legend_handles_labels()[1])
+
+
+    plt.ylabel('Accuracy')
+    plt.title('Accuracy of Experiments')
+    plt.savefig(file.name + '_accuracy.png', dpi=300, bbox_inches = "tight")
+    plt.savefig(file.name + '_accuracy.pfg')
+
+    # Draw the Time plot
+    plt.clf()
+    plt.plot(range(num_algs), [res[3].profile.time for res in results.all_results()], 
+            label=[alg_desc[res[2]] for res in results.all_results()], 
+    )
+    draw_x_axis_labels()
+    legend_without_duplicate_labels(plt.gca().get_legend_handles_labels()[1])
+
+    plt.ylabel('Time (s)')
+    plt.title('Time of Experiments')
+    plt.savefig(file.name + '_time.png', dpi=300, bbox_inches = "tight")
+    plt.savefig(file.name + '_time.pfg')
 
 if __name__ == '__main__':
+    matplotlib.use("pgf")
+    matplotlib.rcParams.update({
+    "pgf.texsystem": "pdflatex",
+    'font.family': 'serif',
+    'font.size' : 7,
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
+
     setup_readline()
     results, file = prompt_user_and_load_results()
     results, plot = prompt_user_for_analysis_options(results)
@@ -272,5 +343,7 @@ if __name__ == '__main__':
         bar_plot_results(results, plot)
     elif plot.plot_type == PlotType.HEATMAP:
         heatmap_plot_results(results, plot)
+    elif plot.plot_type == PlotType.LINE:
+        line_plot_results(results, plot)
     else:
         raise ValueError('Invalid plot type')
