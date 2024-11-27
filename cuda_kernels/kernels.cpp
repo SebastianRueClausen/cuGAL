@@ -24,7 +24,7 @@ void add_distance(torch::Tensor, torch::Tensor, torch::Tensor);
 void regularize(torch::Tensor, torch::Tensor, int);
 
 // update_quasi_permutation.cu
-void update_quasi_permutation(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, float, bool);
+float update_quasi_permutation_log(torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, float, float);
 
 // hungarian.cu
 void dense_hungarian(torch::Tensor, torch::Tensor);
@@ -63,7 +63,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("regularize", &regularize, "regularize matrix");
 
     // update_quasi_permutation.cu
-    m.def("update_quasi_permutation", &update_quasi_permutation, "update quasi permutation matrix");
+    m.def("update_quasi_permutation_log", &update_quasi_permutation_log, "update quasi permutation matrix");
 
     // hungarian.cu
     m.def("dense_hungarian", &dense_hungarian, "run dense hungarian");

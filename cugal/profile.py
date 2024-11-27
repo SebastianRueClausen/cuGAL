@@ -56,6 +56,7 @@ class Profile:
     phase_times: dict[Phase, float] = field(default_factory=dict)
     time: float = 0.0
     max_memory: int | None = None
+    frank_wolfe_iterations: int = 0
 
     def log_time(self, start_time: TimeStamp, phase: Phase):
         now = TimeStamp(start_time.device)
