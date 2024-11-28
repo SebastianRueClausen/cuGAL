@@ -294,56 +294,50 @@ def line_plot_results(results: ExperimentResults, plot: Plot):
         ## Draw second level axes ticklables
         for ps0, ps1, lbl in zip(pos[:-1], pos[1:], [ExperimentResults.graph_descriptions(results.experiment.graphs)[str(g)] for g in results.experiment.graphs]): #[re.sub(" {|, ", "\n{", str(g)) for g in results.experiment.graphs]):
             plt.text((ps0 + ps1) / 2, -0.16, lbl, ha='center', clip_on=False, transform=plt.gca().get_xaxis_transform(), weight = 'bold', size=6)
-        plt.plot(range(num_algs), [res[3].accuracy for res in results.all_results()])
-        plt.xticks(
-            range(num_algs),
-            ['.'.join(re.findall(r'\d+', alg_desc[res[2]])) for res in results.all_results()])
+        for g in results.experiment.graphs:
+            for n in results.experiment.noise_levels:
+                values = [res[3].accuracy for res in results.all_results() if res[0] == g and res[1] == n]
+                print("Values ", values)
+                if num_algs != len(values):
+                    continue
+                plt.plot(range(num_algs), values,
+                    label=[alg_desc[res[2]] for res in results.all_results() if res[0] == g and res[1] == n])
+
+                plt.xticks(
+                    range(num_algs),
+                    ['.'.join(re.findall(r'\d+', alg_desc[res[2]])) for res in results.all_results() if res[0] == g and res[1] == n])
         plt.xlabel(input('Enter the x-axis label: '))
 
     ## Draw the Accuracy plot
     draw_x_axis_labels()
     print("Legend handles labels ", plt.gca().get_legend_handles_labels())
-    legend_without_duplicate_labels(plt.gca().get_legend_handles_labels()[1])
-
 
     plt.ylabel('Accuracy')
     plt.title('Accuracy of Experiments')
     plt.savefig(file.name + '_accuracy.png', dpi=300, bbox_inches = "tight")
-    pfg_choice = input('Do you want to save the plot as a pgf file? (y/[n]): ') == 'y'
-    if pfg_choice:
-        matplotlib.use("pgf")
-        matplotlib.rcParams.update({
-            "pgf.texsystem": "pdflatex",
-            'font.family': 'serif',
-            'font.size' : 7,
-            'text.usetex': True,
-            'pgf.rcfonts': False,
-        })
-        plt.savefig(file.name + '_accuracy.pfg')
+    plt.savefig(file.name + '_accuracy.pgf')
 
     # Draw the Time plot
     plt.clf()
-    plt.plot(range(num_algs), [res[3].profile.time for res in results.all_results()], 
-            label=[alg_desc[res[2]] for res in results.all_results()], 
-    )
     draw_x_axis_labels()
-    legend_without_duplicate_labels(plt.gca().get_legend_handles_labels()[1])
 
     plt.ylabel('Time (s)')
     plt.title('Time of Experiments')
     plt.savefig(file.name + '_time.png', dpi=300, bbox_inches = "tight")
-    if pfg_choice:
-        matplotlib.use("pgf")
-        matplotlib.rcParams.update({
-            "pgf.texsystem": "pdflatex",
-            'font.family': 'serif',
-            'font.size' : 7,
-            'text.usetex': True,
-            'pgf.rcfonts': False,
-        })
-        plt.savefig(file.name + '_time.pfg')
+    plt.savefig(file.name + '_time.pgf')
 
 if __name__ == '__main__':
+    matplotlib.use("pgf")
+    matplotlib.rcParams.update({
+    "pgf.texsystem": "pdflatex",
+    'font.family': 'serif',
+    'font.size' : 7,
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+     "pgf.preamble": [
+                r"\usepackage{underscore}"
+                ]
+})
 
     setup_readline()
     results, file = prompt_user_and_load_results()
