@@ -84,6 +84,8 @@ class Profile:
         time = sum([profile.time for profile in profiles]) / len(profiles)
         max_memory = max([profile.max_memory for profile in profiles if profile.max_memory is not None], default=0)
         sinkhorn_count = len(profiles[0].sinkhorn_profiles)
+        frank_wolfe_iterations = np.mean([profile.frank_wolfe_iterations for profile in profiles])
+        sparsity = np.mean([profile.sparsity for profile in profiles])
         if all(len(profile.sinkhorn_profiles) == sinkhorn_count for profile in profiles):
             print('average')
             sinkhorn_profiles = [
@@ -92,7 +94,7 @@ class Profile:
         else:
             print('no average')
             sinkhorn_profiles = []
-        return Profile(sinkhorn_profiles, phase_times, time, max_memory)
+        return Profile(sinkhorn_profiles, phase_times, time, max_memory, frank_wolfe_iterations, sparsity)
 
 
 def extract_phase_times(profiles: list[Profile], phase: Phase) -> list[float]:
