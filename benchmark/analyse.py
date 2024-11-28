@@ -309,7 +309,17 @@ def line_plot_results(results: ExperimentResults, plot: Plot):
     plt.ylabel('Accuracy')
     plt.title('Accuracy of Experiments')
     plt.savefig(file.name + '_accuracy.png', dpi=300, bbox_inches = "tight")
-    plt.savefig(file.name + '_accuracy.pfg')
+    pfg_choice = input('Do you want to save the plot as a pgf file? (y/[n]): ') == 'y'
+    if pfg_choice:
+        matplotlib.use("pgf")
+        matplotlib.rcParams.update({
+            "pgf.texsystem": "pdflatex",
+            'font.family': 'serif',
+            'font.size' : 7,
+            'text.usetex': True,
+            'pgf.rcfonts': False,
+        })
+        plt.savefig(file.name + '_accuracy.pfg')
 
     # Draw the Time plot
     plt.clf()
@@ -322,17 +332,18 @@ def line_plot_results(results: ExperimentResults, plot: Plot):
     plt.ylabel('Time (s)')
     plt.title('Time of Experiments')
     plt.savefig(file.name + '_time.png', dpi=300, bbox_inches = "tight")
-    plt.savefig(file.name + '_time.pfg')
+    if pfg_choice:
+        matplotlib.use("pgf")
+        matplotlib.rcParams.update({
+            "pgf.texsystem": "pdflatex",
+            'font.family': 'serif',
+            'font.size' : 7,
+            'text.usetex': True,
+            'pgf.rcfonts': False,
+        })
+        plt.savefig(file.name + '_time.pfg')
 
 if __name__ == '__main__':
-    matplotlib.use("pgf")
-    matplotlib.rcParams.update({
-    "pgf.texsystem": "pdflatex",
-    'font.family': 'serif',
-    'font.size' : 7,
-    'text.usetex': True,
-    'pgf.rcfonts': False,
-})
 
     setup_readline()
     results, file = prompt_user_and_load_results()
