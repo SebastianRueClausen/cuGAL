@@ -19,7 +19,7 @@ config = Config(
     frank_wolfe_iter_count=10,
     recompute_distance=True,
     hungarian_method=HungarianMethod.SCIPY,
-    sinkhorn_regularization=1,
+    sinkhorn_regularization=0.5,
     )
 experiment = Experiment(
     graphs=[
@@ -37,8 +37,6 @@ experiment = Experiment(
         Graph(GraphKind.IN_ARENAS, {}),
         Graph(GraphKind.INF_POWER, {}),
         Graph(GraphKind.INF_EUROROAD, {}),
-        Graph(GraphKind.SOC_FACEBOOK, {}),
-        #Graph(GraphKind.EMAIL_ENRON, {}),
     ],
     algorithms=np.array([
         #Algorithm(config, use_fugal=True),
@@ -46,20 +44,16 @@ experiment = Experiment(
         #[Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.1, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.05, mu=mu), use_fugal=False)for mu in mus],
-        Algorithm(config, use_fugal=False),
-        #Algorithm(replace(config, frank_wolfe_iter_count=100), use_fugal=False),
-        Algorithm(replace(config, sinkhorn_regularization=0.8), use_fugal=False) ,
-        Algorithm(replace(config, sinkhorn_regularization=0.6), use_fugal=False) ,
-        Algorithm(replace(config, sinkhorn_regularization=0.4), use_fugal=False) ,
-        Algorithm(replace(config, sinkhorn_regularization=0.2), use_fugal=False) ,
+        Algorithm(config, use_fugal=True),
+        #Algorithm(replace(config, use_sparse_adjacency=False), use_fugal=False),
     ]).flatten(),
     noise_levels=[
         #NoiseLevel(0.0, 0.0, False),
         NoiseLevel(0.1, 0.0, False),
-        NoiseLevel(0.2, 0.0, False),
-        NoiseLevel(0.3, 0.0, False),
+        #Noise1evel(0.2, 0.0, False),
+        #NoiseLevel(0.3, 0.0, False),
     ],
-    num_runs=5,
+    num_runs=4,
 )
 
 #[graph.get(np.random.default_rng()) for graph in experiment.graphs]

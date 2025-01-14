@@ -1,0 +1,203 @@
+{
+    "experiment": {
+        "algorithms": [
+            {
+                "use_fugal": true,
+                "config": {
+                    "safe_mode": false,
+                    "device": "cuda:1",
+                    "dtype": "float32",
+                    "torch_sinkhorn": false,
+                    "sinkhorn_regularization": 0.5,
+                    "sinkhorn_method": "LOG",
+                    "sinkhorn_iterations": 500,
+                    "dynamic_sinkhorn_regularization": false,
+                    "sinkhorn_scaling": 1.0,
+                    "sinkhorn_threshold": 0.001,
+                    "sinkhorn_eval_freq": 10,
+                    "sinkhorn_momentum": false,
+                    "mu": 2,
+                    "iter_count": 15,
+                    "frank_wolfe_iter_count": 10,
+                    "frank_wolfe_threshold": null,
+                    "use_sparse_adjacency": true,
+                    "sinkhorn_cache_size": 1,
+                    "sinkhorn_momentum_start": null,
+                    "recompute_distance": true,
+                    "hungarian_method": "SCIPY"
+                }
+            }
+        ],
+        "graphs": [
+            {
+                "kind": "BIO_DMELA",
+                "parameters": {}
+            },
+            {
+                "kind": "CA_ERDOS",
+                "parameters": {}
+            },
+            {
+                "kind": "CA_GRQC",
+                "parameters": {}
+            },
+            {
+                "kind": "CA_NETSCIENCE",
+                "parameters": {}
+            },
+            {
+                "kind": "IN_ARENAS",
+                "parameters": {}
+            },
+            {
+                "kind": "INF_POWER",
+                "parameters": {}
+            },
+            {
+                "kind": "INF_EUROROAD",
+                "parameters": {}
+            }
+        ],
+        "noise_levels": [
+            {
+                "source_noise": 0.1,
+                "target_noise": 0.0,
+                "refill_edges": false
+            }
+        ],
+        "debug": false,
+        "seed": 283841238,
+        "save_alignment": false,
+        "num_runs": 4
+    },
+    "commit": "7c6b2adfffa78bbf4eece15ac96dc248b8942ba5",
+    "time": "2025-01-14 15:35:31.315888",
+    "results": [
+        [
+            [
+                {
+                    "ics": 0.002845242285580195,
+                    "ec": 0.0031291604649818262,
+                    "sss": 0.0014925435495659757,
+                    "accuracy": 0.7405653997024212,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 2578.516272485256,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.0,
+                    "ec": 0.0,
+                    "sss": 0.0,
+                    "accuracy": 0.25606557377049183,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1547.6612599492073,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.05748025629563403,
+                    "ec": 0.0633040634795513,
+                    "sss": 0.03106404727449001,
+                    "accuracy": 0.6861471861471862,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1199.2092221975327,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.11323851203501094,
+                    "ec": 0.12463729489984304,
+                    "sss": 0.06337158781632013,
+                    "accuracy": 0.6464379947229552,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 9.752054631710052,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.0273173441985369,
+                    "ec": 0.030264129461210425,
+                    "sss": 0.014568370118390971,
+                    "accuracy": 0.9373345101500441,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 44.253580927848816,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.01535486806187443,
+                    "ec": 0.01663701197654293,
+                    "sss": 0.008049512969362493,
+                    "accuracy": 0.5626391418741146,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 978.1710987091064,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.06580804516584333,
+                    "ec": 0.07172280940918248,
+                    "sss": 0.03557025714150118,
+                    "accuracy": 0.6465076660988075,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 47.55883449316025,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ]
+    ]
+}
