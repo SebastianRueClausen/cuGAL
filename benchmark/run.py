@@ -49,11 +49,12 @@ experiment = Experiment(
     ]).flatten(),
     noise_levels=[
         #NoiseLevel(0.0, 0.0, False),
-        NoiseLevel(0.1, 0.0, False),
-        #Noise1evel(0.2, 0.0, False),
-        #NoiseLevel(0.3, 0.0, False),
+        #NoiseLevel(0.1, 0.0, False),
+        NoiseLevel(0.2, 0.0, False),
+        NoiseLevel(0.3, 0.0, False),
     ],
     num_runs=4,
+    seed=283841238,
 )
 
 #[graph.get(np.random.default_rng()) for graph in experiment.graphs]
