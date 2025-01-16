@@ -1,0 +1,437 @@
+{
+    "experiment": {
+        "algorithms": [
+            {
+                "use_fugal": true,
+                "config": {
+                    "safe_mode": false,
+                    "device": "cuda:0",
+                    "dtype": "float32",
+                    "torch_sinkhorn": false,
+                    "sinkhorn_regularization": 0.3,
+                    "sinkhorn_method": "LOG",
+                    "sinkhorn_iterations": 500,
+                    "dynamic_sinkhorn_regularization": false,
+                    "sinkhorn_scaling": 1.0,
+                    "sinkhorn_threshold": 0.001,
+                    "sinkhorn_eval_freq": 10,
+                    "sinkhorn_momentum": false,
+                    "mu": 2,
+                    "iter_count": 15,
+                    "frank_wolfe_iter_count": 10,
+                    "frank_wolfe_threshold": null,
+                    "use_sparse_adjacency": true,
+                    "sinkhorn_cache_size": 1,
+                    "sinkhorn_momentum_start": null,
+                    "recompute_distance": true,
+                    "hungarian_method": "SCIPY"
+                }
+            }
+        ],
+        "graphs": [
+            {
+                "kind": "BIO_DMELA",
+                "parameters": {}
+            },
+            {
+                "kind": "CA_ERDOS",
+                "parameters": {}
+            },
+            {
+                "kind": "CA_GRQC",
+                "parameters": {}
+            },
+            {
+                "kind": "CA_NETSCIENCE",
+                "parameters": {}
+            },
+            {
+                "kind": "IN_ARENAS",
+                "parameters": {}
+            },
+            {
+                "kind": "INF_POWER",
+                "parameters": {}
+            },
+            {
+                "kind": "INF_EUROROAD",
+                "parameters": {}
+            }
+        ],
+        "noise_levels": [
+            {
+                "source_noise": 0.1,
+                "target_noise": 0.0,
+                "refill_edges": false
+            },
+            {
+                "source_noise": 0.2,
+                "target_noise": 0.0,
+                "refill_edges": false
+            },
+            {
+                "source_noise": 0.3,
+                "target_noise": 0.0,
+                "refill_edges": false
+            }
+        ],
+        "debug": false,
+        "seed": 283841238,
+        "save_alignment": false,
+        "num_runs": 4
+    },
+    "commit": "9bfb166ae3e3484d48fa90b4d6ff34c292c40ab8",
+    "time": "2025-01-16 19:03:52.249767",
+    "results": [
+        [
+            [
+                {
+                    "ics": 0.0028647972153779963,
+                    "ec": 0.00315075292450247,
+                    "sss": 0.0015028431808004335,
+                    "accuracy": 0.7404301366157175,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1961.646230518818,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.0032167859517384335,
+                    "ec": 0.00393048124426176,
+                    "sss": 0.0017721355954647148,
+                    "accuracy": 0.7356959285810902,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1959.9060562252998,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.002434588759826352,
+                    "ec": 0.00333463480938529,
+                    "sss": 0.0014092252199723828,
+                    "accuracy": 0.6884891113215204,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1977.6821162700653,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.0,
+                    "ec": 0.0,
+                    "sss": 0.0,
+                    "accuracy": 0.25491803278688524,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1301.8947771787643,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.0,
+                    "ec": 0.0,
+                    "sss": 0.0,
+                    "accuracy": 0.23327868852459016,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1308.588805615902,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.0,
+                    "ec": 0.0,
+                    "sss": 0.0,
+                    "accuracy": 0.19688524590163933,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1330.1549499034882,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.057796900610937264,
+                    "ec": 0.0639099682745935,
+                    "sss": 0.031301225986014966,
+                    "accuracy": 0.6914381914381914,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1735.5910618305206,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.03404857696319475,
+                    "ec": 0.041916362158134345,
+                    "sss": 0.0191481347643071,
+                    "accuracy": 0.6089466089466089,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1700.3092383146286,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.016651765757711223,
+                    "ec": 0.023193802859023893,
+                    "sss": 0.009787820681910945,
+                    "accuracy": 0.4692159692159692,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 1737.2345964312553,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.12445295404814005,
+                    "ec": 0.13697734777442608,
+                    "sss": 0.06978099581291072,
+                    "accuracy": 0.6543535620052771,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 11.819479882717133,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.054978118161925604,
+                    "ec": 0.06708420862972556,
+                    "sss": 0.031179527784061658,
+                    "accuracy": 0.5910290237467019,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 11.4482302069664,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.025437636761487963,
+                    "ec": 0.03598896106089066,
+                    "sss": 0.015135679863001007,
+                    "accuracy": 0.41688654353562005,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 11.159542679786682,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.027641448282248356,
+                    "ec": 0.03056928441488553,
+                    "sss": 0.014731313538241527,
+                    "accuracy": 0.9479258605472197,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 45.90783226490021,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.0203722566904343,
+                    "ec": 0.025277525727212122,
+                    "sss": 0.011411673446745034,
+                    "accuracy": 0.9346866725507502,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 45.06566631793976,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.01808037781276044,
+                    "ec": 0.025538334651604377,
+                    "sss": 0.010700231107684317,
+                    "accuracy": 0.9029126213592233,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 47.64324098825455,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.0177054898392478,
+                    "ec": 0.019147462396832775,
+                    "sss": 0.00928464282572129,
+                    "accuracy": 0.5780206435944141,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 877.6401258111,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.0020094024871094933,
+                    "ec": 0.0023700382797924987,
+                    "sss": 0.0010886731617636256,
+                    "accuracy": 0.19247115968427445,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 887.3824155926704,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.0008720048528965727,
+                    "ec": 0.0011146215012584923,
+                    "sss": 0.0004894999507162822,
+                    "accuracy": 0.08136004857316333,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 893.1465572118759,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "ics": 0.07674664784756528,
+                    "ec": 0.0833558065062828,
+                    "sss": 0.041634013471249995,
+                    "accuracy": 0.6448040885860307,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 45.4686416387558,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.0038814396612561752,
+                    "ec": 0.004602904381857088,
+                    "sss": 0.0021105913518607903,
+                    "accuracy": 0.1737649063032368,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 44.5015469789505,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ],
+            [
+                {
+                    "ics": 0.0022935779816513763,
+                    "ec": 0.003010932787298524,
+                    "sss": 0.0013035944962179998,
+                    "accuracy": 0.07751277683134583,
+                    "profile": {
+                        "sinkhorn_profiles": [],
+                        "phase_times": {},
+                        "time": 44.6789391040802,
+                        "max_memory": 0,
+                        "frank_wolfe_iterations": 0.0,
+                        "sparsity": 0.0
+                    }
+                }
+            ]
+        ]
+    ]
+}
