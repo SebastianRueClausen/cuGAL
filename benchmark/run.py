@@ -6,7 +6,7 @@ from dataclasses import replace
 
 
 config = Config(
-    device='cuda:0', 
+    device='cuda:1', 
     sinkhorn_method=SinkhornMethod.LOG,
     dtype=torch.float32,
     sinkhorn_threshold=1e-3,
@@ -27,16 +27,16 @@ experiment = Experiment(
         #    'source_file': 'data/MultiMagna/yeast0_Y2H1.txt',
         #    'target_file': f'data/MultiMagna/yeast{i}_Y2H1.txt',
         #}) for i in range(5, 26, 5)
-        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': i, 'p': 0.2}) for i in range(5, 26, 5)
+        #Graph(GraphKind.NEWMAN_WATTS, {'n': 500, 'k': i, 'p': 0.2}) for i in range(2, 10, 2)
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 10, 'p': i}) for i in [0.1, 0.2, 0.3, 0.4, 0.5]
-        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 10, 'p': 0.2}),
-        Graph(GraphKind.BIO_DMELA, {}),
-        Graph(GraphKind.CA_ERDOS, {}),
-        Graph(GraphKind.CA_GRQC, {}),
-        Graph(GraphKind.CA_NETSCIENCE, {}),
-        Graph(GraphKind.IN_ARENAS, {}),
-        Graph(GraphKind.INF_POWER, {}),
-        Graph(GraphKind.INF_EUROROAD, {}),
+        Graph(GraphKind.NEWMAN_WATTS, {'n': 100, 'k': 2, 'p': 0.2}),
+        #Graph(GraphKind.BIO_DMELA, {}),
+        #Graph(GraphKind.CA_ERDOS, {}),
+        #Graph(GraphKind.CA_GRQC, {}),
+        #Graph(GraphKind.CA_NETSCIENCE, {}),
+        #Graph(GraphKind.IN_ARENAS, {}),
+        #Graph(GraphKind.INF_POWER, {}),
+        #Graph(GraphKind.INF_EUROROAD, {}),
     ],
     algorithms=np.array([
         #Algorithm(config, use_fugal=True),
@@ -44,17 +44,28 @@ experiment = Experiment(
         #[Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.1, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.05, mu=mu), use_fugal=False)for mu in mus],
+        #Algorithm(replace(config, iter_count=2, hungarian_method=HungarianMethod.SPARSE), use_fugal=False),
+        #Algorithm(replace(config, iter_count=8, hungarian_method=HungarianMethod.SPARSE), use_fugal=False),
+        #Algorithm(replace(config, hungarian_method=HungarianMethod.SPARSE), use_fugal=False),
+        #Algorithm(replace(config, iter_count=2), use_fugal=False),
+        #Algorithm(replace(config, iter_count=8), use_fugal=False),
+        #Algorithm(config, use_fugal=False),
+        #Algorithm(replace(config, iter_count=2, hungarian_method=HungarianMethod.SCIPY), use_fugal=False),
+        #Algorithm(replace(config, iter_count=8, hungarian_method=HungarianMethod.SCIPY), use_fugal=False),
+        #Algorithm(replace(config, hungarian_method=HungarianMethod.SCIPY), use_fugal=False),
         Algorithm(config, use_fugal=False),
-        Algorithm(replace(config, hungarian_method=HungarianMethod.DENSE), use_fugal=False),
-        Algorithm(replace(config, hungarian_method=HungarianMethod.SPARSE), use_fugal=False),
+        Algorithm(replace(config, frank_wolfe_iter_count=100), use_fugal=False),
+        Algorithm(replace(config, frank_wolfe_iter_count=1000), use_fugal=False),
+        #Algorithm(replace(config, frank_wolfe_iter_count=10000), use_fugal=False),
+        #Algorithm(replace(config, frank_wolfe_iter_count=400), use_fugal=False),
     ]).flatten(),
     noise_levels=[
         #NoiseLevel(0.0, 0.0, False),
-        NoiseLevel(0.1, 0.0, False),
-        NoiseLevel(0.2, 0.0, False),
+        #NoiseLevel(0.1, 0.0, False),
+        #NoiseLevel(0.2, 0.0, False),
         NoiseLevel(0.3, 0.0, False),
     ],
-    num_runs=4,
+    num_runs=1,
     seed=283841238,
 )
 

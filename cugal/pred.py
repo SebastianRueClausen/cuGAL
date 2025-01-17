@@ -5,6 +5,8 @@ import scipy.optimize
 import scipy.sparse
 import scipy.sparse.csgraph
 import torch
+import cugraph
+import cudf
 from tqdm.auto import tqdm
 from functools import partial
 
@@ -157,11 +159,14 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
             column_indices: list = greedy_lap(quasi_permutation, config)
         case HungarianMethod.DENSE:
             assert has_cuda, "doesn't have cuda"
-            column_indices = torch.empty(quasi_permutation.size(
-                0), device=config.device, dtype=torch.int32)
-            cuda_kernels.dense_hungarian(
-                1 - quasi_permutation, column_indices)
-            column_indices = column_indices.cpu().numpy()
+            #column_indices = torch.empty(quasi_permutation.size(
+            #    0), device=config.device, dtype=torch.int32)
+            series = cudf.Series(1 - quasi_permutation.flatten())
+            _, column_indices = cugraph.dense_hungarian(series, quasi_permutation.size(0), quasi_permutation.size(1))
+            #cuda_kernels.dense_hungarian(
+            #    1 - quasi_permutation, column_indices)
+            column_indices = column_indices.to_numpy()
+            #column_indices = column_indices.cpu().numpy()
         case HungarianMethod.SPARSE:
             sparse = quasi_permutation.to_sparse_csr().cpu()
             sparse = scipy.sparse.csr_matrix((
