@@ -122,7 +122,7 @@ def edge_correctness(source_adjacency: np.array, target_adjacency: np.array, sou
 
 
 def induced_conserved_structure(source_adjacency: np.array, target_adjacency: np.array, source_mapping: np.array, target_mapping: np.array) -> float:
-    try: 
+    try:
         adj1 = source_adjacency[source_mapping][:, source_mapping]
         adj2 = target_adjacency[target_mapping][:, target_mapping]
         return np.sum(adj1 + adj2 == 2) / np.sum(adj2 == 1)
@@ -464,9 +464,9 @@ class Experiment:
                         if algorithm.use_fugal:
                             start_time = TimeStamp('cpu')
                             _, answer = Fugal.main(
-                                {"Src": edges_to_adjacency_matrix(np.array(source.edges),
+                                {"Src": edges_to_adjacency_matrix(np.array(sources[i].edges),
                                                                   source_mappings[i].shape[0]),
-                                 "Tar": edges_to_adjacency_matrix(np.array(target.edges),
+                                 "Tar": edges_to_adjacency_matrix(np.array(targets[i].edges),
                                                                   source_mappings[i].shape[0])},
                                 algorithm.config.iter_count,
                                 True, algorithm.config.mu
