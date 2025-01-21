@@ -5,6 +5,8 @@ import scipy.optimize
 import scipy.sparse
 import scipy.sparse.csgraph
 import torch
+import cudf
+import cugraph
 from tqdm.auto import tqdm
 from functools import partial
 
@@ -140,15 +142,15 @@ def find_quasi_permutation_matrix(
 
             profile.frank_wolfe_iterations += 1
             if not config.frank_wolfe_threshold is None and duality_gap < config.frank_wolfe_threshold:
-                break    
+                break
     print(profile.frank_wolfe_iterations)
 
     return P
 
 
 def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile) -> np.array:
-    print(torch.count_nonzero(quasi_permutation).item(), torch.numel(quasi_permutation), torch.count_nonzero(quasi_permutation).item() / torch.numel(quasi_permutation))
-    profile.sparsity = torch.count_nonzero(quasi_permutation).item() / torch.numel(quasi_permutation)
+    profile.sparsity = torch.sum(torch.le(quasi_permutation, torch.finfo(
+        quasi_permutation.dtype).eps)).item() / quasi_permutation.numel()
     start_time = TimeStamp(config.device)
     match config.hungarian_method:
         case HungarianMethod.SCIPY:
@@ -158,11 +160,10 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
             column_indices: list = greedy_lap(quasi_permutation, config)
         case HungarianMethod.DENSE:
             assert has_cuda, "doesn't have cuda"
-            column_indices = torch.empty(quasi_permutation.size(
-                0), device=config.device, dtype=torch.int32)
-            cuda_kernels.dense_hungarian(
-                1 - quasi_permutation, column_indices)
-            column_indices = column_indices.cpu().numpy()
+            series = cudf.Series(1 - quasi_permutation.flatten())
+            _, column_indices = cugraph.dense_hungarian(
+                series, quasi_permutation.size(0), quasi_permutation.size(1))
+            column_indices = column_indices.to_numpy()
         case HungarianMethod.SPARSE:
             sparse = quasi_permutation.to_sparse_csr().cpu()
             sparse = scipy.sparse.csr_matrix((
@@ -172,7 +173,7 @@ def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile)
             ))
             _, column_indices = scipy.sparse.csgraph.min_weight_full_bipartite_matching(
                 sparse, maximize=True)
-            
+
     profile.log_time(start_time, Phase.HUNGARIAN)
     return column_indices
 

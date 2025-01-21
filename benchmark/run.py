@@ -21,6 +21,7 @@ config = Config(
     recompute_distance=True,
     hungarian_method=HungarianMethod.SCIPY,
     sinkhorn_regularization=0.3,
+    sinkhorn_regularization=0.3,
     )
 experiment = Experiment(
     graphs=[
@@ -28,7 +29,7 @@ experiment = Experiment(
         #    'source_file': 'data/MultiMagna/yeast0_Y2H1.txt',
         #    'target_file': f'data/MultiMagna/yeast{i}_Y2H1.txt',
         #}) for i in range(5, 26, 5)
-        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': i, 'p': 0.2}) for i in range(5, 26, 5)
+        #Graph(GraphKind.NEWMAN_WATTS, {'n': 500, 'k': i, 'p': 0.2}) for i in range(2, 10, 2)
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 10, 'p': i}) for i in [0.1, 0.2, 0.3, 0.4, 0.5]
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 35000, 'k': 10, 'p': 0.2}),
         Graph(GraphKind.CIT_HEP_PH, {}),
@@ -47,7 +48,7 @@ experiment = Experiment(
         #NoiseLevel(0.2, 0.0, False),
         #NoiseLevel(0.3, 0.0, False),
     ],
-    num_runs=4,
+    num_runs=1,
     seed=283841238,
 )
 
@@ -56,6 +57,7 @@ results = experiment.run()
 
 print([result.accuracy for _, _, _, result in results.all_results()])
 print([sum(result.profile.phase_times.values()) for _, _,_, result in results.all_results()])
+print([result.profile.sparsity for _, _,_, result in results.all_results()])
 
 folder = "results"
 #if not os.path.exists(folder): os.makedirs(folder)

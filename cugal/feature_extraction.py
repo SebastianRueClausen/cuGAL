@@ -4,7 +4,6 @@ import torch
 from cugal.adjacency import Adjacency
 from cugal.config import Config
 from dataclasses import dataclass
-import math
 
 try:
     import cuda_kernels
@@ -89,8 +88,8 @@ class Features:
         if config.safe_mode:
             assert source_features.isfinite().all(), "source feature tensor has NaN values"
             assert target_features.isfinite().all(), "target feature tensor has NaN values"
-        source_features *= math.sqrt(config.mu)
-        target_features *= math.sqrt(config.mu)
+        source_features *= config.mu
+        target_features *= config.mu
         if config.safe_mode:
             assert source_features.isfinite().all(), "source feature tensor has NaN values"
             assert target_features.isfinite().all(), "target feature tensor has NaN values"
