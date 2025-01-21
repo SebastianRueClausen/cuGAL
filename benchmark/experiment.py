@@ -179,6 +179,7 @@ class GraphKind(Enum):
     CA_GRQC = "CA_GRQC"
     CA_NETSCIENCE = "CA_NETSCIENCE"
     CA_ASTROPH = "CA_ASTROPH"
+    CIT_HEP_PH = "CIT_HEP_PH"
     BIO_DMELA = "BIO_DMELA"
     BIO_CELEGANS = "BIO_CELEGANS"
     IN_ARENAS = "IN_ARENAS"
@@ -260,6 +261,10 @@ class Graph:
                 return create_graph_from_str(file_content), None
             case GraphKind.CA_ASTROPH:
                 graph_file = open("data/CA-AstroPh.txt", 'r')
+                file_content = graph_file.read()
+                return create_graph_from_str(file_content), None
+            case GraphKind.CIT_HEP_PH:
+                graph_file = open("data/cit-HepPh.txt", 'r')
                 file_content = graph_file.read()
                 return create_graph_from_str(file_content), None
             case GraphKind.INF_EUROROAD:

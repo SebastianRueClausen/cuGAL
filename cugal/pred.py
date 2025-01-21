@@ -147,6 +147,7 @@ def find_quasi_permutation_matrix(
 
 
 def hungarian(quasi_permutation: torch.Tensor, config: Config, profile: Profile) -> np.array:
+    print(torch.count_nonzero(quasi_permutation).item(), torch.numel(quasi_permutation), torch.count_nonzero(quasi_permutation).item() / torch.numel(quasi_permutation))
     profile.sparsity = torch.count_nonzero(quasi_permutation).item() / torch.numel(quasi_permutation)
     start_time = TimeStamp(config.device)
     match config.hungarian_method:

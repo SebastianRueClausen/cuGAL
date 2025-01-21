@@ -31,6 +31,14 @@ def scale_kernel_matrix_log(K: torch.Tensor, log_u: torch.Tensor, log_v: torch.T
 
 
 def marginal_error(K: torch.Tensor, u: torch.Tensor, v: torch.Tensor) -> float:
+    K *= v.reshape(1, -1)
+    K *= u.reshape(-1, 1)
+    dS = torch.sum(abs(torch.sum(K, dim=0) - 1)).item()
+
+    K /= v.reshape(1, -1)
+    K /= u.reshape(-1, 1)
+    return dS    
+
     return torch.sum(abs(torch.sum(scale_kernel_matrix(K.clone(), u, v), dim=0) - 1)).item()
 
 
@@ -57,6 +65,14 @@ class SinkhornState:
         self.v = vector
 
     def marginal_error_log(self, K: torch.Tensor) -> float:
+        K += self.u[:, None]
+        K += self.v[None, :]
+        torch.exp(K, out=K)
+
+        K -= self.u[:, None]
+        K -= self.v[None, :]
+        return torch.sum(abs(torch.sum(K, dim=0) - 1)).item()
+
         return torch.sum(abs(torch.sum(scale_kernel_matrix_log(K.clone(), self.u, self.v), dim=0) - 1)).item()
 
     def lehmann_momentum(self, config: Config, errors: list[float]) -> float:

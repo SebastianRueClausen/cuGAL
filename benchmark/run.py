@@ -5,11 +5,12 @@ import torch
 from dataclasses import replace
 
 
+
 config = Config(
     device='cuda:1', 
     sinkhorn_method=SinkhornMethod.LOG,
     dtype=torch.float32,
-    sinkhorn_threshold=1e-3,
+    sinkhorn_threshold=0,#1e-3,
     sinkhorn_iterations=500,
     mu=2,
     iter_count=15,
@@ -19,7 +20,7 @@ config = Config(
     frank_wolfe_iter_count=10,
     recompute_distance=True,
     hungarian_method=HungarianMethod.SCIPY,
-    sinkhorn_regularization=0.5,
+    sinkhorn_regularization=0.3,
     )
 experiment = Experiment(
     graphs=[
@@ -29,14 +30,8 @@ experiment = Experiment(
         #}) for i in range(5, 26, 5)
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': i, 'p': 0.2}) for i in range(5, 26, 5)
         #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 10, 'p': i}) for i in [0.1, 0.2, 0.3, 0.4, 0.5]
-        #Graph(GraphKind.NEWMAN_WATTS, {'n': 1000, 'k': 10, 'p': 0.2}),
-        Graph(GraphKind.BIO_DMELA, {}),
-        Graph(GraphKind.CA_ERDOS, {}),
-        Graph(GraphKind.CA_GRQC, {}),
-        Graph(GraphKind.CA_NETSCIENCE, {}),
-        Graph(GraphKind.IN_ARENAS, {}),
-        Graph(GraphKind.INF_POWER, {}),
-        Graph(GraphKind.INF_EUROROAD, {}),
+        #Graph(GraphKind.NEWMAN_WATTS, {'n': 35000, 'k': 10, 'p': 0.2}),
+        Graph(GraphKind.CIT_HEP_PH, {}),
     ],
     algorithms=np.array([
         #Algorithm(config, use_fugal=True),
@@ -44,14 +39,13 @@ experiment = Experiment(
         #[Algorithm(replace(config, sinkhorn_regularization=0.5, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.1, mu=mu), use_fugal=False) for mu in mus],
         #[Algorithm(replace(config, sinkhorn_regularization=0.05, mu=mu), use_fugal=False)for mu in mus],
-        Algorithm(config, use_fugal=True),
-        #Algorithm(replace(config, use_sparse_adjacency=False), use_fugal=False),
+        Algorithm(config, use_fugal=False),
     ]).flatten(),
     noise_levels=[
-        #NoiseLevel(0.0, 0.0, False),
+        NoiseLevel(0.0, 0.0, False),
         #NoiseLevel(0.1, 0.0, False),
-        NoiseLevel(0.2, 0.0, False),
-        NoiseLevel(0.3, 0.0, False),
+        #NoiseLevel(0.2, 0.0, False),
+        #NoiseLevel(0.3, 0.0, False),
     ],
     num_runs=4,
     seed=283841238,
